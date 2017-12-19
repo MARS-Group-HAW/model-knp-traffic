@@ -9,6 +9,8 @@ A re-structured LIFE solution that unites the LIFE-API with the model-developmen
         * DalskiAgent 
   * Layers
         * ObstacleLayer
+        * GISVectorLayer
+        * GISRasterLayer
         * PotentialFieldLayer
         * TimeSeriesLayer
   * Environments
