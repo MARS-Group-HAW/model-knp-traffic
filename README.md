@@ -1,40 +1,25 @@
-# LIFE v2.1
+#LIFE
+This project contains the simulation core of the MARS framework. Currently there are two major versions available: 2.x and 3.x
 
-A re-structured LIFE solution that unites the LIFE-API with the model-development components and the simulation runtime.
+## LIFE v2.x
 
-### Contents
-* LIFE-API: The former 'LifeAPI'. Contains all LIFE interfaces.
-* LIFE-Components: All optional components regarding base/predefined components for model development.
-  * Agents
-        * DalskiAgent 
-  * Layers
-        * ObstacleLayer
-        * GISVectorLayer
-        * GISRasterLayer
-        * PotentialFieldLayer
-        * TimeSeriesLayer
-  * Environments
-        * EnvironmentServiceComponent
-        * GeoGridEnvironment
-  * Utilities
-        * CloudSupport
-* LIFE-Core: The LIFE Core components LayerContainer and SimulationManager
-* Tests: All component-related tests are gathered here.
+This project has been developed over the past years and is in a stable state. This project will receive bug fixes in the future but will not be developed further since all new functionality will be added to version 3.x
 
-### Versioning
+Reasons for moving on from this version were feature wishes that couldn't be integrated without undergoing major changes that would have jeopardised having a stable system. Therefore it was decided to do this in version 3.x and to leave version 2.x in its current state.
 
-All components are detached from the `dotnetcore` or `master` branches of their repositories and because of the required dependency changes, namespace renamings and formattings, it seems hardly possible to automatically merge any new changes. Probably the easiest way would be to apply the updates manually in regular intervals, based on the diffs of the origin and merged version.
+## LIFE v3.x
 
-The latest version of LIFE v2.1 rests on these commits:
+New functionality will flow into this version of LIFE. The Smart Open Hamburg project as well as the EMSAfrica project will be based on this version. The planned core innovations for this evolution of LIFE include:
 
+* Local execution: Simulations based on LIFE 3.x will be executable in the cloud as well as on your local machine
+* Decision support systems: run simulations as basis for decision support system and interact with the running simulation
+* Distribution: Execute simulations in parallel on multiple nodes to gain performance
 
-| Repository                  | Current date  | Merged commit                              |
-|-----------------------------|------------|--------------------------------------------|
-| [CloudSupport](https://gitlab.informatik.haw-hamburg.de/mars/overview_move_to_gitlab/commits/master)                               | 06.02.2017 | `aea928ef27b7924c4e92dfe437255d53bcb7eed8` |
-| [DalskiAgent](https://gitlab.informatik.haw-hamburg.de/mars/life-dalskiagent/commits/master)                                       | 23.01.2017 | `cf312336e606e23fec3d25920f0f8271278412bc` |
-| [EnvironmentServiceComponent](https://gitlab.informatik.haw-hamburg.de/mars/life-environment-service-component/commits/dotnetcore) | 05.11.2016 | `d451f78f577362670a845a5d5ba624c1fff8e1c2` |
-| [GeoGridEnvironment](https://gitlab.informatik.haw-hamburg.de/mars/life-geo-grid-environment/commits/dotnetcore)                   | 06.02.2017 | `f9c2e087a5769ea4156330214ce620626f13539e` |
-| [LIFE](https://gitlab.informatik.haw-hamburg.de/mars/life/commits/LIFEv2)                                                          | 15.02.2017 | `8d70be65c0e2a3eb00034b158adfb3952c00224e` |
-| [ObstacleLayer](https://gitlab.informatik.haw-hamburg.de/mars/life-obstacle-layer/commits/master)                                  | 06.02.2017 | `90e98b2a55d6f7c36cd3ffc76a8463d28d65d1ba` |
-| [PotentialFieldLayer](https://gitlab.informatik.haw-hamburg.de/mars/life-potential-field-layer/commits/master)                     | 06.02.2017 | `2a5c6104eb1b94bc0a7443bca26057d07f7cdb19` |
-| [TimeSeriesLayer](https://gitlab.informatik.haw-hamburg.de/mars/life-time-series-layer/commits/dotnetcore)                         | 06.02.2017 | `7fab686db9b8ee522e2ea01a79caa8e78cdf36e3` |
+### Development for LIFE v3.x
+
+Some ground rules for developing the project. This mostly concerns the dealings with Git and branching:
+
+* life-v3.x-master is the master branch of version 3. No commits can happen to this branch without merge requests. The branch is protected and should only be used to do releases (3.0, 3.1, 3.2 etc.). Everything concerning a release must be discussed with Thomas, Daniel or Julius first
+* life-v3.x-dev is the development branch which should always be kept in a state where whatever is on there works. Every developer can commit to this branch but should only do so if the developed features/ fixes actually work
+* feature/ fix branches: whenever you develop new functionality please do that on a separate branch with a self-explaining name. Same goes for fix/ hotfix branches. 
+* If the branching rules are being ignored, the development branch will be protected as well so that you cannot push anymore and everything has to go through merge requests. This is painful and nobody wants this to happen so please comply to the rules
