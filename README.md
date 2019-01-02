@@ -4,7 +4,7 @@
 [![coverage](https://gitlab.informatik.haw-hamburg.de/mars/life/badges/LIFE-v3.x-dev/coverage.svg)](https://gitlab.informatik.haw-hamburg.de/mars/life/commits/LIFE-v3.x-dev)
 
 
-#LIFE
+# LIFE
 
 The Mars.LIFE project provides agent-based simulation and geographical query processing methods with a set common mathematical functions and data structures for .NET.
 Therefore it contains the simulation core of the MARS framework whic executes the simulation with variable stepsize. Currently there are two major versions available: 2.x and 3.x 
