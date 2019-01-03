@@ -1,6 +1,7 @@
 
 
-[![status](https://gitlab.informatik.haw-hamburg.de/mars/life/badges/LIFE-v3.x-dev/pipeline.svg)](https://gitlab.informatik.haw-hamburg.de/mars/life/commits/LIFE-v3.x-dev)
+[![LIFE-v3.x](https://gitlab.informatik.haw-hamburg.de/mars/life/badges/LIFE-v3.x-dev/pipeline.svg)](https://gitlab.informatik.haw-hamburg.de/mars/life/commits/LIFE-v3.x-dev)
+
 
 # LIFE
 
