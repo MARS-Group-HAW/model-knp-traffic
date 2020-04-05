@@ -329,3 +329,9 @@ ASALocalRun/
 ######################################################
 .mfractor/
 Models/SOHModelStarter/out
+Mars.Documentation/site
+Mars.Documentation/common
+Mars.Documentation/components
+Mars.Documentation/geometry
+Mars.Documentation/mathematics
+Mars.Documentation/simulation
