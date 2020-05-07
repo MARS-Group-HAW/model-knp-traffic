@@ -1,10 +1,10 @@
 
-
-![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations?style=flat-square)
+![Nuget](https://img.shields.io/nuget/v/Mars.Life.Simulations?label=mars)
+![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations)
 [![pipeline status](https://git.haw-hamburg.de/mars/life/badges/feature/soh-debugging/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/feature/master)
 [![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
 
-
+    
 # MARS Runtime System
 
 The Mars.LIFE project provides agent-based simulation and geographical query processing methods with a set of common mathematical functions and data structures for .NET Core.
