@@ -5,7 +5,10 @@ using Mars.Interfaces.Environment;
 
 namespace KrugerNationalPark.Layers
 {
-    public class KNPGISRasterShadeLayer : RasterLayer
+    /// <summary>
+    ///     This raster layer provides information about shade areas.
+    /// </summary>
+    public class RasterShadeLayer : RasterLayer
     {
         private const int FullPotential = 100;
 
@@ -57,7 +60,7 @@ namespace KrugerNationalPark.Layers
         
         private bool IsPointInside(Position coordinate)
         {
-            return base.Extent.Contains(coordinate.X, coordinate.Y) && Math.Abs(base.GetValue(coordinate) - 1) < 0.001;
+            return Extent.Contains(coordinate.X, coordinate.Y) && Math.Abs(base.GetValue(coordinate) - 1) < 0.001;
         }
     }
 }

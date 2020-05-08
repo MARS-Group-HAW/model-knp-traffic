@@ -3,7 +3,7 @@ using Mars.Interfaces.Environment;
 
 namespace KrugerNationalPark.Layers
 {
-    public class KNPGISVectorWaterLayer : VectorLayer 
+    public class VectorWaterLayer : VectorLayer 
     {
         public Position ExploreClosestFullPotentialField(double lat, double lon, double maxDistance)
         {
