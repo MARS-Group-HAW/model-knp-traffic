@@ -1,5 +1,4 @@
 
-
 ![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations?style=flat-square)
 [![pipeline status](https://git.haw-hamburg.de/mars/life/badges/feature/soh-debugging/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/feature/master)
 [![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
@@ -93,3 +92,30 @@ chmod +x create-packages.sh
 ``` 
 
 New dependencies and components which is used by the framework have to be listed in the file tags, including their XML documentation.
+
+
+# Documentation Workflow
+
+TODO: how do we decide what is a well formulated question for the documentation and what is not?
+Possible considerations:
+- is the abstraction level appropriate for documentation purposes?
+- has a similar/related question already answered in the documentation?
+- others...
+
+When a specific question about C# MARS is formulated:
+- a GitLab issue in the issue board for the current LIFE version is created
+- the issue is assigned to Daniel O & Nima A
+  - if Daniel O & Nima A can address the issue, they do so
+  - if Daniel O & Nima A cannot address the issue, the issue is assigned to Daniel G, Florian O, Thomas C, or Ulfia L
+- when the issue has been addressed, it remains in the Resolved status until it has been validated
+- when the issue has been validated, it is moved to Closed
+
+Ticket statuses:
+- Open: issue has been created and assigned to Daniel O & Nima A
+- Ready: issue is ready to be worked on
+- Active: issue is being worked on
+- Resolved: question in issue has been answered and answer needs to be validated and added to documentation (.md file)
+- Closed: issue is completed
+
+General discussion about questions:
+The mars-group Slack channel #documentation is used to discussion topics and questions for the documentation. NOTE: when a question is formulated over the course of a discussion in the channel, it must be transferred into a GitLab issue to start to above workflow.
