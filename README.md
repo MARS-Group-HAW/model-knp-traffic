@@ -117,5 +117,5 @@ Ticket statuses for issues with the tag "documentation":
 - Resolved: question in issue has been answered and answer needs to be validated and added to documentation (.md file)
 - Closed: issue is completed
 
-General discussion about documentation:
+General discussion about documentation:  
 The mars-group Slack channel #documentation is used to discuss topics and questions regarding documentation. NOTE: when a question is formulated over the course of a discussion in the channel, it must be transferred into a GitLab issue to initiate the above workflow.
