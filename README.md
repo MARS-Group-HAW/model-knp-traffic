@@ -1,8 +1,10 @@
-![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations?style=flat-square)
+
+![Nuget](https://img.shields.io/nuget/v/Mars.Life.Simulations?label=mars)
+![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations)
 [![pipeline status](https://git.haw-hamburg.de/mars/life/badges/feature/soh-debugging/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/feature/master)
 [![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
 
-
+    
 # MARS Runtime System
 
 The Mars.LIFE project provides agent-based simulation and geographical query processing methods with a set of common mathematical functions and data structures for .NET Core.
@@ -91,31 +93,3 @@ chmod +x create-packages.sh
 ``` 
 
 New dependencies and components which is used by the framework have to be listed in the file tags, including their XML documentation.
-
-
-# Documentation Workflow
-
-TODO: how do we decide what is a well formulated question for the documentation and what is not?
-Possible considerations:
-- Is the abstraction level appropriate for documentation purposes?
-- Has a similar/related question already answered in the documentation?
-- Others...
-
-Workflow for adding a specific question&answer about C# MARS to documentation:
-- A GitLab issue in the issue board for the current LIFE version is created and:
-  - given the tag "documentation"
-  - assigned to Daniel O & Nima A
-- If Daniel O & Nima A can address the issue, they do so
-- if Daniel O & Nima A cannot address the issue, the issue is assigned to Daniel G and/or Florian O
-- When the issue has been addressed, its status is changed to Resolved
-- When the issue has been validated, its status is changed to Closed
-
-Ticket statuses for issues with the tag "documentation":
-- Open: issue has been created
-- Ready: issue is ready to be worked on
-- Active: issue is being worked on
-- Resolved: question in issue has been answered and answer needs to be validated and added to documentation (.md file)
-- Closed: issue is completed
-
-General discussion about documentation:  
-The mars-group Slack channel #documentation is used to discuss topics and questions regarding documentation. NOTE: when a question is formulated over the course of a discussion in the channel, it must be transferred into a GitLab issue to initiate the above workflow.
