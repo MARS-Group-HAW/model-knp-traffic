@@ -328,7 +328,7 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder
 ######################################################
 .mfractor/
-Models/SOHModelStarter/out
+Models/SmartOpenHamburg/SOHModelStarter/out
 Mars.Documentation/site
 Mars.Documentation/common
 Mars.Documentation/components
