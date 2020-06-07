@@ -337,3 +337,8 @@ Mars.Documentation/mathematics
 Mars.Documentation/simulation
 Models/SOHInfectionModel/out
 Tests/.\\TestResults
+Documentation/common
+Documentation/components
+Documentation/geometry
+Documentation/mathematics
+Documentation/simulation
