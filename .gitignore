@@ -345,3 +345,4 @@ Documentation/simulation
 Documentation/site
 Models/SOHModelStarter/out
 Models/SOHFerryTransferBox/SOHFerryTransfer
+Models/SOHFerryTransferBox/SOHFerryTransferBox
