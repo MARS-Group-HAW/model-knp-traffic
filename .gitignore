@@ -339,6 +339,7 @@ Models/SOHInfectionModel/out
 Tests/.\\TestResults
 Documentation/common
 Documentation/components
+Documentation/soh
 Documentation/geometry
 Documentation/mathematics
 Documentation/simulation
