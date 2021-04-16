@@ -1,11 +1,5 @@
   
-![Nuget](https://img.shields.io/nuget/v/Mars.Life.Simulations?label=mars)
-
-![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations)
-
-[![pipeline status](https://git.haw-hamburg.de/mars/life/badges/feature/soh-debugging/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/feature/master)
-
-[![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
+![Nuget](https://img.shields.io/nuget/v/Mars.Life.Simulations?label=mars) ![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations) [![pipeline status](https://git.haw-hamburg.de/mars/life/badges/feature/soh-debugging/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/feature/master) [![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
 
 <h1  align="center">MARS Runtime System | <a  href="https://mars-group.org">Website</a></h1>
 
