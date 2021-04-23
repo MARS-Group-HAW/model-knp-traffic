@@ -25,11 +25,12 @@ namespace KrugerNationalParkStarter
     {
         public static void Main(string[] args)
         {
+            
             var watch = Stopwatch.StartNew();
             var description = new ModelDescription();
 
             // Turning logger on or off
-            LoggerFactory.SetLogLevel(LogLevel.Off);
+            LoggerFactory.SetLogLevel(LogLevel.Info);
 
             // First register each layer at the runtime system
             description.AddLayer<RasterTempLayer>();

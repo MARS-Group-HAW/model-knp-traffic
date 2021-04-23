@@ -24,13 +24,8 @@ namespace KrugerNationalPark.Agents
             car.TouristLayer = layer;
             
             Car = car;
-            Position = Position.CreatePosition(StartLongitude, StartLatitude);
-
-            Console.WriteLine(StartLongitude);
-            Console.WriteLine(StartLatitude);
-            
             Car.Mass = MyMass;
-            
+
             car.TryEnterDriver(this, out var handle);
 
             var start = layer.StreetEnvironment.NearestNode(Position);
@@ -41,7 +36,7 @@ namespace KrugerNationalPark.Agents
             VehicleHandle = handle;
         }
 
-        [PropertyDescription(Name = "myMass")]
+        [PropertyDescription(Name = "my_mass")]
         public double MyMass { get; set; }
 
         public CarSteeringHandle VehicleHandle { get; set; }
@@ -54,11 +49,6 @@ namespace KrugerNationalPark.Agents
         
         public Guid ID { get; set; }
         
-        [PropertyDescription(Name = "startLon")]
-        public double StartLongitude { get; set; }
-        
-        [PropertyDescription(Name = "startLat")]
-        public double StartLatitude { get; set; }
 
         public Position Position
         {
