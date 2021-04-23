@@ -47,7 +47,7 @@ namespace KrugerNationalPark.Layers
                 NodeIndex = true
             });
             
-            Tourists = Container.Resolve<IAgentManager>().Spawn<Tourist, TouristLayer>().ToList();
+            //Tourists = Container.Resolve<IAgentManager>().Spawn<Tourist, TouristLayer>().ToList();
             
             return true;
         }
