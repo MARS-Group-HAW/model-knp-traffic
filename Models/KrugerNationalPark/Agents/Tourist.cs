@@ -14,6 +14,9 @@ namespace KrugerNationalPark.Agents
     {
         public void Init(TouristLayer layer)
         {
+            
+            Console.WriteLine("Tourist init");
+            
             TripsCollection = new TripsCollection(layer.Context);
             
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
@@ -23,6 +26,9 @@ namespace KrugerNationalPark.Agents
             Car = car;
             Position = Position.CreatePosition(StartLongitude, StartLatitude);
 
+            Console.WriteLine(StartLongitude);
+            Console.WriteLine(StartLatitude);
+            
             Car.Mass = MyMass;
             
             car.TryEnterDriver(this, out var handle);

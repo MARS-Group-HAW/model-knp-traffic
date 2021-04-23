@@ -34,6 +34,11 @@
     {
       "name": "TouristLayer",
       "file": "resources/knp_graph.graphml"
+    },
+
+    {
+      "name": "TouristSchedulingLayer", 
+      "file": "resources/tourist_scheduler.csv"
     }
   ],
   "entities": [
@@ -52,38 +57,7 @@
       "outputtype": "individual"
     },
     {
-      "name": "Tourist",
-      "count": 100,
-      "frequency": 1,
-      "outputFrequency": 60,
-      "outputType": "individual",
-      "file": "resources/car_init.csv",
-      "mapping": [
-        {
-          "parameter": "route",
-          "field": "Route"
-        },
-        {
-          "parameter": "length",
-          "value": 4
-        },
-        {
-          "parameter": "width",
-          "value": 2
-        },
-        {
-          "parameter": "trafficCode",
-          "value": "south-african"
-        },
-        {
-          "parameter": "maxAcceleration",
-          "value": 0.73
-        },
-        {
-          "parameter": "maxDeceleration",
-          "value": 1.67
-        }
-      ]
+      "name": "Tourist"
     }
   ]
 }

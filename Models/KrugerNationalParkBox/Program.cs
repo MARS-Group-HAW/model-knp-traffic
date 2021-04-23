@@ -7,6 +7,7 @@ using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
+using Mars.Components.Layers;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
@@ -16,6 +17,7 @@ using NetTopologySuite.IO;
 using NetTopologySuite.IO.Converters;
 using SOHDomain.Output;
 using SOHMultimodalModel.Output.Trips;
+using SOHMultimodalModel.Planning;
 
 namespace KrugerNationalParkStarter
 {
@@ -37,6 +39,9 @@ namespace KrugerNationalParkStarter
             description.AddLayer<VectorWaterLayer>();
             description.AddLayer<ElephantLayer>();
             description.AddLayer<TouristLayer>();
+
+            description.AddLayer<TouristSchedulingLayer>();
+            
 
             // Second register the agent types with their respective layer type
             var tourist = description.AddAgent<Tourist, TouristLayer>();
