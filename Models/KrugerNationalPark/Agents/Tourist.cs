@@ -1,12 +1,14 @@
 using System;
 using KrugerNationalPark.Layers;
+using Mars.Common;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
-using Mars.Interfaces.Environments;
+using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
 using SOHDomain.Output;
 using SOHDomain.Steering.Common;
+using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
@@ -15,8 +17,8 @@ namespace KrugerNationalPark.Agents
         public void Init(TouristLayer layer)
         {
             
-            Console.WriteLine("Tourist init");
-            
+            //Console.WriteLine("Tourist init");
+
             TripsCollection = new TripsCollection(layer.Context);
             
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
@@ -25,17 +27,39 @@ namespace KrugerNationalPark.Agents
             
             Car = car;
             Car.Mass = MyMass;
-
+            
+            // todo: Source is a Point, no Random needed? 
+            Position = SourceGeometry.RandomPositionFromGeometry();
+            
             car.TryEnterDriver(this, out var handle);
+
+            // From given MULTIPOINT Geometry get a random POINT
+            // RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
+            var target = TargetGeometry.Coordinates;
+            var length = target.Length;
+            Random rnd = new Random();
+            var index = rnd.Next((int) length);
+            var targetCor = target[index];
+            var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
             var start = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, start);
-            var goal = layer.StreetEnvironment.GetRandomNode();
+            
+            // for the StreetEnvironment we need an SpatialNode, not a Position. 
+            // -> get nearest Node to chosen target position
+            //var goal = layer.StreetEnvironment.GetRandomNode();
+            var goal = layer.StreetEnvironment.NearestNode(targetPos);
             handle.Route = layer.StreetEnvironment.FindRoute(start, goal);
 
             VehicleHandle = handle;
         }
 
+        [PropertyDescription(Name = "source")] 
+        public Geometry SourceGeometry { get; set; }
+
+        [PropertyDescription(Name = "destination")]
+        public Geometry TargetGeometry { get; set; }
+        
         [PropertyDescription(Name = "my_mass")]
         public double MyMass { get; set; }
 
