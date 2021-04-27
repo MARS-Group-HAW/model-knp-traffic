@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using KrugerNationalPark.Layers;
 using Mars.Common;
+using Mars.Numerics;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using NetTopologySuite.Geometries;
@@ -14,8 +17,16 @@ namespace KrugerNationalPark.Agents
 {
     public class Tourist : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
     {
+        private TouristLayer _touristLayer;
+
+        public int ElephantCounter { set; get; }
+
+        private HashSet<Guid> KnownElephants = new HashSet<Guid>();
+        
         public void Init(TouristLayer layer)
         {
+            _touristLayer = layer;
+            ElephantCounter = 0;
             
             //Console.WriteLine("Tourist init");
 
@@ -67,6 +78,28 @@ namespace KrugerNationalPark.Agents
 
         public void Tick()
         {
+            //Console.WriteLine("Tourist position: " + Position);
+
+            // just for debugging: what is the distance to nearest elephant:
+            //var enumerable2 = _touristLayer.ElephantLayer.Environment.Explore(Position);
+            //var elephant2 = enumerable2.FirstOrDefault();
+            //var distanceElephant = Distance.Haversine(elephant2.Position.PositionArray, Position.PositionArray);
+            //Console.WriteLine("Distance to nearest elephant:" + distanceElephant);
+            
+            // Look for nearest elephant for counting
+            var enumerable = _touristLayer.ElephantLayer.Environment.Explore(Position, 300, 1);
+            var elephant = enumerable.FirstOrDefault();
+            if (elephant != null)
+            {
+                if (KnownElephants.Add(elephant.ID))
+                {
+                    ElephantCounter += 1;
+                }
+            }
+                
+            
+            
+            
             VehicleHandle.Move();
             TripsCollection.Add(Position);
         }
@@ -89,6 +122,9 @@ namespace KrugerNationalPark.Agents
         public Car Car { get; set; }
         public bool CurrentlyCarDriving => true;
         public int StableId { get; }
+        
+
+        
         public TripsCollection TripsCollection { get; set; }
     }
 }
