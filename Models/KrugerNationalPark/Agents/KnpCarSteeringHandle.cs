@@ -63,7 +63,14 @@ namespace KrugerNationalPark.Agents
                 speedElephant = 5;
                 distanceElephant = Distance.Haversine(elephant.Position.PositionArray, Vehicle.Position.PositionArray);
 
-                //Console.WriteLine("Elephant ahead in: " + distanceElephant + " m");
+                var driver = Vehicle.Driver;
+                
+                if (driver is Tourist tourist) {
+                    tourist.ElephantAhead(elephant);
+                }
+                
+                
+                Console.WriteLine("Elephant ahead in: " + distanceElephant + " m");
                 return true;
             }
 

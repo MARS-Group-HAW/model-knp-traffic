@@ -87,7 +87,8 @@ namespace KrugerNationalPark.Agents
             //Console.WriteLine("Distance to nearest elephant:" + distanceElephant);
             
             // Look for nearest elephant for counting
-            var enumerable = _touristLayer.ElephantLayer.Environment.Explore(Position, 300, 1);
+            
+            /* var enumerable = _touristLayer.ElephantLayer.Environment.Explore(Position, 300, 1);
             var elephant = enumerable.FirstOrDefault();
             if (elephant != null)
             {
@@ -95,17 +96,23 @@ namespace KrugerNationalPark.Agents
                 {
                     ElephantCounter += 1;
                 }
-            }
-                
+            } */
             
             
-            
-            VehicleHandle.Move();
+            VehicleHandle.Move(); // -> will call our HandleCustom in 
             TripsCollection.Add(Position);
         }
         
         public Guid ID { get; set; }
-        
+
+
+        public void ElephantAhead(Elephant elephant)
+        {
+            if (KnownElephants.Add(elephant.ID))
+            {
+                ElephantCounter += 1;
+            }
+        }
 
         public Position Position
         {
