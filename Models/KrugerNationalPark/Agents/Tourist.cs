@@ -1,11 +1,11 @@
 using System;
 using KrugerNationalPark.Layers;
+using Mars.Components.Agents.Trips;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
-using SOHDomain.Output;
 using SOHDomain.Steering.Common;
 
 namespace KrugerNationalPark.Agents
