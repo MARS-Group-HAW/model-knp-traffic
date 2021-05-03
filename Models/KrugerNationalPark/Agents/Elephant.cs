@@ -411,11 +411,6 @@ namespace KrugerNationalPark.Agents
         }
 
 
-        private double MetersToDecimalDegrees(double meters, double latitude)
-        {
-            return meters / (111.32 * 1000 * Math.Cos(latitude * (Math.PI / 180)));
-        }
-
         private void LeadingElephantAction()
         {
             //todo May find water and biomass outside of the fences and tries to move towards the position
