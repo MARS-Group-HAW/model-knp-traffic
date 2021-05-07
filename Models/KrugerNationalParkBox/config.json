@@ -35,10 +35,13 @@
       "name": "TouristLayer",
       "file": "resources/knp_graph.graphml"
     },
-
     {
-      "name": "TouristSchedulingLayer", 
-      "file": "resources/tourist_scheduler.csv"
+      "name": "TouristSchedulingLayer",
+      "file": "resources/Camp2CampScheduler.csv"
+    },
+    {
+      "name": "CommuterSchedulingLayer",
+      "file": "resources/CommScheduler.csv"
     }
   ],
   "entities": [
@@ -58,6 +61,9 @@
     },
     {
       "name": "Tourist"
+    },
+    {
+      "name": "Commuter"
     }
-  ]
+  ] 
 }
