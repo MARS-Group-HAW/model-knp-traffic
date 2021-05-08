@@ -360,3 +360,6 @@ Models/SOHBicycleRealTimeBox/SOHBicycleRealTimeBox
 Models/SOHGreen4BikesBox/SOHGreen4BikesBox
 Models/SOHPlayground/out
 Visualization/venv/
+Visualization/lib
+Visualization/include
+pyvenv.cfg
