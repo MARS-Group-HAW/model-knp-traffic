@@ -5,7 +5,7 @@
     "startTime": "2019-01-01T06:00:00.000Z",
     "endTime": "2019-01-01T07:00:00.000Z",
     "output": "csv",
-    "console" : true,
+    "console" : false,
     "options": {
       "numberFormat": "G"
     }
@@ -37,11 +37,11 @@
     },
     {
       "name": "TouristSchedulingLayer",
-      "file": "resources/Camp2CampScheduler.csv"
+      "file": "resources/_emptyScheduler.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/CommScheduler.csv"
+      "file": "resources/CommScheduler_debug.csv"
     }
   ],
   "entities": [
@@ -54,13 +54,13 @@
     {
       "name": "Elephant",
       "file": "resources/elephant1989_constant_population_15k.csv",
-      "count": 100,
-      "frequency": 60,
-      "outputFrequency": 60,
+      "count": 0,
+      "frequency": 3600,
+      "outputFrequency": 3600,
       "outputtype": "individual"
     },
     {
-      "name": "Tourist"
+      "name": "Tourist",
     },
     {
       "name": "Commuter"
