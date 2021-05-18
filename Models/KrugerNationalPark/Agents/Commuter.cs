@@ -21,6 +21,10 @@ namespace KrugerNationalPark.Agents
     {
         private TouristLayer _touristLayer;
 
+        public const string STATE_GOING_TO_WORK = "toWork";
+        public const string STATE_WORKING = "atCamp";
+        public const string STATE_GOING_HOME = "backHome";
+        
         public Position Origin;
         public ISpatialNode OriginNode;
         public Position Workplace;
@@ -33,9 +37,8 @@ namespace KrugerNationalPark.Agents
         
         public void Init(TouristLayer layer)
         {
+            State = STATE_GOING_TO_WORK;
 
-            GoalReached = false;
-            
             _touristLayer = layer;
             TripsCollection = new TripsCollection(layer.Context);
             
@@ -86,32 +89,49 @@ namespace KrugerNationalPark.Agents
         
         [PropertyDescription(Name = "my_mass")]
         public double MyMass { get; set; }
-        
-        public bool GoalReached { get; set; }
 
+        /// <summary>
+        /// if the agent is on its way to work (FALSE) or on the way back home (TRUE).
+        /// </summary>
+        public string State { get; set; }
+        
         public double CarVelocity { get; set; }
         
+
         public CarSteeringHandle VehicleHandle { get; set; }
 
         public void Tick()
         {
             var WorkDuration = 10; // in minutes, @todo: als Parameter aus CSV 
-       
+
+            
             if (VehicleHandle.Route.GoalReached)
             {
-                // camp reached -> now work!
-                if (!GoalReached)
+
+                if (State.Equals(STATE_GOING_TO_WORK))
                 {
-                    GoalReached = true; // save Commuter "internal" GoalReached-state
+                    State = STATE_WORKING;
                     ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
                 }
-
+                
                 // finished working -> go back to origin gate
-                if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                if (State.Equals(STATE_WORKING) && DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
                 {
+                    State = STATE_GOING_HOME;
+                    Console.WriteLine("leave now");
                     VehicleHandle.Route = _touristLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
                 }
+                
+                if (State.Equals(STATE_GOING_HOME))
+                {
+                    Console.WriteLine("Back home again");
+                    //_touristLayer.StreetEnvironment.Remove(Car);
+                    // return route finished
+                    // home again, do nothing
+                }
+                
+                
             }
             else
             {
