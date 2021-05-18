@@ -76,10 +76,6 @@ namespace KrugerNationalPark.Agents
             handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, WorkplaceNode);
             
             VehicleHandle = handle;
-            
-            
-            
-            
         }
 
         [PropertyDescription(Name = "source")] 
@@ -99,40 +95,21 @@ namespace KrugerNationalPark.Agents
 
         public void Tick()
         {
-            var WorkDuration = 10; // in minutes
+            var WorkDuration = 10; // in minutes, @todo: als Parameter aus CSV 
        
             if (VehicleHandle.Route.GoalReached)
             {
                 // camp reached -> now work!
-
-                // @todo: CurrentTimePoint is Nullable (`DateTime?`) so we need t make sure
-                // a value is set. We copied the `new DateTime(1999, 12, 31)` from `Models/SOHMultimodalModel/Multimodal/MultimodalAgent.cs`.
-                // Is this Ok? -> our simulation is timevased and wie should *never* run in to this (we think).
-                
                 if (!GoalReached)
                 {
-                    GoalReached = true;
-                    
-                    ArrivalTime = _touristLayer.Context.CurrentTimePoint ?? new DateTime(1999, 12, 31);
+                    GoalReached = true; // save Commuter "internal" GoalReached-state
+                    ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
                 }
 
-                if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint  ?? new DateTime(1999, 12, 31) ).Minutes < 0)
+                // finished working -> go back to origin gate
+                if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
                 {
-                    /*var car = _touristLayer.EntityManager.Create<KnpCar>("type", "Golf");
-                    car.Environment = _touristLayer.StreetEnvironment;
-                    car.TouristLayer = _touristLayer;
-            
-                    Car = car;
-                    Car.Mass = MyMass;
-
-                    var entered = car.TryEnterDriver(this, out var handle);
-                    
-                    handle.Route = _touristLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
-            
-                    VehicleHandle = handle; */
-
-                    Console.WriteLine("we need to leave now");
                     VehicleHandle.Route = _touristLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
                 }
             }
