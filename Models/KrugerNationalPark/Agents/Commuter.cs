@@ -21,6 +21,7 @@ namespace KrugerNationalPark.Agents
     {
         private TouristLayer _touristLayer;
 
+        // @todo: refactore into an ENUM?
         public const string STATE_GOING_TO_WORK = "toWork";
         public const string STATE_WORKING = "atCamp";
         public const string STATE_GOING_HOME = "backHome";
@@ -125,13 +126,11 @@ namespace KrugerNationalPark.Agents
                 
                 if (State.Equals(STATE_GOING_HOME))
                 {
-                    Console.WriteLine("Back home again");
-                    //_touristLayer.StreetEnvironment.Remove(Car);
-                    // return route finished
-                    // home again, do nothing
+                    // @todo: this agent is no longer needed an can be "destroyed"
+                    // Car.LeaveVehicle(this);
+                    //_touristLayer.StreetEnvironment.Remove(Car); // <- throws exception
+                    //_touristLayer.Entities.TryRemove(ID, out _);
                 }
-                
-                
             }
             else
             {

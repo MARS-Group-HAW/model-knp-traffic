@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc;
 using Mars.Common;
 using Mars.Numerics;
 using Mars.Interfaces.Agents;
@@ -19,6 +20,12 @@ namespace KrugerNationalPark.Agents
     {
         private TouristLayer _touristLayer;
 
+
+        private bool StartedLooking = false;
+        
+        public DateTime ArrivalTime;
+        public DateTime DepartureTime;
+
         public int ElephantCounter { set; get; }
 
         private HashSet<Guid> KnownElephants = new HashSet<Guid>();
@@ -27,6 +34,7 @@ namespace KrugerNationalPark.Agents
         {
             _touristLayer = layer;
             ElephantCounter = 0;
+            State = TouristState.Driving;
             
             //Console.WriteLine("Tourist init");
 
@@ -73,6 +81,13 @@ namespace KrugerNationalPark.Agents
         
         [PropertyDescription(Name = "my_mass")]
         public double MyMass { get; set; }
+        
+        public double CarVelocity { get; set; }
+
+        /// <summary>
+        /// if the agent is on its way to work (FALSE) or on the way back home (TRUE).
+        /// </summary>
+        public TouristState State { get; set; }
 
         public CarSteeringHandle VehicleHandle { get; set; }
 
@@ -97,9 +112,34 @@ namespace KrugerNationalPark.Agents
                     ElephantCounter += 1;
                 }
             } */
+
+            var LookDuration = 15;
+
+            if (State == TouristState.Looking)
+            {
+                if (!StartedLooking)
+                {
+                    ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    DepartureTime = ArrivalTime.AddMinutes(LookDuration);
+                    StartedLooking = true;
+                    Console.WriteLine("looking around");
+                }
+                else
+                {
+                    if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                    {
+                        State = TouristState.Driving;
+                        StartedLooking = false;
+                        Console.WriteLine("Drivingagain");
+                    }
+                }
+            }
+            else
+            {
+                VehicleHandle.Move(); // -> will call our HandleCustom in 
+            }
             
-            
-            VehicleHandle.Move(); // -> will call our HandleCustom in 
+            CarVelocity = Car.Velocity;
             TripsCollection.Add(Position);
         }
         
