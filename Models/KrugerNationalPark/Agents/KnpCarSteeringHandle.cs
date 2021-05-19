@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc;
 using Mars.Common.Core;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
@@ -32,8 +33,51 @@ namespace KrugerNationalPark.Agents
 
             if (type.Equals("Tourist"))
             {
-                if (IsWildlifeAhead(out var speedElephant, out var distanceElephant))
-                    return HandleWildlifeAhead(deceleration, speedElephant, distanceElephant);
+                var driver = Vehicle.Driver;
+                
+                if (driver is Tourist tourist) {
+
+                    if (tourist.State == TouristState.Driving && _carLayer.Context.CurrentTick >= 1100)
+                    {
+                        // throw dice…
+                        Random rnd = new Random();
+
+                        if (rnd.NextDouble() > 0.5)
+                        {
+                            tourist.State = TouristState.Braking;
+                        }
+                        
+                        tourist.State = TouristState.Braking;
+                    }
+                    
+                    if (tourist.State == TouristState.Braking)
+                    {
+
+                        if (Vehicle.Velocity > 0)
+                        {
+                            
+                            
+                            
+                            var speedChange = VehicleAccelerator.CalculateSpeedChange(Vehicle.Velocity, SpeedLimit,
+                                10, 0);
+
+                            // Is used when the movement is performed
+                            var outv  =  speedChange < deceleration ? speedChange : deceleration;
+            
+                            //Console.WriteLine("deceleration in: " + outv);
+                            return outv;
+                        }
+                        
+                        // if car halted Velocity is 0 and we start waiting
+                        tourist.State = TouristState.Looking;
+                        
+                    }
+                    
+                }
+                
+            
+                //if (IsWildlifeAhead(out var speedElephant, out var distanceElephant))
+                //    return HandleWildlifeAhead(deceleration, speedElephant, distanceElephant);
             }
             
             return deceleration;

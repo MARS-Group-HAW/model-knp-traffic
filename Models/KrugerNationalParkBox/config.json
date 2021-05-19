@@ -37,11 +37,11 @@
     },
     {
       "name": "TouristSchedulingLayer",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/TouristScheduler_debug_1.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/CommScheduler_debug.csv"
+      "file": "resources/CommScheduler_debug_1.csv"
     }
   ],
   "entities": [
@@ -55,12 +55,10 @@
       "name": "Elephant",
       "file": "resources/elephant1989_constant_population_15k.csv",
       "count": 0,
-      "frequency": 3600,
-      "outputFrequency": 3600,
       "outputtype": "individual"
     },
     {
-      "name": "Tourist",
+      "name": "Tourist"
     },
     {
       "name": "Commuter"
