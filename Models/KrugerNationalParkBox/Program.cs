@@ -8,10 +8,10 @@ using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
 using Mars.Components.Agents.Trips;
+using Mars.Components.Agents.Trips.Output;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
-using SOHMultimodalModel.Output.Trips;
 
 namespace KrugerNationalParkStarter
 {
