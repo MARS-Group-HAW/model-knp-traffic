@@ -8,6 +8,7 @@ using Mars.Numerics;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
+using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
@@ -70,6 +71,8 @@ namespace KrugerNationalPark.Agents
             
             layer.StreetEnvironment.Insert(car, OriginNode);
             
+            
+            
             // for the StreetEnvironment we need an SpatialNode, not a Position. 
             // -> get nearest Node to chosen target position
             //var goal = layer.StreetEnvironment.GetRandomNode();
@@ -90,6 +93,10 @@ namespace KrugerNationalPark.Agents
         
         [PropertyDescription(Name = "my_mass")]
         public double MyMass { get; set; }
+        
+        [PropertyDescription]
+        public UnregisterAgent UnregisterHandle { get; set; }
+        
 
         /// <summary>
         /// if the agent is on its way to work (FALSE) or on the way back home (TRUE).
@@ -104,32 +111,30 @@ namespace KrugerNationalPark.Agents
         public void Tick()
         {
             var WorkDuration = 10; // in minutes, @todo: als Parameter aus CSV 
-
             
             if (VehicleHandle.Route.GoalReached)
             {
-
                 if (State.Equals(STATE_GOING_TO_WORK))
                 {
+                    // we reached our wokring destination
                     State = STATE_WORKING;
                     ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
                 }
-                
-                // finished working -> go back to origin gate
-                if (State.Equals(STATE_WORKING) && DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                else if (State.Equals(STATE_WORKING) && DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
                 {
+                    // finished working -> go back to origin gate
                     State = STATE_GOING_HOME;
-                    Console.WriteLine("leave now");
                     VehicleHandle.Route = _touristLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
                 }
-                
-                if (State.Equals(STATE_GOING_HOME))
+                else if (State.Equals(STATE_GOING_HOME))
                 {
-                    // @todo: this agent is no longer needed an can be "destroyed"
-                    // Car.LeaveVehicle(this);
-                    //_touristLayer.StreetEnvironment.Remove(Car); // <- throws exception
-                    //_touristLayer.Entities.TryRemove(ID, out _);
+                    // 1. remove car from graph
+                    _touristLayer.StreetEnvironment.Remove(Car); 
+                    
+                    // 2. unregister agent, it will no longer receive any tick() calls
+                    // this agent reached it's goal and is no longer relevant in the sim context so we can remove it.
+                    UnregisterHandle.Invoke(_touristLayer, this);
                 }
             }
             else
@@ -148,8 +153,6 @@ namespace KrugerNationalPark.Agents
             get => Car.Position;
             set => Car.Position = value;
         }
-
-        
         
         public void Notify(PassengerMessage passengerMessage)
         {
