@@ -63,7 +63,10 @@ BenchmarkDotNet.Artifacts/
 project.lock.json
 project.fragment.lock.json
 artifacts/
-
+**/cache/
+**/bin
+**/obj
+**/.compiled**
 # StyleCop
 ##########
 StyleCopReport.xml
@@ -357,4 +360,6 @@ Models/SOHBicycleRealTimeBox/SOHBicycleRealTimeBox
 Models/SOHGreen4BikesBox/SOHGreen4BikesBox
 Models/SOHPlayground/out
 Visualization/venv/
-.ipynb_checkpoints
+Visualization/lib
+Visualization/include
+pyvenv.cfg

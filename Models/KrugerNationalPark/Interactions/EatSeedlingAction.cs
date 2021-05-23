@@ -1,4 +1,4 @@
-﻿namespace KrugerNationalPark.Interactions
+﻿namespace rugerNationalPark.Interactions
 {
     /*class EatSeedlingAction : IInteraction
     {

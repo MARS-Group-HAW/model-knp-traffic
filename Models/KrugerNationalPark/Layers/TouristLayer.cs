@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using KrugerNationalPark.Agents;
-using Mars.Common.Core.Collections;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
-using Mars.Core.Data;
 using Mars.Interfaces.Annotations;
+using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Interfaces.Model;

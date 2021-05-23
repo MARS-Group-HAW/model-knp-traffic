@@ -20,11 +20,11 @@ using System.Linq;
 using KrugerNationalPark.Layers;
 using Mars.Common;
 using Mars.Components.Agents;
+using Mars.Components.Agents.Trips;
 using Mars.Components.Environments;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
-using SOHDomain.Output;
 
 namespace KrugerNationalPark.Agents
 {
@@ -410,11 +410,6 @@ namespace KrugerNationalPark.Agents
             }
         }
 
-
-        private double MetersToDecimalDegrees(double meters, double latitude)
-        {
-            return meters / (111.32 * 1000 * Math.Cos(latitude * (Math.PI / 180)));
-        }
 
         private void LeadingElephantAction()
         {

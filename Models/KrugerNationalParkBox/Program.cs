@@ -7,17 +7,11 @@ using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
-using Mars.Components.Layers;
+using Mars.Components.Agents.Trips;
+using Mars.Components.Agents.Trips.Output;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
-using NetTopologySuite.Features;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.IO;
-using NetTopologySuite.IO.Converters;
-using SOHDomain.Output;
-using SOHMultimodalModel.Output.Trips;
-using SOHMultimodalModel.Planning;
 
 namespace KrugerNationalParkStarter
 {
