@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc;
 using Mars.Common;
 using Mars.Common.IO.Mapped;
 using Mars.Numerics;
@@ -21,11 +22,6 @@ namespace KrugerNationalPark.Agents
     public class Commuter : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
     {
         private TouristLayer _touristLayer;
-
-        // @todo: refactore into an ENUM?
-        public const string STATE_GOING_TO_WORK = "toWork";
-        public const string STATE_WORKING = "atCamp";
-        public const string STATE_GOING_HOME = "backHome";
         
         public Position Origin;
         public ISpatialNode OriginNode;
@@ -39,8 +35,7 @@ namespace KrugerNationalPark.Agents
         
         public void Init(TouristLayer layer)
         {
-            State = STATE_GOING_TO_WORK;
-
+            State = CommuterState.GoingToWork;
             _touristLayer = layer;
             TripsCollection = new TripsCollection(layer.Context);
             
@@ -101,7 +96,7 @@ namespace KrugerNationalPark.Agents
         /// <summary>
         /// if the agent is on its way to work (FALSE) or on the way back home (TRUE).
         /// </summary>
-        public string State { get; set; }
+        public CommuterState State { get; set; }
         
         public double CarVelocity { get; set; }
         
@@ -114,20 +109,20 @@ namespace KrugerNationalPark.Agents
             
             if (VehicleHandle.Route.GoalReached)
             {
-                if (State.Equals(STATE_GOING_TO_WORK))
+                if (State == CommuterState.GoingToWork)
                 {
-                    // we reached our wokring destination
-                    State = STATE_WORKING;
+                    // we reached our working destination
+                    State = CommuterState.Working;
                     ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
                 }
-                else if (State.Equals(STATE_WORKING) && DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                else if (State == CommuterState.Working && DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
                 {
                     // finished working -> go back to origin gate
-                    State = STATE_GOING_HOME;
+                    State = CommuterState.GoingHome;
                     VehicleHandle.Route = _touristLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
                 }
-                else if (State.Equals(STATE_GOING_HOME))
+                else if (State == CommuterState.GoingHome)
                 {
                     // 1. remove car from graph
                     _touristLayer.StreetEnvironment.Remove(Car); 
