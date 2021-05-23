@@ -44,6 +44,8 @@ namespace KrugerNationalPark.Agents
             car.TouristLayer = layer;
             
             Car = car;
+            
+            // @todo: has no relevance for Car? Seems like to be used by Bicyclist and Multimodal agent only
             Car.Mass = MyMass;
             
             // todo: Source is a Point, no Random needed? 
