@@ -86,6 +86,9 @@ namespace KrugerNationalPark.Agents
         [PropertyDescription(Name = "destination")]
         public Geometry TargetGeometry { get; set; }
         
+        [PropertyDescription(Name = "workDuration")]
+        public double WorkDuration { get; set; }
+        
         [PropertyDescription(Name = "my_mass")]
         public double MyMass { get; set; }
         
@@ -105,8 +108,6 @@ namespace KrugerNationalPark.Agents
 
         public void Tick()
         {
-            var WorkDuration = 10; // in minutes, @todo: als Parameter aus CSV 
-            
             if (VehicleHandle.Route.GoalReached)
             {
                 if (State == CommuterState.GoingToWork)
