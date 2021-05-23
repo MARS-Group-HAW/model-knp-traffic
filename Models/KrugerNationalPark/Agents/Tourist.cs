@@ -10,6 +10,7 @@ using Mars.Interfaces.Annotations;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
+using SOHDomain.Model;
 using SOHDomain.Output;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
@@ -23,9 +24,13 @@ namespace KrugerNationalPark.Agents
 
         private bool StartedLooking = false;
         
+        
+        
         public DateTime ArrivalTime;
         public DateTime DepartureTime;
 
+        private KnpCar AnimalSighting;
+        
         public int ElephantCounter { set; get; }
 
         private HashSet<Guid> KnownElephants = new HashSet<Guid>();
@@ -71,6 +76,11 @@ namespace KrugerNationalPark.Agents
             handle.Route = layer.StreetEnvironment.FindRoute(start, goal);
 
             VehicleHandle = handle;
+            
+            
+            
+            //_touristLayer.StreetEnvironment.Insert()
+            
         }
 
         [PropertyDescription(Name = "source")] 
@@ -114,31 +124,70 @@ namespace KrugerNationalPark.Agents
             } */
 
             var LookDuration = 15;
-
-            if (State == TouristState.Looking)
+            
+            // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
+            // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
+            var insertAnimalSightingDistanceAhead = 33.0;
+            
+            
+            // we are driving around and wait for an anima sighting event
+            if (State == TouristState.Driving)
             {
-                if (!StartedLooking)
+                // throw dice...
+                Random rnd = new Random();
+
+                //if (rnd.NextDouble() > 0.5)
+                if (_touristLayer.Context.CurrentTick >= 1800)                
                 {
-                    ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
-                    DepartureTime = ArrivalTime.AddMinutes(LookDuration);
-                    StartedLooking = true;
-                    Console.WriteLine("looking around");
-                }
-                else
-                {
-                    if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                    // 1. determine our position
+                    var remainingDistance = VehicleHandle.RemainingDistanceOnEdge;
+                    
+                    // if the next intersection is closer than our break distance, 
+                    // don't look for the animal and keep driving
+                    // @todo: this removed the hassly of determining the next edge and position the car there,
+                    //        but maybe this is better for us anyway? discuss!
+                    if (remainingDistance > insertAnimalSightingDistanceAhead)
                     {
-                        State = TouristState.Driving;
-                        StartedLooking = false;
-                        Console.WriteLine("Drivingagain");
+                        // 2. Create our car to force braking
+                        AnimalSighting = _touristLayer.EntityManager.Create<KnpCar>("type", "Golf");
+                        AnimalSighting.Environment = _touristLayer.StreetEnvironment;
+                        AnimalSighting.TouristLayer = _touristLayer;
+
+                        var edge = VehicleHandle.Route[0].Edge; // <- current edge of our car
+                        
+                        // 3. insert our baking trigger into the graph
+                        // @todo: we should check if between our position and the pos where we insert the car the road is empty
+                        // -> so we don't block an commuter ahead of us e.g.
+                        _touristLayer.StreetEnvironment.Insert(AnimalSighting, edge,
+                            Car.PositionOnCurrentEdge + insertAnimalSightingDistanceAhead);
+                        
+                        // 4. enter braking state 
+                        State = TouristState.Braking;
                     }
                 }
             }
-            else
+            else if (State == TouristState.Braking)
             {
-                VehicleHandle.Move(); // -> will call our HandleCustom in 
+                if (Car.Velocity == 0)
+                {
+                    // we are at a stand now, start timer to remove AnimalSighting "car"
+                    ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    DepartureTime = ArrivalTime.AddMinutes(LookDuration);
+                    State = TouristState.Looking;
+                }
+            } else if (State == TouristState.Looking)
+            {
+                if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                {
+                    _touristLayer.StreetEnvironment.Remove(AnimalSighting);
+                    State = TouristState.Driving;
+                }
             }
             
+            
+            // Always call Move, since braking is "handled" by the AnimalSighting car ahead
+            VehicleHandle.Move(); // -> will call our HandleCustom in 
+
             CarVelocity = Car.Velocity;
             TripsCollection.Add(Position);
         }

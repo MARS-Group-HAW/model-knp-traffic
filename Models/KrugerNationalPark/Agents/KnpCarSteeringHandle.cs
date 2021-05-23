@@ -31,7 +31,7 @@ namespace KrugerNationalPark.Agents
         {
             var type = Vehicle.Driver.GetType().Name;
 
-            if (type.Equals("Tourist"))
+            if (type.Equals("Tourist2"))
             {
                 var driver = Vehicle.Driver;
                 
