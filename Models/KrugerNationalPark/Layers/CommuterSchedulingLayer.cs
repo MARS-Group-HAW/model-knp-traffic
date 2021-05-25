@@ -4,7 +4,7 @@ using SOHDomain.Common;
 
 namespace KrugerNationalPark.Layers
 {
-    public class CommuterSchedulingLayer : AgentSchedulerLayer<Commuter, TouristLayer>
+    public class CommuterSchedulingLayer : AgentSchedulerLayer<Commuter, StreetLayer>
     {
     }
 }

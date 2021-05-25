@@ -16,9 +16,9 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Tourist : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Tourist : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
     {
-        private TouristLayer _touristLayer;
+        private StreetLayer _streetLayer;
         
         public DateTime ArrivalTime;
         public DateTime DepartureTime;
@@ -29,9 +29,9 @@ namespace KrugerNationalPark.Agents
 
         private HashSet<Guid> KnownElephants = new HashSet<Guid>();
         
-        public void Init(TouristLayer layer)
+        public void Init(StreetLayer layer)
         {
-            _touristLayer = layer;
+            _streetLayer = layer;
             ElephantCounter = 0;
             State = TouristState.Driving;
             
@@ -41,7 +41,7 @@ namespace KrugerNationalPark.Agents
             
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
-            car.TouristLayer = layer;
+            car.StreetLayer = layer;
             
             Car = car;
             Car.Mass = MyMass;
@@ -131,7 +131,7 @@ namespace KrugerNationalPark.Agents
                 Random rnd = new Random();
 
                 //if (rnd.NextDouble() > 0.5)
-                if (_touristLayer.Context.CurrentTick == 1400)                
+                if (_streetLayer.Context.CurrentTick == 1400)                
                 {
                     // 1. determine our position
                     var remainingDistance = VehicleHandle.RemainingDistanceOnEdge;
@@ -143,16 +143,16 @@ namespace KrugerNationalPark.Agents
                     if (remainingDistance > insertAnimalSightingDistanceAhead)
                     {
                         // 2. Create our car to force braking
-                        AnimalSighting = _touristLayer.EntityManager.Create<KnpCar>("type", "Golf");
-                        AnimalSighting.Environment = _touristLayer.StreetEnvironment;
-                        AnimalSighting.TouristLayer = _touristLayer;
+                        AnimalSighting = _streetLayer.EntityManager.Create<KnpCar>("type", "Golf");
+                        AnimalSighting.Environment = _streetLayer.StreetEnvironment;
+                        AnimalSighting.StreetLayer = _streetLayer;
 
                         var edge = VehicleHandle.Route[0].Edge; // <- current edge of our car
                         
                         // 3. insert our baking trigger into the graph
                         // @todo: we should check if between our position and the pos where we insert the car the road is empty
                         // -> so we don't block an commuter ahead of us e.g.
-                        _touristLayer.StreetEnvironment.Insert(AnimalSighting, edge,
+                        _streetLayer.StreetEnvironment.Insert(AnimalSighting, edge,
                             Car.PositionOnCurrentEdge + insertAnimalSightingDistanceAhead);
                         
                         // 4. enter braking state 
@@ -165,15 +165,15 @@ namespace KrugerNationalPark.Agents
                 if (Car.Velocity == 0)
                 {
                     // we are at a stand now, start timer to remove AnimalSighting "car"
-                    ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    ArrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(LookDuration);
                     State = TouristState.Looking;
                 }
             } else if (State == TouristState.Looking)
             {
-                if (DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                if (DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
                 {
-                    _touristLayer.StreetEnvironment.Remove(AnimalSighting);
+                    _streetLayer.StreetEnvironment.Remove(AnimalSighting);
                     State = TouristState.Driving;
                 }
             }

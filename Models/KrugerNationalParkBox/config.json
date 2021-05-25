@@ -32,7 +32,7 @@
       "file": "resources/merged_waters_fixed_with_fence_buffer.geojson"
     },
     {
-      "name": "TouristLayer",
+      "name": "StreetLayer",
       "file": "resources/knp_graph.graphml"
     },
     {

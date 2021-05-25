@@ -16,9 +16,9 @@ namespace KrugerNationalPark.Layers
     ///     This class represents the agent layer implementation for the <see cref="KnpCar" /> and keeps references
     ///     to all other required layer e.g., the <see cref="ElephantLayer" />
     /// </summary>
-    public class TouristLayer : AbstractLayer
+    public class StreetLayer : AbstractLayer
     {
-        public TouristLayer(ElephantLayer elephantLayer)
+        public StreetLayer(ElephantLayer elephantLayer)
         {
             ElephantLayer = elephantLayer;
         }

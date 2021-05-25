@@ -34,15 +34,15 @@ namespace KrugerNationalParkStarter
             description.AddLayer<VectorWaterLayer>();
             description.AddLayer<ElephantLayer>();
             
-            description.AddLayer<TouristLayer>(); // Straßennetzt im KNP
+            description.AddLayer<StreetLayer>(); // Straßennetzt im KNP
 
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
             
 
             // Second register the agent types with their respective layer type
-            var tourist = description.AddAgent<Tourist, TouristLayer>();
-            var commuter = description.AddAgent<Commuter, TouristLayer>();
+            var tourist = description.AddAgent<Tourist, StreetLayer>();
+            var commuter = description.AddAgent<Commuter, StreetLayer>();
             var elephant = description.AddAgent<Elephant, ElephantLayer>();
             description.AddEntity<KnpCar>();
 

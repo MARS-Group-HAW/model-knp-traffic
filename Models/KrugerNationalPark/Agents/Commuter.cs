@@ -19,9 +19,9 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Commuter : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
     {
-        private TouristLayer _touristLayer;
+        private StreetLayer _streetLayer;
         
         public Position Origin;
         public ISpatialNode OriginNode;
@@ -33,15 +33,15 @@ namespace KrugerNationalPark.Agents
         public DateTime ArrivalTime;
         public DateTime DepartureTime;
         
-        public void Init(TouristLayer layer)
+        public void Init(StreetLayer layer)
         {
             State = CommuterState.GoingToWork;
-            _touristLayer = layer;
+            _streetLayer = layer;
             TripsCollection = new TripsCollection(layer.Context);
             
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
-            car.TouristLayer = layer;
+            car.StreetLayer = layer;
             
             Car = car;
             
@@ -116,23 +116,23 @@ namespace KrugerNationalPark.Agents
                 {
                     // we reached our working destination
                     State = CommuterState.Working;
-                    ArrivalTime = _touristLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    ArrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
                 }
-                else if (State == CommuterState.Working && DepartureTime.Subtract(_touristLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                else if (State == CommuterState.Working && DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
-                    VehicleHandle.Route = _touristLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
+                    VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
                 }
                 else if (State == CommuterState.GoingHome)
                 {
                     // 1. remove car from graph
-                    _touristLayer.StreetEnvironment.Remove(Car); 
+                    _streetLayer.StreetEnvironment.Remove(Car); 
                     
                     // 2. unregister agent, it will no longer receive any tick() calls
                     // this agent reached it's goal and is no longer relevant in the sim context so we can remove it.
-                    UnregisterHandle.Invoke(_touristLayer, this);
+                    UnregisterHandle.Invoke(_streetLayer, this);
                 }
             }
             else
