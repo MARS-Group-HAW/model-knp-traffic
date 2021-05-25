@@ -4,14 +4,13 @@ using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
+using Mars.Components.Agents.Trips;
 using Mars.Numerics;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
-using SOHDomain.Model;
-using SOHDomain.Output;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
@@ -20,11 +19,6 @@ namespace KrugerNationalPark.Agents
     public class Tourist : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
     {
         private TouristLayer _touristLayer;
-
-
-        private bool StartedLooking = false;
-        
-        
         
         public DateTime ArrivalTime;
         public DateTime DepartureTime;
@@ -137,7 +131,7 @@ namespace KrugerNationalPark.Agents
                 Random rnd = new Random();
 
                 //if (rnd.NextDouble() > 0.5)
-                if (_touristLayer.Context.CurrentTick >= 1800)                
+                if (_touristLayer.Context.CurrentTick == 1400)                
                 {
                     // 1. determine our position
                     var remainingDistance = VehicleHandle.RemainingDistanceOnEdge;

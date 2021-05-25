@@ -5,6 +5,7 @@ using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
 using Mars.Common.IO.Mapped;
+using Mars.Components.Agents.Trips;
 using Mars.Numerics;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
@@ -13,7 +14,6 @@ using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
-using SOHDomain.Output;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
