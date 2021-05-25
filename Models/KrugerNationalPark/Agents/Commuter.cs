@@ -27,9 +27,6 @@ namespace KrugerNationalPark.Agents
         public ISpatialNode OriginNode;
         public Position Workplace;
         public ISpatialNode WorkplaceNode;
-
-        //public bool GoalReached = false;
-        
         public DateTime ArrivalTime;
         public DateTime DepartureTime;
         
@@ -42,7 +39,6 @@ namespace KrugerNationalPark.Agents
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
             car.StreetLayer = layer;
-            
             Car = car;
             
             // @todo: has no relevance for Car? Seems like to be used by Bicyclist and Multimodal agent only
@@ -63,22 +59,16 @@ namespace KrugerNationalPark.Agents
             var targetCor = target[index];
             var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
-    
             OriginNode = layer.StreetEnvironment.NearestNode(Position);
-            
             layer.StreetEnvironment.Insert(car, OriginNode);
-            
-            
             
             // for the StreetEnvironment we need an SpatialNode, not a Position. 
             // -> get nearest Node to chosen target position
             //var goal = layer.StreetEnvironment.GetRandomNode();
             WorkplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
-
             Workplace = WorkplaceNode.Position;
             
             handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, WorkplaceNode);
-            
             VehicleHandle = handle;
         }
 
@@ -105,7 +95,6 @@ namespace KrugerNationalPark.Agents
         
         public double CarVelocity { get; set; }
         
-
         public CarSteeringHandle VehicleHandle { get; set; }
 
         public void Tick()

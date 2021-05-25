@@ -22,11 +22,12 @@ namespace KrugerNationalPark.Agents
         
         public DateTime ArrivalTime;
         public DateTime DepartureTime;
-
         private KnpCar AnimalSighting;
-        
-        public int ElephantCounter { set; get; }
 
+        // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
+        // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
+        private double _insertAnimalSightingDistanceAhead = 33.0;
+        
         private HashSet<Guid> KnownElephants = new HashSet<Guid>();
         
         public void Init(StreetLayer layer)
@@ -42,13 +43,11 @@ namespace KrugerNationalPark.Agents
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
             car.StreetLayer = layer;
-            
             Car = car;
             Car.Mass = MyMass;
             
             // todo: Source is a Point, no Random needed? 
             Position = SourceGeometry.RandomPositionFromGeometry();
-            
             car.TryEnterDriver(this, out var handle);
 
             // From given MULTIPOINT Geometry get a random POINT
@@ -68,13 +67,7 @@ namespace KrugerNationalPark.Agents
             //var goal = layer.StreetEnvironment.GetRandomNode();
             var goal = layer.StreetEnvironment.NearestNode(targetPos);
             handle.Route = layer.StreetEnvironment.FindRoute(start, goal);
-
             VehicleHandle = handle;
-            
-            
-            
-            //_touristLayer.StreetEnvironment.Insert()
-            
         }
 
         [PropertyDescription(Name = "source")] 
@@ -89,10 +82,12 @@ namespace KrugerNationalPark.Agents
         public double CarVelocity { get; set; }
 
         /// <summary>
-        /// if the agent is on its way to work (FALSE) or on the way back home (TRUE).
+        /// State of the tourist (driving around, looking at wildlife, ...)
         /// </summary>
         public TouristState State { get; set; }
-
+        
+        public int ElephantCounter { set; get; }
+        
         public CarSteeringHandle VehicleHandle { get; set; }
 
         public void Tick()
@@ -119,10 +114,7 @@ namespace KrugerNationalPark.Agents
 
             var LookDuration = 15;
             
-            // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
-            // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
-            var insertAnimalSightingDistanceAhead = 33.0;
-            
+
             
             // we are driving around and wait for an anima sighting event
             if (State == TouristState.Driving)
@@ -140,7 +132,7 @@ namespace KrugerNationalPark.Agents
                     // don't look for the animal and keep driving
                     // @todo: this removed the hassly of determining the next edge and position the car there,
                     //        but maybe this is better for us anyway? discuss!
-                    if (remainingDistance > insertAnimalSightingDistanceAhead)
+                    if (remainingDistance > _insertAnimalSightingDistanceAhead)
                     {
                         // 2. Create our car to force braking
                         AnimalSighting = _streetLayer.EntityManager.Create<KnpCar>("type", "Golf");
@@ -153,7 +145,7 @@ namespace KrugerNationalPark.Agents
                         // @todo: we should check if between our position and the pos where we insert the car the road is empty
                         // -> so we don't block an commuter ahead of us e.g.
                         _streetLayer.StreetEnvironment.Insert(AnimalSighting, edge,
-                            Car.PositionOnCurrentEdge + insertAnimalSightingDistanceAhead);
+                            Car.PositionOnCurrentEdge + _insertAnimalSightingDistanceAhead);
                         
                         // 4. enter braking state 
                         State = TouristState.Braking;
@@ -187,8 +179,7 @@ namespace KrugerNationalPark.Agents
         }
         
         public Guid ID { get; set; }
-
-
+        
         public void ElephantAhead(Elephant elephant)
         {
             if (KnownElephants.Add(elephant.ID))
@@ -212,9 +203,7 @@ namespace KrugerNationalPark.Agents
         public Car Car { get; set; }
         public bool CurrentlyCarDriving => true;
         public int StableId { get; }
-        
 
-        
         public TripsCollection TripsCollection { get; set; }
     }
 }
