@@ -3,12 +3,13 @@
     "deltaT": 1,
     "deltaTUnit": "seconds",
     "startTime": "2019-01-01T06:00:00.000Z",
-    "endTime": "2019-01-01T07:00:00.000Z",
+    "endTime": "2019-01-01T10:00:00.000Z",
     "output": "csv",
-    "console" : false,
+    "console" : true,
     "options": {
       "numberFormat": "G"
-    }
+    },
+    "knpCloseTimeHour": 18
   },
   "layers": [
     {
@@ -37,11 +38,11 @@
     },
     {
       "name": "TouristSchedulingLayer",
-      "file": "resources/TouristScheduler_debug_1.csv"
+      "file": "resources/TouristScheduler_debug_2.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/CommScheduler_debug_1.csv"
+      "file": "resources/_emptyScheduler.csv"
     }
   ],
   "entities": [

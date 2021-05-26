@@ -8,6 +8,7 @@ using Mars.Components.Agents.Trips;
 using Mars.Numerics;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
+using Mars.Interfaces.Environments;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
@@ -19,9 +20,26 @@ namespace KrugerNationalPark.Agents
     public class Tourist : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
     {
         private StreetLayer _streetLayer;
+
+        public DateTime StartTime; // when the tourist starts his tour
+
+        public DateTime endTime;
+
+        public double drivingEdgeTime = 0.0;
+            
+        //private Dictionary<ISpatialEdge, DateTime> _edgeTimings =  new Dictionary<ISpatialEdge, DateTime>();
         
-        public DateTime ArrivalTime;
-        public DateTime DepartureTime;
+        private Queue<DateTime> _edgeTimings =  new Queue<DateTime>();
+
+
+        private ISpatialEdge _lastEdge;
+        
+        public ISpatialNode OriginNode;
+        
+        private bool _goingHome = false;
+        
+        public DateTime ArrivalTime; // start of "sighting"
+        public DateTime DepartureTime; // time to start driving after a sightinh
         private KnpCar AnimalSighting;
 
         // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
@@ -32,9 +50,15 @@ namespace KrugerNationalPark.Agents
         
         public void Init(StreetLayer layer)
         {
+
             _streetLayer = layer;
             ElephantCounter = 0;
             State = TouristState.Driving;
+            
+            StartTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
+            
+            // @todo: parameterisierung aus CSV oder dynamik mit +/- random wert um varianz im tourist verhalten bazubilden
+            endTime = new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 10, 0, 0);
             
             //Console.WriteLine("Tourist init");
 
@@ -59,17 +83,110 @@ namespace KrugerNationalPark.Agents
             var targetCor = target[index];
             var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
-            var start = layer.StreetEnvironment.NearestNode(Position);
-            layer.StreetEnvironment.Insert(car, start);
+            OriginNode = layer.StreetEnvironment.NearestNode(Position);
+            layer.StreetEnvironment.Insert(car, OriginNode);
             
             // for the StreetEnvironment we need an SpatialNode, not a Position. 
             // -> get nearest Node to chosen target position
             //var goal = layer.StreetEnvironment.GetRandomNode();
             var goal = layer.StreetEnvironment.NearestNode(targetPos);
-            handle.Route = layer.StreetEnvironment.FindRoute(start, goal);
+            
+            //handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, goal);
+            
+            handle.Route = findRoute(OriginNode);
+            
             VehicleHandle = handle;
+            
+            
+
+
+
         }
 
+        /*
+         *
+findRoute() {
+	
+	returnTime = AvailableTime / 2
+	tripTime = 0
+	
+	do {
+		// random connected node, that is not the origin
+		n = nextNode() 
+		Route.add(n)
+		tripTime += timeToNode(n)
+	} while(tripTime < returnTime )
+
+}
+
+         */
+        
+        
+        private Route findRoute(ISpatialNode start)
+        {
+            var node = start;
+            var tripTime = 0.0; // in seconds
+            
+            // determine delta between current start time and max end time
+            // divide by 2 to make sure we have the same time to drive home - > point of no return 
+            var returnTime = Convert.ToDouble(endTime.Subtract(StartTime).TotalSeconds / 2);
+            
+            ISpatialEdge lastEdge = node.OutgoingEdges.Values.ToList()[0];
+
+
+            
+            var rt = new Route();
+            
+            do
+            {
+                var outEdges = node.OutgoingEdges.Values.ToList();
+                
+                
+                // @todo: die lastEdge scheint kein3 OutGoing edge der "Nächsten" node zu sein. 
+                // das ist uns unklar und nicht erwartungskonform
+                
+                // tripTime == 0 -> erster durchlauf, keine kante entfernen
+                // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
+                if (tripTime != 0 && outEdges.Count != 1)
+                {
+                    outEdges.Remove(lastEdge);
+                }
+
+                var count = outEdges.Count;
+                var rnd = new Random();
+                var i = rnd.Next(0, count);
+                
+                lastEdge = outEdges[i];
+                
+                //tripTime += lastEdge.TravelTime; // broken 
+                tripTime += lastEdge.Length / lastEdge.MaxSpeed;
+
+                //StartTime.AddSeconds(tripTime);
+
+                // zeit der schließung - TZeitspanne von diesem node nach hause 
+                // => beim abfahren der route, darf dieser punkt nicht nach dieser uhrzeut übertreten werden.
+                var x = endTime.Subtract(TimeSpan.FromSeconds(tripTime));
+
+                /*if (!_edgeTimings.ContainsKey(lastEdge))
+                {
+                    _edgeTimings.Add(lastEdge, x);
+                }*/
+                
+                _edgeTimings.Enqueue(x);
+
+                rt.Add(lastEdge);
+                
+  
+                
+                node = outEdges[i].To;
+
+            } while (tripTime < returnTime);
+            
+            return rt;
+        }
+        
+        
+        
         [PropertyDescription(Name = "source")] 
         public Geometry SourceGeometry { get; set; }
 
@@ -116,14 +233,74 @@ namespace KrugerNationalPark.Agents
             
 
             
+            
+            
+            /*
+             *
+             *
+             *
+    
+    if (ifOnNode()) {
+		// save time to this node
+		drivingEdgeTime += time_of_previous_edge
+	
+		// check if next edge sprengt zeitlimit
+		time_of_next_edge
+
+		// 15 Uhr + (3h +
+		if (NOW() + (drivingEdgeTime + time_of_next_edge)) >= 18:00 Uhr {
+			// -> go home
+			
+			Route = FastestRouteHome(<currentNode>, <goalNode>)
+			
+		}
+	}
+             */
+            
+            drivingEdgeTime += 1;
+            
+            //VehicleHandle.Route[1].Edge.TravelTime
+
+
+
+            if (!_goingHome)
+            {
+                var currentEdge = VehicleHandle.Route[0].Edge;
+
+                if (!currentEdge.Equals(_lastEdge))
+                {
+                    var currentTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    var lastOkTimeForEdge = _edgeTimings.Dequeue();
+                    
+                    _lastEdge = currentEdge;
+                    
+                    if (lastOkTimeForEdge.Subtract(currentTime).TotalSeconds <= 0)
+                    {
+                        // GO HOME
+                        
+                        // Fastest 
+                        VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(currentEdge.From, OriginNode);
+                        _goingHome = true;
+                    }
+                }
+            }
+            
+
+            
+            // if currentTime > x -> fahr nach hause
+            
+            
             // we are driving around and wait for an anima sighting event
             if (State == TouristState.Driving)
             {
+
                 // throw dice...
                 Random rnd = new Random();
 
-                //if (rnd.NextDouble() > 0.5)
-                if (_streetLayer.Context.CurrentTick == 1400)                
+                
+                if (false)
+                //if (rnd.NextDouble() > 0.8)
+                //if (_streetLayer.Context.CurrentTick == 1400)                
                 {
                     // 1. determine our position
                     var remainingDistance = VehicleHandle.RemainingDistanceOnEdge;
