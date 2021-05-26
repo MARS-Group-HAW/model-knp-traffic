@@ -230,38 +230,6 @@ findRoute() {
             } */
 
             var LookDuration = 15;
-            
-
-            
-            
-            
-            /*
-             *
-             *
-             *
-    
-    if (ifOnNode()) {
-		// save time to this node
-		drivingEdgeTime += time_of_previous_edge
-	
-		// check if next edge sprengt zeitlimit
-		time_of_next_edge
-
-		// 15 Uhr + (3h +
-		if (NOW() + (drivingEdgeTime + time_of_next_edge)) >= 18:00 Uhr {
-			// -> go home
-			
-			Route = FastestRouteHome(<currentNode>, <goalNode>)
-			
-		}
-	}
-             */
-            
-            drivingEdgeTime += 1;
-            
-            //VehicleHandle.Route[1].Edge.TravelTime
-
-
 
             if (!_goingHome)
             {
@@ -276,19 +244,12 @@ findRoute() {
                     
                     if (lastOkTimeForEdge.Subtract(currentTime).TotalSeconds <= 0)
                     {
-                        // GO HOME
-                        
-                        // Fastest 
+                        // Go home with Fastest route
                         VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(currentEdge.From, OriginNode);
                         _goingHome = true;
                     }
                 }
             }
-            
-
-            
-            // if currentTime > x -> fahr nach hause
-            
             
             // we are driving around and wait for an anima sighting event
             if (State == TouristState.Driving)
@@ -298,8 +259,8 @@ findRoute() {
                 Random rnd = new Random();
 
                 
-                if (false)
-                //if (rnd.NextDouble() > 0.8)
+                //if (false)
+                if (rnd.NextDouble() > 0.999999)
                 //if (_streetLayer.Context.CurrentTick == 1400)                
                 {
                     // 1. determine our position
@@ -340,7 +301,8 @@ findRoute() {
                 }
             } else if (State == TouristState.Looking)
             {
-                if (DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                //@todo : logik valdieiren, in der simulkation sah es so aus lob die dauernd bremsen
+                if (DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     _streetLayer.StreetEnvironment.Remove(AnimalSighting);
                     State = TouristState.Driving;

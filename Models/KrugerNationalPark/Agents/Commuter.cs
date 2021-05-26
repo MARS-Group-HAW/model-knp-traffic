@@ -108,7 +108,7 @@ namespace KrugerNationalPark.Agents
                     ArrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
                 }
-                else if (State == CommuterState.Working && DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).Minutes < 0)
+                else if (State == CommuterState.Working && DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
