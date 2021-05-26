@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
-using Mars.Common.IO.Mapped;
 using Mars.Components.Agents.Trips;
-using Mars.Numerics;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -21,81 +17,107 @@ namespace KrugerNationalPark.Agents
 {
     public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
     {
+        #region Properties
+
+        public Guid ID { get; set; }
+        public int StableId { get; }
+
+        private CommuterState State { get; set; }
+
+        [PropertyDescription(Name = "my_mass")]
+        private double MyMass { get; set; }
+
+        [PropertyDescription] private UnregisterAgent UnregisterHandle { get; set; }
+
+        private Position Origin;
+        private ISpatialNode OriginNode;
+        private Position Workplace;
+        private ISpatialNode WorkplaceNode;
+        [PropertyDescription(Name = "source")] public Geometry SourceGeometry { get; set; }
+
+        [PropertyDescription(Name = "destination")]
+        private Geometry TargetGeometry { get; set; }
+
+        /// <summary>
+        /// The agent's arrival time at work, work duration, and departure time from work (each in hours)
+        /// </summary>
+        private DateTime _arrivalTime;
+
+        [PropertyDescription(Name = "workDuration")]
+        private double WorkDuration { get; set; }
+
+        private DateTime _departureTime;
+
+        /// <summary>
+        /// The agent's reference to the KNP traffic network
+        /// </summary>
         private StreetLayer _streetLayer;
-        
-        public Position Origin;
-        public ISpatialNode OriginNode;
-        public Position Workplace;
-        public ISpatialNode WorkplaceNode;
-        public DateTime ArrivalTime;
-        public DateTime DepartureTime;
-        
+
+        public Position Position
+        {
+            get => Car.Position;
+            set => Car.Position = value;
+        }
+
+        public CarSteeringHandle VehicleHandle { get; set; }
+
+        public bool OvertakingActivated { get; }
+        public Car Car { get; set; }
+        public bool CurrentlyCarDriving => true;
+
+        public double CarVelocity { get; set; }
+
+        public TripsCollection TripsCollection { get; set; }
+
+        #endregion
+
+        #region Initialization
+
         public void Init(StreetLayer layer)
         {
             State = CommuterState.GoingToWork;
             _streetLayer = layer;
             TripsCollection = new TripsCollection(layer.Context);
-            
+
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
             car.StreetLayer = layer;
             Car = car;
-            
+
             // @todo: has no relevance for Car? Seems like to be used by Bicyclist and Multimodal agent only
             Car.Mass = MyMass;
-            
-            // todo: Source is a Point, no Random needed? 
+
+            // todo: Source is a Point, no Random needed?
             Position = SourceGeometry.RandomPositionFromGeometry();
             Origin = Position;
-            
+
             car.TryEnterDriver(this, out var handle);
 
             // From given MULTIPOINT Geometry get a random POINT
             // RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
             var target = TargetGeometry.Coordinates;
             var length = target.Length;
-            Random rnd = new Random();
-            var index = rnd.Next((int) length);
+            var rnd = new Random();
+            var index = rnd.Next(length);
             var targetCor = target[index];
             var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
             OriginNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, OriginNode);
-            
-            // for the StreetEnvironment we need an SpatialNode, not a Position. 
+
+            // for the StreetEnvironment we need a SpatialNode, not a Position.
             // -> get nearest Node to chosen target position
             //var goal = layer.StreetEnvironment.GetRandomNode();
             WorkplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
             Workplace = WorkplaceNode.Position;
-            
+
             handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, WorkplaceNode);
             VehicleHandle = handle;
         }
 
-        [PropertyDescription(Name = "source")] 
-        public Geometry SourceGeometry { get; set; }
+        #endregion
 
-        [PropertyDescription(Name = "destination")]
-        public Geometry TargetGeometry { get; set; }
-        
-        [PropertyDescription(Name = "workDuration")]
-        public double WorkDuration { get; set; }
-        
-        [PropertyDescription(Name = "my_mass")]
-        public double MyMass { get; set; }
-        
-        [PropertyDescription]
-        public UnregisterAgent UnregisterHandle { get; set; }
-        
-
-        /// <summary>
-        /// if the agent is on its way to work (FALSE) or on the way back home (TRUE).
-        /// </summary>
-        public CommuterState State { get; set; }
-        
-        public double CarVelocity { get; set; }
-        
-        public CarSteeringHandle VehicleHandle { get; set; }
+        #region Tick
 
         public void Tick()
         {
@@ -105,10 +127,11 @@ namespace KrugerNationalPark.Agents
                 {
                     // we reached our working destination
                     State = CommuterState.Working;
-                    ArrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
-                    DepartureTime = ArrivalTime.AddMinutes(WorkDuration);
+                    _arrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    _departureTime = _arrivalTime.AddMinutes(WorkDuration);
                 }
-                else if (State == CommuterState.Working && DepartureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+                else if (State == CommuterState.Working && _departureTime
+                    .Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
@@ -117,8 +140,8 @@ namespace KrugerNationalPark.Agents
                 else if (State == CommuterState.GoingHome)
                 {
                     // 1. remove car from graph
-                    _streetLayer.StreetEnvironment.Remove(Car); 
-                    
+                    _streetLayer.StreetEnvironment.Remove(Car);
+
                     // 2. unregister agent, it will no longer receive any tick() calls
                     // this agent reached it's goal and is no longer relevant in the sim context so we can remove it.
                     UnregisterHandle.Invoke(_streetLayer, this);
@@ -126,31 +149,23 @@ namespace KrugerNationalPark.Agents
             }
             else
             {
-                VehicleHandle.Move(); // -> will call our HandleCustom in 
+                // agent calls its movement handle (associated with its car) to perform a movement
+                VehicleHandle.Move();
             }
 
+            // TODO: can this be moved into the else block?
             CarVelocity = Car.Velocity;
-            TripsCollection.Add(Position); 
-        }
-        
-        public Guid ID { get; set; }
-        
-        public Position Position
-        {
-            get => Car.Position;
-            set => Car.Position = value;
-        }
-        
-        public void Notify(PassengerMessage passengerMessage)
-        {
-            
+            TripsCollection.Add(Position);
         }
 
-        public bool OvertakingActivated { get; }
-        public Car Car { get; set; }
-        public bool CurrentlyCarDriving => true;
-        public int StableId { get; }
-        
-        public TripsCollection TripsCollection { get; set; }
+        #endregion
+
+        #region Methods
+
+        public void Notify(PassengerMessage passengerMessage)
+        {
+        }
+
+        #endregion
     }
 }
