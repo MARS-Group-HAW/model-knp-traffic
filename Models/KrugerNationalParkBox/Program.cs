@@ -38,12 +38,11 @@ namespace KrugerNationalParkStarter
 
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
-            
 
             // Second register the agent types with their respective layer type
-            var tourist = description.AddAgent<Tourist, StreetLayer>();
-            var commuter = description.AddAgent<Commuter, StreetLayer>();
-            var elephant = description.AddAgent<Elephant, ElephantLayer>();
+            description.AddAgent<Tourist, StreetLayer>();
+            description.AddAgent<Commuter, StreetLayer>();
+            description.AddAgent<Elephant, ElephantLayer>();
             description.AddEntity<KnpCar>();
 
             // Starting up

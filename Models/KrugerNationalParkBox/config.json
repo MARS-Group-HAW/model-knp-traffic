@@ -59,7 +59,8 @@
       "outputtype": "individual"
     },
     {
-      "name": "Tourist"
+      "name": "Tourist",
+      "file": "TouristScheduler_debug_2.csv"
     },
     {
       "name": "Commuter"
