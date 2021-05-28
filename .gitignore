@@ -362,4 +362,5 @@ Models/SOHPlayground/out
 Visualization/venv/
 Visualization/lib
 Visualization/include
-pyvenv.cfg
+pyvenv.
+*.sqlite
