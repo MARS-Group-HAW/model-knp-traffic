@@ -33,29 +33,54 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         private DateTime _startTime;
 
+        /// <summary>
+        /// TimeStamp if the the time alle Camps close and the tourist needs to be home.
+        /// </summary>
         private DateTime _endTime;
 
         private ISpatialNode _originNode;
 
-        private ISpatialEdge _lastEdge;
-        [PropertyDescription(Name = "source")] public Geometry SourceGeometry { get; set; }
+        /// <summary>
+        /// During tick() we need to check before entering a new edge, if we have enough time to get home (before _endTime).
+        /// To notice if entered a new edge / passed a node we keep track of the edge and compare it each tick to detect
+        /// a new edge.
+        /// </summary>
+        private ISpatialEdge _edgeFromPreviousTick;
+        
+        /// <summary>
+        /// Start point of the tourist (can be Camp, or gate).
+        /// Example: POINT (31.482268 -24.979422)
+        /// </summary>
+        [PropertyDescription(Name = "source")] 
+        public Geometry SourceGeometry { get; set; }
 
         [PropertyDescription(Name = "destination")]
         private Geometry TargetGeometry { get; set; }
-
-        [PropertyDescription(Name = "my_mass")]
-        private double MyMass { get; set; }
-
+        
         /// <summary>
         /// A queue containing one DateTime object for each node of the agent's node
         /// A node's DateTime object specifies the time as of which the agent needs to start driving home when it reaches this node
         /// </summary>
         private readonly Queue<DateTime> _edgeTimings = new();
 
+        /// <summary>
+        /// Keep track if the tourist is on its way home -> no longer stop for animals
+        /// </summary>
         private bool _goingHome;
 
-        private DateTime _arrivalTime; // start time of animal sighting
-        private DateTime _departureTime; // time to start driving after an animal sighting
+        /// <summary>
+        /// start time of animal sighting
+        /// </summary>
+        private DateTime _arrivalTime;
+        
+        /// <summary>
+        /// time to start driving after an animal sighting
+        /// </summary>
+        private DateTime _departureTime;
+        
+        /// <summary>
+        /// Reference to the object positioned before our agent to trigger braking.
+        /// </summary>
         private KnpCar _animalSighting;
 
         // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
@@ -108,31 +133,26 @@ namespace KrugerNationalPark.Agents
             car.Environment = layer.StreetEnvironment;
             car.StreetLayer = layer;
             Car = car;
-            Car.Mass = MyMass;
 
             // todo: Source is a Point, no Random needed? 
             Position = SourceGeometry.RandomPositionFromGeometry();
             car.TryEnterDriver(this, out var handle);
-
-            // From given MULTIPOINT Geometry get a random POINT
-            // RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
-            // var target = TargetGeometry.Coordinates;
-            // var length = target.Length;
-            // var rnd = new Random();
-            // var index = rnd.Next(length);
-
-            // TODO: remove targetCor and targetPos?
-            // var targetCor = target[index];
-            // var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
-
+            
             _originNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, _originNode);
 
             handle.Route = FindRoute(_originNode);
-
             VehicleHandle = handle;
         }
 
+        /// <summary>
+        /// Find a random route starting from start, that has the max duration of half difference from the
+        /// current time and endTime (so we have the time to go home).
+        /// 
+        /// Keeps track of the driving duration in _edgeTimings.
+        /// </summary>
+        /// <param name="start">Start position for route</param>
+        /// <returns></returns>
         private Route FindRoute(ISpatialNode start)
         {
             var node = start;
@@ -146,12 +166,13 @@ namespace KrugerNationalPark.Agents
 
             var rt = new Route();
 
+            // build route with edges until return time is reached
             do
             {
                 var outEdges = node.OutgoingEdges.Values.ToList();
 
-                // TODO: die lastEdge scheint kein3 OutGoing edge der "Nächsten" node zu sein. 
-                // das ist uns unklar und nicht erwartungskonform
+                // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
+                // das ist uns unklar und nicht erwartungskonform!
 
                 // tripTime == 0 -> erster durchlauf, keine kante entfernen
                 // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
@@ -170,11 +191,10 @@ namespace KrugerNationalPark.Agents
                 //tripTime += lastEdge.TravelTime; 
                 tripTime += lastEdge.Length / lastEdge.MaxSpeed;
 
-                // zeit der schließung - TZeitspanne von diesem node nach hause 
-                // => beim abfahren der route, darf dieser punkt nicht nach dieser uhrzeut übertreten werden.
-                var x = _endTime.Subtract(TimeSpan.FromSeconds(tripTime));
-
-                _edgeTimings.Enqueue(x);
+                // zeit der schließung - Zeitspanne von diesem node nach hause 
+                // => beim Abfahren der route, darf dieser punkt nicht nach dieser uhrzeit übertreten werden.
+                var latestTimeToReachHomeFromThisNode = _endTime.Subtract(TimeSpan.FromSeconds(tripTime));
+                _edgeTimings.Enqueue(latestTimeToReachHomeFromThisNode);
 
                 rt.Add(lastEdge);
 
@@ -190,38 +210,20 @@ namespace KrugerNationalPark.Agents
 
         public void Tick()
         {
-            //Console.WriteLine("Tourist position: " + Position);
+            // @todo: random in range
+            const int lookDuration = 15; // in minutes
 
-            // just for debugging: what is the distance to nearest elephant:
-            //var enumerable2 = _touristLayer.ElephantLayer.Environment.Explore(Position);
-            //var elephant2 = enumerable2.FirstOrDefault();
-            //var distanceElephant = Distance.Haversine(elephant2.Position.PositionArray, Position.PositionArray);
-            //Console.WriteLine("Distance to nearest elephant:" + distanceElephant);
-
-            // Look for nearest elephant for counting
-
-            /* var enumerable = _touristLayer.ElephantLayer.Environment.Explore(Position, 300, 1);
-            var elephant = enumerable.FirstOrDefault();
-            if (elephant != null)
-            {
-                if (KnownElephants.Add(elephant.ID))
-                {
-                    ElephantCounter += 1;
-                }
-            } */
-
-            const int lookDuration = 15;
-
+            // keep track of our timings and start way home when latest return is reached.
             if (!_goingHome)
             {
                 var currentEdge = VehicleHandle.Route[0].Edge;
 
-                if (!currentEdge.Equals(_lastEdge))
+                if (!currentEdge.Equals(_edgeFromPreviousTick))
                 {
                     var currentTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     var lastOkTimeForEdge = _edgeTimings.Dequeue();
 
-                    _lastEdge = currentEdge;
+                    _edgeFromPreviousTick = currentEdge;
 
                     if (lastOkTimeForEdge.Subtract(currentTime).TotalSeconds <= 0)
                     {
@@ -233,13 +235,13 @@ namespace KrugerNationalPark.Agents
             }
 
             // we are driving around and wait for an anima sighting event
+            // todo: on the qy home should we prevent looking for animals?
             if (State == TouristState.Driving)
             {
-                // throw dice...
                 var rnd = new Random();
 
                 //if (false)
-                if (rnd.NextDouble() > 0.9999)
+                if (rnd.NextDouble() > 0.9999) // @todo: what number is good, or layer with probabilities?
                     //if (_streetLayer.Context.CurrentTick == 1400)                
                 {
                     // 1. determine our position
@@ -247,7 +249,7 @@ namespace KrugerNationalPark.Agents
 
                     // if the next intersection is closer than our break distance, 
                     // don't look for the animal and keep driving
-                    // @todo: this removed the hassly of determining the next edge and position the car there,
+                    // @todo: this removed the hassle of determining the next edge and position the car there,
                     //        but maybe this is better for us anyway? discuss!
                     if (remainingDistance > InsertAnimalSightingDistanceAhead)
                     {
@@ -290,7 +292,7 @@ namespace KrugerNationalPark.Agents
             }
 
             // Always call Move, since braking is "handled" by the AnimalSighting car ahead
-            VehicleHandle.Move(); // -> will call our HandleCustom in 
+            VehicleHandle.Move(); 
 
             CarVelocity = Car.Velocity;
             TripsCollection.Add(Position);

@@ -15,6 +15,10 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
+    /// <summary>
+    /// Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
+    /// Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
+    /// </summary>
     public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
     {
         #region Properties
@@ -23,29 +27,42 @@ namespace KrugerNationalPark.Agents
         public int StableId { get; }
 
         private CommuterState State { get; set; }
-
-        [PropertyDescription(Name = "my_mass")]
-        private double MyMass { get; set; }
-
-        [PropertyDescription] private UnregisterAgent UnregisterHandle { get; set; }
+        
+        /// <summary>
+        /// Needed fo "removing" the agent and preventing further tick() call to it.
+        /// </summary>
+        [PropertyDescription] 
+        private UnregisterAgent UnregisterHandle { get; set; }
 
         private Position Origin;
         private ISpatialNode OriginNode;
         private Position Workplace;
         private ISpatialNode WorkplaceNode;
-        [PropertyDescription(Name = "source")] public Geometry SourceGeometry { get; set; }
+        
+        /// <summary>
+        /// Format: WKT Point (`POINT (31.482268 -24.979422)`).
+        /// </summary>
+        [PropertyDescription(Name = "source")] 
+        public Geometry SourceGeometry { get; set; }
 
+        /// <summary>
+        /// WKT Multipoint with variable amount of target points. On is chosen by random.
+        /// Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)
+        /// 
+        /// </summary>
         [PropertyDescription(Name = "destination")]
         private Geometry TargetGeometry { get; set; }
 
         /// <summary>
-        /// The agent's arrival time at work, work duration, and departure time from work (each in hours)
+        /// Duration of work at the camp, in minutes.
         /// </summary>
-        private DateTime _arrivalTime;
-
         [PropertyDescription(Name = "workDuration")]
         private double WorkDuration { get; set; }
-
+        
+        /// <summary>
+        /// The agent's arrival time at work, and departure time from work (each in hours)
+        /// </summary>
+        private DateTime _arrivalTime;
         private DateTime _departureTime;
 
         /// <summary>
@@ -53,6 +70,9 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         private StreetLayer _streetLayer;
 
+        /// <summary>
+        ///  Position of our car/agent on the map.
+        /// </summary>
         public Position Position
         {
             get => Car.Position;
@@ -84,9 +104,6 @@ namespace KrugerNationalPark.Agents
             car.StreetLayer = layer;
             Car = car;
 
-            // @todo: has no relevance for Car? Seems like to be used by Bicyclist and Multimodal agent only
-            Car.Mass = MyMass;
-
             // todo: Source is a Point, no Random needed?
             Position = SourceGeometry.RandomPositionFromGeometry();
             Origin = Position;
@@ -94,7 +111,7 @@ namespace KrugerNationalPark.Agents
             car.TryEnterDriver(this, out var handle);
 
             // From given MULTIPOINT Geometry get a random POINT
-            // RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
+            // @todo: RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
             var target = TargetGeometry.Coordinates;
             var length = target.Length;
             var rnd = new Random();
@@ -107,7 +124,6 @@ namespace KrugerNationalPark.Agents
 
             // for the StreetEnvironment we need a SpatialNode, not a Position.
             // -> get nearest Node to chosen target position
-            //var goal = layer.StreetEnvironment.GetRandomNode();
             WorkplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
             Workplace = WorkplaceNode.Position;
 
@@ -151,11 +167,11 @@ namespace KrugerNationalPark.Agents
             {
                 // agent calls its movement handle (associated with its car) to perform a movement
                 VehicleHandle.Move();
+                
+                // TODO: can this be moved into the else block?
+                CarVelocity = Car.Velocity;
+                TripsCollection.Add(Position);
             }
-
-            // TODO: can this be moved into the else block?
-            CarVelocity = Car.Velocity;
-            TripsCollection.Add(Position);
         }
 
         #endregion
