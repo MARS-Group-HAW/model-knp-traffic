@@ -102,13 +102,13 @@ namespace KrugerNationalPark.Agents
 
         public bool OvertakingActivated { get; }
         public bool CurrentlyCarDriving => true;
-        private double CarVelocity { get; set; }
+        public double CarVelocity { get; set; }
 
         private CarSteeringHandle VehicleHandle { get; set; }
 
         public TripsCollection TripsCollection { get; set; }
 
-        private int ElephantCounter { set; get; }
+        public int ElephantCounter { set; get; }
 
         private readonly HashSet<Guid> _knownElephants;
 
