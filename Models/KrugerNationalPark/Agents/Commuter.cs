@@ -32,7 +32,7 @@ namespace KrugerNationalPark.Agents
         /// Needed fo "removing" the agent and preventing further tick() call to it.
         /// </summary>
         [PropertyDescription] 
-        private UnregisterAgent UnregisterHandle { get; set; }
+        public UnregisterAgent UnregisterHandle { get; set; }
 
         private Position Origin;
         private ISpatialNode OriginNode;
@@ -51,7 +51,7 @@ namespace KrugerNationalPark.Agents
         /// 
         /// </summary>
         [PropertyDescription(Name = "destination")]
-        private Geometry TargetGeometry { get; set; }
+        public Geometry TargetGeometry { get; set; }
 
         /// <summary>
         /// Duration of work at the camp, in minutes.
