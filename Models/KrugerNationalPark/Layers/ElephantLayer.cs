@@ -208,7 +208,7 @@ namespace KrugerNationalPark.Layers
     {
         private readonly double _maximumDeviation;
         private readonly double _meanValue;
-        private readonly Random _rand = new Random();
+        private readonly Random _rand = new();
         private readonly double _standardDeviation;
 
         public NormalDistributionGenerator(double meanValue, double maximumDeviation)

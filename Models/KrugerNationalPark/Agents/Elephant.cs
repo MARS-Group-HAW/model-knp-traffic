@@ -60,6 +60,7 @@ namespace KrugerNationalPark.Agents
         {
             _random = new Random(ID.GetHashCode());
 
+            StableId = 1;
             TripsCollection = new TripsCollection(layer.Context);
             BiomassCellDifference = biomassCellDifference;
             TickSearchForFood = tickSearchForFood;
@@ -209,7 +210,7 @@ namespace KrugerNationalPark.Agents
         /// <summary>
         ///     Stage of life when change the type
         /// </summary>
-        private readonly Dictionary<string, ElephantType> _elephantTypeMap = new Dictionary<string, ElephantType>
+        private readonly Dictionary<string, ElephantType> _elephantTypeMap = new()
         {
             {"ELEPHANT_COW", ElephantType.ElephantCow},
             {"ELEPHANT_BULL", ElephantType.ElephantBull},
@@ -221,7 +222,7 @@ namespace KrugerNationalPark.Agents
         ///     Water consumption per day in litres
         /// </summary>
         private readonly Dictionary<ElephantLifePeriod, double> _hydrationMapDaily =
-            new Dictionary<ElephantLifePeriod, double>
+            new()
             {
                 {ElephantLifePeriod.Calf, 140.0}, // 140 liters a day
                 {ElephantLifePeriod.Adolescent, 190.0}, // 190 liters a day
@@ -256,8 +257,6 @@ namespace KrugerNationalPark.Agents
         public bool Leading { get; set; } // herding related
 
         internal double Satiety { get; set; } // food related
-
-        public string TreeInteraction { get; set; } = "none";
 
         public int HerdId { get; }
 
