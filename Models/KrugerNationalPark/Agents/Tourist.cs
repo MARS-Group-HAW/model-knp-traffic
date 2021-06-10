@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using KrugerNationalPark.Layers;
 using Mars.Components.Agents.Trips;
 using Mars.Interfaces.Agents;
@@ -10,6 +11,7 @@ using SOHDomain.Steering.Common;
 
 namespace KrugerNationalPark.Agents
 {
+    [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
     public class Tourist : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
     {
         public void Init(TouristLayer layer)

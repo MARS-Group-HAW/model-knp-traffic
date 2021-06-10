@@ -24,9 +24,9 @@ namespace KrugerNationalPark.Layers
         }
         
         public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle = null,
-            UnregisterAgent unregisterAgentHandle = null)
+            UnregisterAgent unregisterAgent = null)
         {
-            base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
+            base.InitLayer(layerInitData, registerAgentHandle, unregisterAgent);
 
             StreetEnvironment = new SpatialGraphEnvironment(new SpatialGraphOptions
             {

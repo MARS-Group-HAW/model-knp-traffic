@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using KrugerNationalPark.Layers;
 using Mars.Common;
@@ -28,6 +29,7 @@ using Mars.Interfaces.Layers;
 
 namespace KrugerNationalPark.Agents
 {
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class Elephant : Agent, IPositionable, ITripSavingAgent
     {
         [ActiveConstructor]

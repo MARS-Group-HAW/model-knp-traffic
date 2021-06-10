@@ -13,7 +13,7 @@ using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
 
-namespace KrugerNationalParkStarter
+namespace KrugerNationalParkBox
 {
     public static class Program
     {
@@ -39,8 +39,8 @@ namespace KrugerNationalParkStarter
             
 
             // Second register the agent types with their respective layer type
-            var tourist = description.AddAgent<Tourist, TouristLayer>();
-            var elephant = description.AddAgent<Elephant, ElephantLayer>();
+            description.AddAgent<Tourist, TouristLayer>();
+            description.AddAgent<Elephant, ElephantLayer>();
             description.AddEntity<KnpCar>();
 
             // Starting up
@@ -69,11 +69,15 @@ namespace KrugerNationalParkStarter
                 result = starter.Run();
             }
 
-            // Generate proprietary trips output
-            TripsOutputAdapter.PrintTripResult(result.Model.ExecutionAgentTypeGroups.Values
-                .SelectMany(agents => agents.Values).OfType<ITripSavingAgent>());
-            watch.Stop();
-            Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
+            if (result != null)
+            {
+                // Generate proprietary trips output
+                TripsOutputAdapter.PrintTripResult(result.Model.ExecutionAgentTypeGroups.Values
+                    .SelectMany(agents => agents.Values).OfType<ITripSavingAgent>());
+                watch.Stop();
+                Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
+            }
+            
         }
     }
 }
