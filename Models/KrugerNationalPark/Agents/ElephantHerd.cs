@@ -11,14 +11,12 @@ namespace KrugerNationalPark.Agents
     {
         public readonly List<Elephant> OtherElephants;
 
-        public ElephantHerd(int herdId, Elephant leader, List<Elephant> other)
+        public ElephantHerd(Elephant leader, List<Elephant> other)
         {
             OtherElephants = other;
-            Id = herdId;
             LeadingElephant = leader;
         }
 
-        private int Id { get; }
         public Elephant LeadingElephant { get; }
     }
 }

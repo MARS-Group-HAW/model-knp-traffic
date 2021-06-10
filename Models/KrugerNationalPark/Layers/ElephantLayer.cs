@@ -99,7 +99,7 @@ namespace KrugerNationalPark.Layers
                     }
 
                     var other = h.Where(e => !e.Leading).ToList();
-                    _herdMap.Add(leader.HerdId, new ElephantHerd(leader.HerdId, leader, other));
+                    _herdMap.Add(leader.HerdId, new ElephantHerd(leader, other));
                 }
 
                 Console.WriteLine("[ElephantLayer]: Filled Herds");
@@ -172,6 +172,7 @@ namespace KrugerNationalPark.Layers
             Entities.TryAdd(newElephant.ID, newElephant);
         }
 
+/*
         private void KillElephantHerd()
         {
             var herdId = _herdMap.Keys.FirstOrDefault();
@@ -195,6 +196,7 @@ namespace KrugerNationalPark.Layers
                 Console.WriteLine("[ElephantLayer] error killing a herd");
             }
         }
+*/
 
         public int GetNextNormalDistribution()
         {

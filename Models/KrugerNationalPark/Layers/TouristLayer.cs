@@ -23,8 +23,8 @@ namespace KrugerNationalPark.Layers
             ElephantLayer = elephantLayer;
         }
         
-        public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle,
-            UnregisterAgent unregisterAgentHandle)
+        public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle = null,
+            UnregisterAgent unregisterAgentHandle = null)
         {
             base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
 
