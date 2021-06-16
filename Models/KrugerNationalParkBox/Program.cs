@@ -20,6 +20,16 @@ namespace KrugerNationalParkStarter
         public static void Main(string[] args)
         {
             
+            
+            
+            GetRouteTimings.Timings();
+            
+            return;
+            
+            
+            
+            
+            
             var watch = Stopwatch.StartNew();
             var description = new ModelDescription();
 
