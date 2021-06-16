@@ -22,9 +22,8 @@ namespace KrugerNationalParkStarter
             
             
             
-            GetRouteTimings.Timings();
-            
-            return;
+            //GetRouteTimings.Timings();
+            //return;
             
             
             
@@ -45,7 +44,8 @@ namespace KrugerNationalParkStarter
             description.AddLayer<ElephantLayer>();
             
             description.AddLayer<StreetLayer>(); // Straßennetzt im KNP
-
+            description.AddLayer<POILayer>(); // Camps and Gates
+            
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
 

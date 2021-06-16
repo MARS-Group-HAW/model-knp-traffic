@@ -37,6 +37,10 @@
       "file": "resources/knp_graph.graphml"
     },
     {
+      "name": "POILayer",
+      "file": "resources/poi.geojson"
+    },
+    {
       "name": "TouristSchedulingLayer",
       "file": "resources/TouristScheduler_debug_2.csv"
     },
