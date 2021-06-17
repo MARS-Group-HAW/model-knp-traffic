@@ -7,7 +7,6 @@ using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Interfaces.Model;
-using Mars.Interfaces.Model.Import;
 using Mars.Interfaces.Model.Options;
 
 namespace KrugerNationalPark.Layers
@@ -30,7 +29,7 @@ namespace KrugerNationalPark.Layers
 
             StreetEnvironment = new SpatialGraphEnvironment(new SpatialGraphOptions
             {
-                GraphImports = new List<Source>
+                GraphImports = new List<Input>
                 {
                     new()
                     {

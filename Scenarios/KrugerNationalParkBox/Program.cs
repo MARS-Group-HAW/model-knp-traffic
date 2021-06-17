@@ -71,9 +71,6 @@ namespace KrugerNationalParkBox
 
             if (result != null)
             {
-                // Generate proprietary trips output
-                TripsOutputAdapter.PrintTripResult(result.Model.ExecutionAgentTypeGroups.Values
-                    .SelectMany(agents => agents.Values).OfType<ITripSavingAgent>());
                 watch.Stop();
                 Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
             }

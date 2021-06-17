@@ -12,14 +12,12 @@ using SOHDomain.Steering.Common;
 namespace KrugerNationalPark.Agents
 {
     [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
-    public class Tourist : IAgent<TouristLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Tourist : IAgent<TouristLayer>, ICarSteeringCapable
     {
         public void Init(TouristLayer layer)
         {
             
             Console.WriteLine("Tourist init");
-            
-            TripsCollection = new TripsCollection(layer.Context);
             
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
@@ -46,7 +44,6 @@ namespace KrugerNationalPark.Agents
         public void Tick()
         {
             VehicleHandle.Move();
-            TripsCollection.Add(Position);
         }
         
         public Guid ID { get; set; }
@@ -67,6 +64,5 @@ namespace KrugerNationalPark.Agents
         public Car Car { get; set; }
         public bool CurrentlyCarDriving => true;
         public int StableId { get; }
-        public TripsCollection TripsCollection { get; set; }
     }
 }
