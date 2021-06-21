@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using KrugerNationalPark.Misc;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
@@ -37,10 +38,11 @@ namespace KrugerNationalPark.Layers
         /// </summary>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-
-        public Position getDestinationPoiPosition(int timeLimit)
+        
+        // TODO: determine which Pois can be reached within timeLimit and return them in a list
+        public List<Position> getDestinationPoiPosition(int timeLimit)
         {
-            
+            return new List<Position>();
         }
 
         public void Update(VectorStructuredData data)

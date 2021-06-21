@@ -31,3 +31,39 @@ The directory `resources` contains a set of files with data that describe aspect
 - **veg_knp_wifi_RCP45.zip:** a time series (from 1979 to 2099) of biomass amount/density? TODO in the KNP as a result of the moderate RCP 4.5 climate scenario, encoded as a raster-layer
 - **veg_knp_wifi_CRP85.zip:** a time series (from 1979 to 2099) of biomass amount/density? TODO in the KNP as a result of the severe RCP 8.5 climate scenario, encoded as a raster-layer
 
+
+
+## Agent Types
+
+### Commuter
+
+The commuter does cool things.
+
+
+
+### DailyTourist
+
+
+
+### OvernightTourist
+
+
+
+### OSV
+
+
+
+## Layers
+
+
+
+
+
+## Tools
+
+### Jupyter Notebooks
+
+
+
+### C# Distance Table (creates csv)
+
