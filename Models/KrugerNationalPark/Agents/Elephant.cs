@@ -21,7 +21,6 @@ using System.Linq;
 using KrugerNationalPark.Layers;
 using Mars.Common;
 using Mars.Components.Agents;
-using Mars.Components.Agents.Trips;
 using Mars.Components.Environments;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
