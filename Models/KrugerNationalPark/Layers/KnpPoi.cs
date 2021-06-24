@@ -14,7 +14,7 @@ namespace KrugerNationalPark.Layers
 
         public Position Position { get; private set; }
         
-        public RouteInfoListPOCO infoList; 
+        public OriginPOCO infoList; 
         
         public VectorStructuredData VectorStructured { get; private set;  }
         public void Init(ILayer layer, VectorStructuredData data)
@@ -27,7 +27,7 @@ namespace KrugerNationalPark.Layers
             // load timings form json into structure
             // todo: this could probably be hinted directly in the GeoJSON Properties for JObject?
             var list = VectorStructured.Data["routeList"].ToString();
-            infoList = JsonSerializer.Deserialize<RouteInfoListPOCO>(list);
+            infoList = JsonSerializer.Deserialize<OriginPOCO>(list);
         }
         
         

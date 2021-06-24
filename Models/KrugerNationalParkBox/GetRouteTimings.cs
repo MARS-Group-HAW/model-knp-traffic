@@ -1,26 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using Mars.Common.IO;
 using Mars.Components.Environments;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
 using Mars.Interfaces.Model.Import;
 using Mars.Interfaces.Model.Options;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using KrugerNationalPark.Misc;
 
 namespace KrugerNationalParkStarter
 {
-
-
     public static class GetRouteTimings
     {
         public static void Timings()
         {
             // Build Spatial graph env.
-            ISpatialGraphEnvironment se = new SpatialGraphEnvironment(new SpatialGraphOptions
+            ISpatialGraphEnvironment spatialGraphEnvironment = new SpatialGraphEnvironment(new SpatialGraphOptions
             {
                 GraphImports = new List<Source>
                 {
@@ -37,128 +34,93 @@ namespace KrugerNationalParkStarter
                 NodeIndex = true
             });
             
-            
             // load POIs
-            String header ="";
             var pois = new List<Position>();
-            var lines = new List<String>();
-            
-            String fileOutput =  "";
-            
-            using(var reader = new StreamReader(@"./camp_waypoints.csv"))
+            var originNames = new List<(string, string)>();
+
+            using (var reader = new StreamReader(@"./camp_waypoints.csv"))
             {
-                var skip = true;
-                while (!reader.EndOfStream)
+                // skip header of input file
+                reader.ReadLine();
+                // read first relevant line
+                var line = reader.ReadLine();
+                if (line != null)
                 {
-                    var line = reader.ReadLine();
-                    var values = line.Split(';');
-
-                    if (skip)
+                    // dynamically identify the separator used in input file
+                    var commaIndex = line.IndexOf(',');
+                    var semicolonIndex = line.IndexOf(';');
+                    var separator = semicolonIndex == -1 ? line[commaIndex] : line[Math.Min(commaIndex, semicolonIndex)];
+                    while (line != null)
                     {
-                        header = line +  ";RouteInfoList";
-                        skip = false;
-                        continue;
-                    }
+                        var lineValues = line.Split(separator);
 
-                    Position p = new Position(Convert.ToDouble(values[2]), Convert.ToDouble(values[3]));
-                    pois.Add(p);
-                    lines.Add(line);
+                        var originName = lineValues[0];
+                        var originCampType = lineValues[1];
+                        originNames.Add((originName, originCampType));
+                        var originPos = new Position(Convert.ToDouble(lineValues[2], CultureInfo.InvariantCulture),
+                            Convert.ToDouble(lineValues[3], CultureInfo.InvariantCulture));
+                        pois.Add(originPos);
+                        line = reader.ReadLine();
+                    }
                 }
             }
 
-            fileOutput += header + "\n";
-
-            for (int i = 0; i < pois.Count; i++)
+            var routeInfoList = new List<OriginPOCO>();
+            for (var i = 0; i < pois.Count; i++)
             {
-                Position p1 = pois[i];
-                ISpatialNode n1 = se.NearestNode(p1);
+                var originPos = pois[i];
+                var originName = originNames[i].Item1;
+                var originCampType = originNames[i].Item2;
+                var originNode = spatialGraphEnvironment.NearestNode(originPos);
 
-                //var timings = new List<(Position, double, double)>();
-                var timings = new List<RouteInfoPOCO>();  
-                    
-                    /*
-                     * {
-                     *  p1 => [
-                     *      [p1, p2,  duration, length],
-                     *      [p1, 2p2',  duration, length],
-                     *      [p1, p2'', duration, length]
-                        ]
-                     * }
-                     *
-                     * 
-                     */
-                
-                for (int j = 0; j < pois.Count; j++)
+                var timings = new List<DestinationPOCO>();
+
+                for (var j = 0; j < pois.Count; j++)
                 {
-                    Position p2 = pois[j];
-                    ISpatialNode n2 = se.NearestNode(p2);
+                    var destinationPos = pois[j];
+                    var destinationNode = spatialGraphEnvironment.NearestNode(destinationPos);
 
-                    if (p1.Equals(p2))
-                    {
-                        continue;
-                    }
-                    
-                    Route rt = se.FindRoute(n1, n2);
-                    List<EdgeStop> edgeStops = rt.Stops;
-                    
+                    if (originPos.Equals(destinationPos)) continue;
+
+                    var destinationName = originNames[j].Item1;
+                    var destinationCampType = originNames[j].Item2;
+
+                    var route = spatialGraphEnvironment.FindRoute(originNode, destinationNode);
+                    var edgeStops = route.Stops;
+
                     var tripTime = 0.0; // in seconds
-                    var tripLength = 0.0;
-                    tripLength = rt.RouteLength;
+                    var tripLength = route.RouteLength;
 
-                    for (int k = 0; k < rt.Count; k++)
+                    for (var k = 0; k < route.Count; k++)
                     {
                         var edge = edgeStops[k].Edge;
                         tripTime += edge.Length / edge.MaxSpeed;
                     }
 
-                    var routeInfoPoco = new RouteInfoPOCO();
-                    routeInfoPoco.Origin = p1; 
-                    routeInfoPoco.Destination = p2;
-                    routeInfoPoco.Duration = tripTime;
-                    routeInfoPoco.Length = tripLength;
-                    
+                    var routeInfoPoco = new DestinationPOCO
+                    {
+                        Destination = destinationPos,
+                        DestinationName = destinationName,
+                        DestinationCampType = destinationCampType,
+                        Duration = tripTime,
+                        Length = tripLength
+                    };
+
                     timings.Add(routeInfoPoco);
                 }
 
-                RouteInfoListPOCO rilp = new RouteInfoListPOCO();
-                rilp.RouteInfoList = timings;
-                
-                lines[i] += ';'  + JsonSerializer.Serialize(rilp);
-                fileOutput += lines[i]  + "\n";
-                //Console.WriteLine(lines[i]);
-            }
-            
-            File.WriteAllText("./camp_waypoints_with_routeinfolist.csv",  fileOutput);
-            
-            
-            
-            /* Position p1 = new Position(31.45122, -25.42001);
-            ISpatialNode n1 = se.NearestNode(p1);
-            
-            Position p2 = new Position(31.59263, -24.98984);
-            ISpatialNode n2 = se.NearestNode(p2);
+                var originPoco = new OriginPOCO
+                {
+                    Origin = originPos,
+                    OriginName = originName,
+                    OriginCampType = originCampType,
+                    RouteInfoList = timings
+                };
 
-
-
-            Route rt = se.FindRoute(n1, n2);
-            var tripTime = 0.0; // in seconds
-            var tripLength = 0.0;
-
-            List<EdgeStop> edgeStops = rt.Stops;
-
-            tripLength = rt.RouteLength;
-            
-            
-            
-            for (int i = 0; i < rt.Count; i++)
-            {
-                var edge = edgeStops[i].Edge;
-                tripTime += edge.Length / edge.MaxSpeed;
+                routeInfoList.Add(originPoco);
             }
 
-            Console.WriteLine(tripTime);
-            Console.WriteLine(tripLength); */
-
+            File.WriteAllText("./route_info_list.json", JsonSerializer.Serialize(routeInfoList));
         }
     }
 }
