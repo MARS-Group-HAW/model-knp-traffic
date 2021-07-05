@@ -156,11 +156,11 @@ namespace KrugerNationalPark.Agents
                 else if (State == CommuterState.GoingHome)
                 {
                     // 1. remove car from graph
-                    _streetLayer.StreetEnvironment.Remove(Car);
+                    //_streetLayer.StreetEnvironment.Remove(Car);
 
                     // 2. unregister agent, it will no longer receive any tick() calls
                     // this agent reached it's goal and is no longer relevant in the sim context so we can remove it.
-                    UnregisterHandle.Invoke(_streetLayer, this);
+                    //UnregisterHandle.Invoke(_streetLayer, this);
                 }
             }
             else
