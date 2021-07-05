@@ -42,11 +42,11 @@
     },
     {
       "name": "TouristSchedulingLayer",
-      "file": "resources/TouristScheduler_debug_2.csv"
+      "file": "resources/_emptyScheduler.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/CommScheduler.csv"
     }
   ],
   "entities": [
@@ -63,8 +63,7 @@
       "outputtype": "individual"
     },
     {
-      "name": "Tourist",
-      "file": "TouristScheduler_debug_2.csv"
+      "name": "Tourist"
     },
     {
       "name": "Commuter"

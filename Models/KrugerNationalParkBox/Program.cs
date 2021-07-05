@@ -22,8 +22,8 @@ namespace KrugerNationalParkStarter
             
             
             
-            GetRouteTimings.Timings();
-            return;
+            //GetRouteTimings.Timings();
+            //return;
             
             
             
