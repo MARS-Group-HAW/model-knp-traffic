@@ -7,8 +7,6 @@ using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
-using Mars.Components.Agents.Trips;
-using Mars.Components.Agents.Trips.Output;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
@@ -81,9 +79,6 @@ namespace KrugerNationalParkStarter
                 result = starter.Run();
             }
 
-            // Generate proprietary trips output
-            TripsOutputAdapter.PrintTripResult(result.Model.ExecutionAgentTypeGroups.Values
-                .SelectMany(agents => agents.Values).OfType<ITripSavingAgent>());
             watch.Stop();
             Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
         }
