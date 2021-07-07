@@ -17,11 +17,11 @@ namespace KrugerNationalPark.Agents
         }
 
         [PropertyDescription] 
-        public TouristLayer TouristLayer { get; set; }
+        public StreetLayer StreetLayer { get; set; }
 
         protected override CarSteeringHandle CreateSteeringHandle(ICarSteeringCapable steeringCapable)
         {
-            return new KnpCarSteeringHandle(TouristLayer, Environment, this);
+            return new KnpCarSteeringHandle(StreetLayer, Environment, this);
         }
     }
 }

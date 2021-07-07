@@ -1,9 +1,10 @@
 ﻿using KrugerNationalPark.Agents;
 using Mars.Components.Layers;
+using SOHDomain.Common;
 
 namespace KrugerNationalPark.Layers
 {
-    public class TouristSchedulingLayer : AgentSchedulerLayer<Tourist, StreetLayer>
+    public class CommuterSchedulingLayer : AgentSchedulerLayer<Commuter, StreetLayer>
     {
     }
 }
