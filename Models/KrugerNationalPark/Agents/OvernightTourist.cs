@@ -107,7 +107,7 @@ namespace KrugerNationalPark.Agents
 
         public int ElephantCounter { set; get; }
 
-        private readonly HashSet<Guid> _knownElephants;
+        private HashSet<Guid> _knownElephants;
 
         #endregion
 
@@ -136,7 +136,7 @@ namespace KrugerNationalPark.Agents
             _originNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, _originNode);
 
-            
+            _knownElephants = new HashSet<Guid>();
             // @todo: OverNight Konzeption
             // - initialisierung identisch /(wie obemn)
             // - radius? -> ereichbare camps ermitteln

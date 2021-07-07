@@ -107,7 +107,7 @@ namespace KrugerNationalPark.Agents
 
         public int ElephantCounter { set; get; }
 
-        private readonly HashSet<Guid> _knownElephants;
+        private HashSet<Guid> _knownElephants;
 
         #endregion
 
@@ -138,6 +138,8 @@ namespace KrugerNationalPark.Agents
 
             handle.Route = FindRoute(_originNode);
             VehicleHandle = handle;
+
+            _knownElephants = new HashSet<Guid>();
         }
 
         /// <summary>
