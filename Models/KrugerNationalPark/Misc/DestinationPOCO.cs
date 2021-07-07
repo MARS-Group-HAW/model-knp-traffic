@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Mars.Interfaces.Environments;
 
 namespace KrugerNationalPark.Misc

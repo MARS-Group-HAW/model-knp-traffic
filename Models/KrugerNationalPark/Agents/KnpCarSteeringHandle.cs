@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
-using Mars.Common.Core;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
 using SOHCarModel.Model;

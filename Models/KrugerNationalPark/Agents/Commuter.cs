@@ -2,7 +2,6 @@ using System;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
-using Mars.Components.Agents.Trips;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -19,7 +18,7 @@ namespace KrugerNationalPark.Agents
     /// Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
     /// Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
     /// </summary>
-    public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable
     {
         #region Properties
 
@@ -87,8 +86,6 @@ namespace KrugerNationalPark.Agents
 
         public double CarVelocity { get; set; }
 
-        public TripsCollection TripsCollection { get; set; }
-
         #endregion
 
         #region Initialization
@@ -97,7 +94,6 @@ namespace KrugerNationalPark.Agents
         {
             State = CommuterState.GoingToWork;
             _streetLayer = layer;
-            TripsCollection = new TripsCollection(layer.Context);
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
@@ -170,7 +166,6 @@ namespace KrugerNationalPark.Agents
                 
                 // TODO: can this be moved into the else block?
                 CarVelocity = Car.Velocity;
-                TripsCollection.Add(Position);
             }
         }
 

@@ -4,8 +4,6 @@ using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Newtonsoft.Json.Linq;
 
 namespace KrugerNationalPark.Layers
 {

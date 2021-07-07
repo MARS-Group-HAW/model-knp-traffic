@@ -4,7 +4,6 @@ using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
-using Mars.Components.Agents.Trips;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -16,7 +15,7 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Tourist : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Tourist : IAgent<StreetLayer>, ICarSteeringCapable
     {
         #region Properties
 
@@ -106,8 +105,6 @@ namespace KrugerNationalPark.Agents
 
         private CarSteeringHandle VehicleHandle { get; set; }
 
-        public TripsCollection TripsCollection { get; set; }
-
         public int ElephantCounter { set; get; }
 
         private readonly HashSet<Guid> _knownElephants;
@@ -126,8 +123,6 @@ namespace KrugerNationalPark.Agents
 
             // TODO: Parameterisierung aus CSV oder Dynamik mit +/- Random Wert, um Varianz im Tourist-Verhalten abzubilden
             _endTime = new DateTime(_startTime.Year, _startTime.Month, _startTime.Day, 10, 0, 0);
-
-            TripsCollection = new TripsCollection(layer.Context);
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
@@ -295,7 +290,6 @@ namespace KrugerNationalPark.Agents
             VehicleHandle.Move(); 
 
             CarVelocity = Car.Velocity;
-            TripsCollection.Add(Position);
         }
 
         #endregion
