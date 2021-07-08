@@ -364,13 +364,4 @@ Visualization/lib
 Visualization/include
 pyvenv.
 *.sqlite
-Scenarios/SOHCitizenDailyPlanBox/.cache/1061291431_VectorLanduseLayer.network
-Scenarios/SOHCitizenDailyPlanBox/.cache/1061291431_VectorLanduseLayer.vectors
-Scenarios/SOHCitizenDailyPlanBox/.cache/-1077389424_CarParkingLayer.network
-Scenarios/SOHCitizenDailyPlanBox/.cache/-1077389424_CarParkingLayer.vectors
-Scenarios/SOHCitizenDailyPlanBox/.cache/747215620_BicycleRentalLayer.network
-Scenarios/SOHCitizenDailyPlanBox/.cache/747215620_BicycleRentalLayer.vectors
-Scenarios/SOHCitizenDailyPlanBox/.cache/-770523381_VectorBuildingsLayer.network
-Scenarios/SOHCitizenDailyPlanBox/.cache/-770523381_VectorBuildingsLayer.vectors
-Scenarios/SOHCitizenDailyPlanBox/.cache/-904300837_VectorPoiLayer.network
-Scenarios/SOHCitizenDailyPlanBox/.cache/-904300837_VectorPoiLayer.vectors
+**/.cache/
