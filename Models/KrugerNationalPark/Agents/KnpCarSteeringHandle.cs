@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
 using SOHCarModel.Model;
@@ -10,9 +12,9 @@ namespace KrugerNationalPark.Agents
 {
     public class KnpCarSteeringHandle : CarSteeringHandle
     {
-        private readonly TouristLayer _carLayer;
+        private readonly StreetLayer _carLayer;
 
-        public KnpCarSteeringHandle(TouristLayer carLayer, ISpatialGraphEnvironment environment, Car car) : base(environment, car)
+        public KnpCarSteeringHandle(StreetLayer carLayer, ISpatialGraphEnvironment environment, Car car) : base(environment, car)
         {
             _carLayer = carLayer;
         }
@@ -26,20 +28,74 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         protected override double HandleCustom(SpatialGraphExploreResult exploreResult, double deceleration)
         {
-            if (IsWildlifeAhead(out var speedElephant, out var distanceElephant))
-                return HandleWildlifeAhead(deceleration, speedElephant, distanceElephant);
+            var type = Vehicle.Driver.GetType().Name;
 
+            if (type.Equals("Tourist2"))
+            {
+                var driver = Vehicle.Driver;
+                
+                if (driver is Tourist tourist) {
+
+                    if (tourist.State == TouristState.Driving && _carLayer.Context.CurrentTick >= 1100)
+                    {
+                        // throw dice…
+                        Random rnd = new Random();
+
+                        if (rnd.NextDouble() > 0.5)
+                        {
+                            tourist.State = TouristState.Braking;
+                        }
+                        
+                        tourist.State = TouristState.Braking;
+                    }
+                    
+                    if (tourist.State == TouristState.Braking)
+                    {
+
+                        if (Vehicle.Velocity > 0)
+                        {
+                            
+                            
+                            
+                            var speedChange = VehicleAccelerator.CalculateSpeedChange(Vehicle.Velocity, SpeedLimit,
+                                10, 0);
+
+                            // Is used when the movement is performed
+                            var outv  =  speedChange < deceleration ? speedChange : deceleration;
+            
+                            //Console.WriteLine("deceleration in: " + outv);
+                            return outv;
+                        }
+                        
+                        // if car halted Velocity is 0 and we start waiting
+                        tourist.State = TouristState.Looking;
+                        
+                    }
+                    
+                }
+                
+            
+                //if (IsWildlifeAhead(out var speedElephant, out var distanceElephant))
+                //    return HandleWildlifeAhead(deceleration, speedElephant, distanceElephant);
+            }
+            
             return deceleration;
         }
 
         private double HandleWildlifeAhead(double deceleration, double speedElephantAhead, double distanceElephantAhead)
         {
+            
+            //Console.WriteLine("deceleration in: " + deceleration);
+            
             // Calculate the full stop speed change when wildlife was detected
             var speedChange = VehicleAccelerator.CalculateSpeedChange(Vehicle.Velocity, SpeedLimit,
                 distanceElephantAhead, speedElephantAhead);
 
             // Is used when the movement is performed
-            return speedChange < deceleration ? speedChange : deceleration;
+            var outv  =  speedChange < deceleration ? speedChange : deceleration;
+            
+            //Console.WriteLine("deceleration in: " + outv);
+            return outv;
         }
 
         private bool IsWildlifeAhead(out double speedElephant, out double distanceElephant)
@@ -47,7 +103,7 @@ namespace KrugerNationalPark.Agents
             // @Thomas: Use this to define your condition when the wildlife is ahead
             var elephantLayer = _carLayer.ElephantLayer;
             var enumerable = elephantLayer.Environment.Explore(Vehicle.Position, 300, 1);
-
+            
             //TODO Check for wildlife in the area by exploring elephants + rule set about how to react
 
             // Did we explore any elephant within 100 meter then wildlife detected
@@ -63,7 +119,14 @@ namespace KrugerNationalPark.Agents
                 speedElephant = 5;
                 distanceElephant = Distance.Haversine(elephant.Position.PositionArray, Vehicle.Position.PositionArray);
 
-                //Console.WriteLine("Elephant ahead in: " + distanceElephant + " m");
+                var driver = Vehicle.Driver;
+                
+                if (driver is Tourist tourist) {
+                    tourist.ElephantAhead(elephant);
+                }
+                
+                
+                Console.WriteLine("Elephant ahead in: " + distanceElephant + " m");
                 return true;
             }
 

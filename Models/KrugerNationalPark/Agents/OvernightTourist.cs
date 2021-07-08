@@ -15,7 +15,7 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Tourist : IAgent<StreetLayer>, ICarSteeringCapable
+    public class OvernightTourist : IAgent<StreetLayer>, ICarSteeringCapable
     {
         #region Properties
 
@@ -136,10 +136,15 @@ namespace KrugerNationalPark.Agents
             _originNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, _originNode);
 
+            _knownElephants = new HashSet<Guid>();
+            // @todo: OverNight Konzeption
+            // - initialisierung identisch /(wie obemn)
+            // - radius? -> ereichbare camps ermitteln
+
+            
+            
             handle.Route = FindRoute(_originNode);
             VehicleHandle = handle;
-
-            _knownElephants = new HashSet<Guid>();
         }
 
         /// <summary>

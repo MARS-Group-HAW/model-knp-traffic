@@ -3,12 +3,13 @@
     "deltaT": 1,
     "deltaTUnit": "seconds",
     "startTime": "2019-01-01T06:00:00.000Z",
-    "endTime": "2019-01-01T07:00:00.000Z",
+    "endTime": "2019-01-01T10:00:00.000Z",
     "output": "csv",
     "console" : true,
     "options": {
       "numberFormat": "G"
-    }
+    },
+    "knpCloseTimeHour": 18
   },
   "layers": [
     {
@@ -32,13 +33,20 @@
       "file": "resources/merged_waters_fixed_with_fence_buffer.geojson"
     },
     {
-      "name": "TouristLayer",
+      "name": "StreetLayer",
       "file": "resources/knp_graph.graphml"
     },
-
     {
-      "name": "TouristSchedulingLayer", 
-      "file": "resources/tourist_scheduler.csv"
+      "name": "POILayer",
+      "file": "resources/poi.geojson"
+    },
+    {
+      "name": "TouristSchedulingLayer",
+      "file": "resources/_emptyScheduler.csv"
+    },
+    {
+      "name": "CommuterSchedulingLayer",
+      "file": "resources/CommScheduler.csv"
     }
   ],
   "entities": [
@@ -51,13 +59,14 @@
     {
       "name": "Elephant",
       "file": "resources/elephant1989_constant_population_15k.csv",
-      "count": 100,
-      "frequency": 60,
-      "outputFrequency": 60,
+      "count": 0,
       "outputtype": "individual"
     },
     {
       "name": "Tourist"
+    },
+    {
+      "name": "Commuter"
     }
-  ]
+  ] 
 }
