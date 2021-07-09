@@ -38,7 +38,7 @@ namespace KrugerNationalParkStarter
             var pois = new List<Position>();
             var originNames = new List<(string, string)>();
 
-            using (var reader = new StreamReader(@"./camp_waypoints.csv"))
+            using (var reader = new StreamReader(@"./pois.csv"))
             {
                 // skip header of input file
                 reader.ReadLine();
@@ -75,8 +75,12 @@ namespace KrugerNationalParkStarter
 
                 var timings = new List<DestinationPOCO>();
 
+                Console.WriteLine("Origin: " + originName);
+
                 for (var j = 0; j < pois.Count; j++)
                 {
+                    
+                    
                     var destinationPos = pois[j];
                     var destinationNode = spatialGraphEnvironment.NearestNode(destinationPos);
 
@@ -85,9 +89,19 @@ namespace KrugerNationalParkStarter
                     var destinationName = originNames[j].Item1;
                     var destinationCampType = originNames[j].Item2;
 
+                    
                     var route = spatialGraphEnvironment.FindRoute(originNode, destinationNode);
+
+                    if (route == null)
+                    {
+                        Console.WriteLine("No route for: " + originName + " -> " + destinationName);
+                        continue;
+                    }
+                    
                     var edgeStops = route.Stops;
 
+
+                    
                     var tripTime = 0.0; // in seconds
                     var tripLength = route.RouteLength;
 
