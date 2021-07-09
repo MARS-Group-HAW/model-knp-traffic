@@ -126,7 +126,7 @@ namespace KrugerNationalPark.Agents
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
-            car.StreetLayer = layer;
+            car.KnpStreetLayer = layer;
             Car = car;
 
             // todo: Source is a Point, no Random needed? 
@@ -258,7 +258,7 @@ namespace KrugerNationalPark.Agents
                         // 2. Create our car to force braking
                         _animalSighting = _streetLayer.EntityManager.Create<KnpCar>("type", "Golf");
                         _animalSighting.Environment = _streetLayer.StreetEnvironment;
-                        _animalSighting.StreetLayer = _streetLayer;
+                        _animalSighting.KnpStreetLayer = _streetLayer;
 
                         var edge = VehicleHandle.Route[0].Edge; // <- current edge of our car
 

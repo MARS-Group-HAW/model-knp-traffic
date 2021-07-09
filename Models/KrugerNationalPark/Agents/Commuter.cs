@@ -97,7 +97,7 @@ namespace KrugerNationalPark.Agents
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
-            car.StreetLayer = layer;
+            car.KnpStreetLayer = layer;
             Car = car;
 
             // todo: Source is a Point, no Random needed?
