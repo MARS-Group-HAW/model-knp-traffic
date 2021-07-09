@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Interfaces.Data;
@@ -16,10 +17,13 @@ namespace KrugerNationalPark.Layers
             UnregisterAgent unregisterAgentHandle)
         {
             base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
-
-            
             
             return true;
+        }
+
+        public KnpPoi Nearest(Position position)
+        {
+            return Explore(position.PositionArray, -1, 1).FirstOrDefault().Node?.Value;
         }
     }
 }
