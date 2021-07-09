@@ -38,7 +38,7 @@ namespace KrugerNationalParkStarter
             var pois = new List<Position>();
             var originNames = new List<(string, string)>();
 
-            using (var reader = new StreamReader(@"./pois.csv"))
+            using (var reader = new StreamReader(@"./resources/pois.csv"))
             {
                 // skip header of input file
                 reader.ReadLine();
@@ -134,7 +134,7 @@ namespace KrugerNationalParkStarter
                 routeInfoList.Add(originPoco);
             }
 
-            File.WriteAllText("./route_info_list.json", JsonSerializer.Serialize(routeInfoList));
+            File.WriteAllText("./resources/route_info_list.json", JsonSerializer.Serialize(routeInfoList));
         }
     }
 }
