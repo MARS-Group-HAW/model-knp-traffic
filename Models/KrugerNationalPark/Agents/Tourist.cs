@@ -20,6 +20,7 @@ namespace KrugerNationalPark.Agents
     {
         #region Properties
 
+        public POILayer PoiLayer { get; set; }
         public Guid ID { get; set; }
         public int StableId { get; }
 
@@ -143,6 +144,8 @@ namespace KrugerNationalPark.Agents
 
             handle.Route = FindRoute(_originNode);
             VehicleHandle = handle;
+
+            var knpPoi = PoiLayer.Nearest(Position);
         }
 
         /// <summary>

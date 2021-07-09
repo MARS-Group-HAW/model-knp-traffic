@@ -42,7 +42,7 @@
     },
     {
       "name": "TouristSchedulingLayer",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/CommScheduler.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
