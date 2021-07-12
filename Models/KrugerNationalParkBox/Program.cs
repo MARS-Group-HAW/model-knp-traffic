@@ -20,15 +20,16 @@ namespace KrugerNationalParkStarter
         public static void Main(string[] args)
         {
             
-            
-            
-            //GetRouteTimings.Timings();
-            //return;
-            
-            
-            
-            
-            
+            // only one binary output per project is possible -> use argument to trigger
+            // execution of POI timings script. Use `$ dotnet run -poi` to run.
+            if (args.Any(s => s.Equals("-poi")))
+            {
+                GetRouteTimings.Timings();
+                return;
+            }
+
+
+            // Build model...
             var watch = Stopwatch.StartNew();
             var description = new ModelDescription();
 
