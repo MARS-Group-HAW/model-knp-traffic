@@ -134,7 +134,7 @@ namespace KrugerNationalParkStarter
                 routeInfoList.Add(originPoco);
             }
 
-            File.WriteAllText("./resources/route_info_list.json", JsonSerializer.Serialize(routeInfoList));
+            File.WriteAllText("./resources/pois.json", JsonSerializer.Serialize(routeInfoList));
         }
     }
 }

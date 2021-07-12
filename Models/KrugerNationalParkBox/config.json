@@ -38,7 +38,7 @@
     },
     {
       "name": "POILayer",
-      "file": "resources/poi.geojson"
+      "file": "resources/pois.geojson"
     },
     {
       "name": "TouristSchedulingLayer",
