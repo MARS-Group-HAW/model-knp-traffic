@@ -363,3 +363,4 @@ Visualization/venv/
 Visualization/lib
 Visualization/include
 pyvenv.cfg
+.ipynb_checkpoints
