@@ -21,11 +21,11 @@ except EnvironmentError: # parent of IOError, OSError *and* WindowsError where a
 features = []
 
 for origin in data:
-    p = origin['Origin']
+    p = origin['Position']
 
     props = {
-        'name':      origin['OriginName'],
-        'type':      origin['OriginCampType'],
+        'name':      origin['Name'],
+        'type':      origin['Type'],
         'routeList': origin
     }
 
