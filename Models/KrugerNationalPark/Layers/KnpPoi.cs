@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using KrugerNationalPark.Misc;
 using Mars.Interfaces.Data;
@@ -40,9 +41,27 @@ namespace KrugerNationalPark.Layers
         /// <returns></returns>
         
         // TODO: determine which Pois can be reached within timeLimit and return them in a list
-        public List<Position> getDestinationPoiPosition(int timeLimit)
+        public List<DestinationPOCO> getDestinationPOIs(double timeLimit, List<string> allowedTypes = null )
         {
-            return new List<Position>();
+            List<DestinationPOCO> results = new();
+            
+            foreach (var d in infoList.RouteInfoList)
+            {
+                // exclude POIs exceeding time limit
+                if (d.Duration > timeLimit)
+                {
+                    continue;
+                }
+                
+                // type exclusion
+                if (allowedTypes != null && !allowedTypes.Contains(d.DestinationCampType))
+                {
+                    continue;
+                }     
+                
+                results.Add(d);
+            }
+            return results;
         }
 
         public void Update(VectorStructuredData data)

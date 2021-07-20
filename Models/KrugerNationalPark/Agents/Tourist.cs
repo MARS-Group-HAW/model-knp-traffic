@@ -141,11 +141,20 @@ namespace KrugerNationalPark.Agents
             
             _originNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, _originNode);
+            
+            
+            
 
+            // Random walk with time constraint without "destination"
             handle.Route = FindRoute(_originNode);
             VehicleHandle = handle;
-
-            var knpPoi = PoiLayer.Nearest(Position);
+            
+            // tourist determines destination
+            var sourcePoi = PoiLayer.Nearest(Position);
+            
+            // search all gates/camps inside time constrainaed
+            // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
+            
         }
 
         /// <summary>
