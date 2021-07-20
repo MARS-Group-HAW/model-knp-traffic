@@ -8,7 +8,7 @@ namespace KrugerNationalPark.Layers
     {
         public Position ExploreClosestFullPotentialField(double lat, double lon, double maxDistance)
         {
-            return Explore(new[] {lon, lat}, maxDistance, 1).FirstOrDefault()?.NodePosition;
+            return Explore(new[] {lon, lat}, maxDistance).FirstOrDefault()?.NodePosition;
         }
     }
 }

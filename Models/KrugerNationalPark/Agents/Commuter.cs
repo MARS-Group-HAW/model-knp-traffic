@@ -23,8 +23,6 @@ namespace KrugerNationalPark.Agents
         #region Properties
 
         public Guid ID { get; set; }
-        public int StableId { get; }
-
         private CommuterState State { get; set; }
         
         /// <summary>
@@ -33,10 +31,8 @@ namespace KrugerNationalPark.Agents
         [PropertyDescription] 
         public UnregisterAgent UnregisterHandle { get; set; }
 
-        private Position Origin;
-        private ISpatialNode OriginNode;
-        private Position Workplace;
-        private ISpatialNode WorkplaceNode;
+        private ISpatialNode _originNode;
+        private ISpatialNode _workplaceNode;
         
         /// <summary>
         /// Format: WKT Point (`POINT (31.482268 -24.979422)`).
@@ -102,7 +98,6 @@ namespace KrugerNationalPark.Agents
 
             // todo: Source is a Point, no Random needed?
             Position = SourceGeometry.RandomPositionFromGeometry();
-            Origin = Position;
 
             car.TryEnterDriver(this, out var handle);
 
@@ -115,15 +110,14 @@ namespace KrugerNationalPark.Agents
             var targetCor = target[index];
             var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
-            OriginNode = layer.StreetEnvironment.NearestNode(Position);
-            layer.StreetEnvironment.Insert(car, OriginNode);
+            _originNode = layer.StreetEnvironment.NearestNode(Position);
+            layer.StreetEnvironment.Insert(car, _originNode);
 
             // for the StreetEnvironment we need a SpatialNode, not a Position.
             // -> get nearest Node to chosen target position
-            WorkplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
-            Workplace = WorkplaceNode.Position;
+            _workplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
 
-            handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, WorkplaceNode);
+            handle.Route = layer.StreetEnvironment.FindRoute(_originNode, _workplaceNode);
             VehicleHandle = handle;
         }
 
@@ -147,7 +141,7 @@ namespace KrugerNationalPark.Agents
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
-                    VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
+                    VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(_workplaceNode, _originNode);
                 }
                 else if (State == CommuterState.GoingHome)
                 {

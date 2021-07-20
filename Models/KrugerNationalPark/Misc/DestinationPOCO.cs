@@ -2,7 +2,7 @@ using Mars.Interfaces.Environments;
 
 namespace KrugerNationalPark.Misc
 {
-    public class DestinationPOCO
+    public class DestinationPoco
     {
         public string DestinationName { get; set; }
         

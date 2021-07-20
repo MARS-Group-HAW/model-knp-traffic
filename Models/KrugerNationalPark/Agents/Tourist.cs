@@ -20,7 +20,6 @@ namespace KrugerNationalPark.Agents
         #region Properties
 
         public Guid ID { get; set; }
-        public int StableId { get; }
 
         /// <summary>
         /// State of the tourist (driving around, looking at wildlife, ...)

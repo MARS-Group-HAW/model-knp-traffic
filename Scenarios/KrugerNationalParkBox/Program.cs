@@ -8,10 +8,9 @@ using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
 using Mars.Components.Starter;
-using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
 
-namespace KrugerNationalParkStarter
+namespace KrugerNationalParkBox
 {
     public static class Program
     {
@@ -42,7 +41,7 @@ namespace KrugerNationalParkStarter
             description.AddLayer<ElephantLayer>();
             
             description.AddLayer<StreetLayer>(); // Straßennetzt im KNP
-            description.AddLayer<POILayer>(); // Camps and Gates
+            description.AddLayer<PoiLayer>(); // Camps and Gates
             
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
@@ -54,7 +53,6 @@ namespace KrugerNationalParkStarter
             description.AddEntity<KnpCar>();
 
             // Starting up
-            SimulationWorkflowState result = null;
             if (args != null)
             {
                 if (args.Any(s => s.Equals("-l")))
@@ -76,7 +74,7 @@ namespace KrugerNationalParkStarter
 
                 var simConfig = SimulationConfig.Deserialize(file);
                 var starter = SimulationStarter.Start(description, simConfig);
-                result = starter.Run();
+                starter.Run();
             }
 
             watch.Stop();

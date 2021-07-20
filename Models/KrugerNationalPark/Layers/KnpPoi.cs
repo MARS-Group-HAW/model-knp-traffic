@@ -12,7 +12,7 @@ namespace KrugerNationalPark.Layers
 
         public Position Position { get; private set; }
         
-        public OriginPOCO infoList; 
+        public OriginPoco InfoList; 
         
         public VectorStructuredData VectorStructured { get; private set;  }
         public void Init(ILayer layer, VectorStructuredData data)
@@ -25,7 +25,7 @@ namespace KrugerNationalPark.Layers
             // load timings form json into structure
             // todo: this could probably be hinted directly in the GeoJSON Properties for JObject?
             var list = VectorStructured.Data["routeList"].ToString();
-            infoList = JsonSerializer.Deserialize<OriginPOCO>(list);
+            InfoList = JsonSerializer.Deserialize<OriginPoco>(list);
         }
         
         
@@ -38,7 +38,7 @@ namespace KrugerNationalPark.Layers
         /// <returns></returns>
         
         // TODO: determine which Pois can be reached within timeLimit and return them in a list
-        public List<Position> getDestinationPoiPosition(int timeLimit)
+        public List<Position> GetDestinationPoiPosition(int timeLimit)
         {
             return new List<Position>();
         }
