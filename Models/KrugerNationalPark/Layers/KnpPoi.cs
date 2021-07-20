@@ -15,6 +15,10 @@ namespace KrugerNationalPark.Layers
 
         public Position Position { get; private set; }
         
+        public String Name { get; private set; }
+        
+        public String Type { get; private set; }
+        
         public OriginPOCO infoList; 
         
         public VectorStructuredData VectorStructured { get; private set;  }
@@ -22,8 +26,12 @@ namespace KrugerNationalPark.Layers
         {
             var centroid = data.Geometry.Centroid;
             Position = Position.CreatePosition(centroid.X, centroid.Y);
-            
+
             VectorStructured = data;
+
+            Name = VectorStructured.Data["name"].ToString();
+            Type = VectorStructured.Data["type"].ToString();
+
             
             // load timings form json into structure
             // todo: this could probably be hinted directly in the GeoJSON Properties for JObject?
@@ -53,7 +61,7 @@ namespace KrugerNationalPark.Layers
                     continue;
                 }
                 
-                // type exclusion
+                // if only special types are requested, search only for wanted
                 if (allowedTypes != null && !allowedTypes.Contains(d.Type))
                 {
                     continue;
