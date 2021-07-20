@@ -45,7 +45,7 @@ namespace KrugerNationalPark.Layers
         {
             List<DestinationPOCO> results = new();
             
-            foreach (var d in infoList.RouteInfoList)
+            foreach (var d in infoList.Destinations)
             {
                 // exclude POIs exceeding time limit
                 if (d.Duration > timeLimit)
@@ -54,7 +54,7 @@ namespace KrugerNationalPark.Layers
                 }
                 
                 // type exclusion
-                if (allowedTypes != null && !allowedTypes.Contains(d.DestinationCampType))
+                if (allowedTypes != null && !allowedTypes.Contains(d.Type))
                 {
                     continue;
                 }     

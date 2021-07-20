@@ -113,9 +113,9 @@ namespace KrugerNationalParkStarter
 
                     var routeInfoPoco = new DestinationPOCO
                     {
-                        Destination = destinationPos,
-                        DestinationName = destinationName,
-                        DestinationCampType = destinationCampType,
+                        Position = destinationPos,
+                        Name = destinationName,
+                        Type = destinationCampType,
                         Duration = tripTime,
                         Length = tripLength
                     };
@@ -125,10 +125,10 @@ namespace KrugerNationalParkStarter
 
                 var originPoco = new OriginPOCO
                 {
-                    Origin = originPos,
-                    OriginName = originName,
-                    OriginCampType = originCampType,
-                    RouteInfoList = timings
+                    Position = originPos,
+                    Name = originName,
+                    Type = originCampType,
+                    Destinations = timings
                 };
 
                 routeInfoList.Add(originPoco);
