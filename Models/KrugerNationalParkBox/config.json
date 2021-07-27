@@ -42,11 +42,11 @@
     },
     {
       "name": "TouristSchedulingLayer",
-      "file": "resources/CommScheduler.csv"
+      "file": "resources/TouristScheduler_debug_1.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/CommScheduler.csv"
+      "file": "resources/_emptyScheduler.csv"
     }
   ],
   "entities": [

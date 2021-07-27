@@ -24,6 +24,8 @@ namespace KrugerNationalPark.Agents
         public Guid ID { get; set; }
         public int StableId { get; }
 
+        private static Random rng = new Random(); 
+
         /// <summary>
         /// State of the tourist (driving around, looking at wildlife, ...)
         /// </summary>
@@ -141,21 +143,142 @@ namespace KrugerNationalPark.Agents
             
             _originNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, _originNode);
+
+
+
+            var p1 = new Position(31.4447138, -24.9883233);
+            var p2 = new Position(31.4277741, -25.0153934);
+            var n1 = layer.StreetEnvironment.NearestNode(p1);
+            var n2 = layer.StreetEnvironment.NearestNode(p2);
             
-            
-            
+            var rt1 = _streetLayer.StreetEnvironment.FindRoute(n1, n2);
+            var rt2 = _streetLayer.StreetEnvironment.FindRoute(n2, n1);
 
             // Random walk with time constraint without "destination"
-            handle.Route = FindRoute(_originNode);
-            VehicleHandle = handle;
+            //handle.Route = FindRoute(_originNode);
+            //VehicleHandle = handle;
             
             // tourist determines destination
             var sourcePoi = PoiLayer.Nearest(Position);
             
+            var availableDestinations = sourcePoi.getDestinationPOIs(3600, new List<String> { "Rest camp", "Gate" });
+
+            var l = availableDestinations.Count;
+            var rnd = new Random();
+            var i = rnd.Next(0, l);
+            var destinationPoco = availableDestinations[i];
+
+            
+            var destNode = layer.StreetEnvironment.NearestNode(destinationPoco.Position);
+
+            
+   
+            handle.Route = FindRoute2(_originNode, destNode, 3600);
+            VehicleHandle = handle;
+            
             // search all gates/camps inside time constrainaed
             // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
-            
+
         }
+
+        private Route FindRoute2(ISpatialNode start, ISpatialNode goal, double timeLimit)
+        {
+            var node = start;
+            var lastEdge = node.OutgoingEdges.Values.ToList()[0];
+
+            var oldFrom = lastEdge.From;
+
+            var rt = new Route();
+
+            // build route with edges until return time is reached
+            do
+            {
+                var outEdges = node.OutgoingEdges.Values.ToList();
+
+                // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
+                // das ist uns unklar und nicht erwartungskonform!
+
+                // tripTime == 0 -> erster durchlauf, keine kante entfernen
+                // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
+                if (rt.Count > 0  && outEdges.Count != 1)
+                {
+                    // find edge, leading back to the last origin
+                    var count2 = outEdges.Count;
+
+                    for (var i = 0; i < count2; i++)
+                    {
+                        var e = outEdges[i];
+                        if (e.To.Equals(oldFrom))
+                        {
+                            outEdges.Remove(e);
+                            break;
+                        }
+                    }
+                
+                
+                    //outEdges.Remove(lastEdge);
+                }
+
+                var rnd = new Random(); 
+                
+                outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
+
+                var count = outEdges.Count;
+                    
+                for (var i = 0; i < count; i++)
+                {
+                    lastEdge = outEdges[i];
+                    oldFrom = lastEdge.From;
+                    
+                    var edgeDuration =  (lastEdge.Length / lastEdge.MaxSpeed);
+                    
+                    // edge leads to this node
+                    // from this node we have to be able to reach out goal within the time limit
+                    var targetNode = lastEdge.To;
+                    var tmpRoute = _streetLayer.StreetEnvironment.FindRoute(targetNode, goal);
+                    var duration = GetRouteDuration(tmpRoute);
+
+                    if ((duration + edgeDuration) < timeLimit)
+                    {
+                        // route edge is Okay to drive on
+                        rt.Add(lastEdge);
+                        node = lastEdge.To;
+                        timeLimit -= edgeDuration;
+                        break;
+                    }
+                }
+                
+            } while (!node.Equals(goal));
+
+            return rt;
+        }
+
+        public void Shuffle<T>(IList<T> list)  
+        {  
+            int n = list.Count;  
+            while (n > 1) {  
+                n--;  
+                int k = rng.Next(n + 1);  
+                T value = list[k];  
+                list[k] = list[n];  
+                list[n] = value;  
+            }  
+        }
+
+        private double GetRouteDuration(Route rt)
+        {
+            double duration = 0.0;
+            
+            foreach (var edgeStop in rt)
+            {
+                var edge = edgeStop.Edge;
+                // TODO: MARS method is broken (see next line for correct calculation)
+                //tripTime += lastEdge.TravelTime; 
+                duration += edge.Length / edge.MaxSpeed;
+            }
+            return duration;
+        }
+
 
         /// <summary>
         /// Find a random route starting from start, that has the max duration of half difference from the
@@ -226,7 +349,7 @@ namespace KrugerNationalPark.Agents
             const int lookDuration = 15; // in minutes
 
             // keep track of our timings and start way home when latest return is reached.
-            if (!_goingHome)
+            /*if (!_goingHome)
             {
                 var currentEdge = VehicleHandle.Route[0].Edge;
 
@@ -244,7 +367,7 @@ namespace KrugerNationalPark.Agents
                         _goingHome = true;
                     }
                 }
-            }
+            } */
 
             // we are driving around and wait for an anima sighting event
             // todo: on the qy home should we prevent looking for animals?
