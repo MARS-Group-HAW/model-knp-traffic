@@ -21,7 +21,12 @@ namespace KrugerNationalPark.Layers
         {
             ElephantLayer = elephantLayer;
         }
-        
+
+
+        [PropertyDescription] public ElephantLayer ElephantLayer { get; }
+
+        public ISpatialGraphEnvironment StreetEnvironment { get; set; }
+
         public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle = null,
             UnregisterAgent unregisterAgent = null)
         {
@@ -43,16 +48,8 @@ namespace KrugerNationalPark.Layers
                 },
                 NodeIndex = true
             });
-            
+
             return true;
         }
-
-        
-
-        [PropertyDescription]
-        public ElephantLayer ElephantLayer { get; }
-        
-        public ISpatialGraphEnvironment StreetEnvironment { get; set; }
-        
     }
 }

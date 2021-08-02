@@ -16,16 +16,10 @@ namespace KrugerNationalParkBox
     {
         public static void Main(string[] args)
         {
-            
-            
-            
             //GetRouteTimings.Timings();
             //return;
-            
-            
-            
-            
-            
+
+
             var watch = Stopwatch.StartNew();
             var description = new ModelDescription();
 
@@ -39,10 +33,10 @@ namespace KrugerNationalParkBox
             description.AddLayer<RasterVegetationLayer>();
             description.AddLayer<VectorWaterLayer>();
             description.AddLayer<ElephantLayer>();
-            
+
             description.AddLayer<StreetLayer>(); // Straßennetzt im KNP
             description.AddLayer<PoiLayer>(); // Camps and Gates
-            
+
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
 

@@ -15,75 +15,11 @@ using Position = Mars.Interfaces.Environments.Position;
 namespace KrugerNationalPark.Agents
 {
     /// <summary>
-    /// Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
-    /// Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
+    ///     Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
+    ///     Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
     /// </summary>
     public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable
     {
-        #region Properties
-
-        public Guid ID { get; set; }
-        private CommuterState State { get; set; }
-        
-        /// <summary>
-        /// Needed fo "removing" the agent and preventing further tick() call to it.
-        /// </summary>
-        [PropertyDescription] 
-        public UnregisterAgent UnregisterHandle { get; set; }
-
-        private ISpatialNode _originNode;
-        private ISpatialNode _workplaceNode;
-        
-        /// <summary>
-        /// Format: WKT Point (`POINT (31.482268 -24.979422)`).
-        /// </summary>
-        [PropertyDescription(Name = "source")] 
-        public Geometry SourceGeometry { get; set; }
-
-        /// <summary>
-        /// WKT Multipoint with variable amount of target points. On is chosen by random.
-        /// Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)
-        /// 
-        /// </summary>
-        [PropertyDescription(Name = "destination")]
-        public Geometry TargetGeometry { get; set; }
-
-        /// <summary>
-        /// Duration of work at the camp, in minutes.
-        /// </summary>
-        [PropertyDescription(Name = "workDuration")]
-        private double WorkDuration { get; set; }
-        
-        /// <summary>
-        /// The agent's arrival time at work, and departure time from work (each in hours)
-        /// </summary>
-        private DateTime _arrivalTime;
-        private DateTime _departureTime;
-
-        /// <summary>
-        /// The agent's reference to the KNP traffic network
-        /// </summary>
-        private StreetLayer _streetLayer;
-
-        /// <summary>
-        ///  Position of our car/agent on the map.
-        /// </summary>
-        public Position Position
-        {
-            get => Car.Position;
-            set => Car.Position = value;
-        }
-
-        public CarSteeringHandle VehicleHandle { get; set; }
-
-        public bool OvertakingActivated { get; }
-        public Car Car { get; set; }
-        public bool CurrentlyCarDriving => true;
-
-        public double CarVelocity { get; set; }
-
-        #endregion
-
         #region Initialization
 
         public void Init(StreetLayer layer)
@@ -157,7 +93,7 @@ namespace KrugerNationalPark.Agents
             {
                 // agent calls its movement handle (associated with its car) to perform a movement
                 VehicleHandle.Move();
-                
+
                 // TODO: can this be moved into the else block?
                 CarVelocity = Car.Velocity;
             }
@@ -170,6 +106,70 @@ namespace KrugerNationalPark.Agents
         public void Notify(PassengerMessage passengerMessage)
         {
         }
+
+        #endregion
+
+        #region Properties
+
+        public Guid ID { get; set; }
+        private CommuterState State { get; set; }
+
+        /// <summary>
+        ///     Needed fo "removing" the agent and preventing further tick() call to it.
+        /// </summary>
+        [PropertyDescription]
+        public UnregisterAgent UnregisterHandle { get; set; }
+
+        private ISpatialNode _originNode;
+        private ISpatialNode _workplaceNode;
+
+        /// <summary>
+        ///     Format: WKT Point (`POINT (31.482268 -24.979422)`).
+        /// </summary>
+        [PropertyDescription(Name = "source")]
+        public Geometry SourceGeometry { get; set; }
+
+        /// <summary>
+        ///     WKT Multipoint with variable amount of target points. On is chosen by random.
+        ///     Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)
+        /// </summary>
+        [PropertyDescription(Name = "destination")]
+        public Geometry TargetGeometry { get; set; }
+
+        /// <summary>
+        ///     Duration of work at the camp, in minutes.
+        /// </summary>
+        [PropertyDescription(Name = "workDuration")]
+        private double WorkDuration { get; set; }
+
+        /// <summary>
+        ///     The agent's arrival time at work, and departure time from work (each in hours)
+        /// </summary>
+        private DateTime _arrivalTime;
+
+        private DateTime _departureTime;
+
+        /// <summary>
+        ///     The agent's reference to the KNP traffic network
+        /// </summary>
+        private StreetLayer _streetLayer;
+
+        /// <summary>
+        ///     Position of our car/agent on the map.
+        /// </summary>
+        public Position Position
+        {
+            get => Car.Position;
+            set => Car.Position = value;
+        }
+
+        public CarSteeringHandle VehicleHandle { get; set; }
+
+        public bool OvertakingActivated { get; }
+        public Car Car { get; set; }
+        public bool CurrentlyCarDriving => true;
+
+        public double CarVelocity { get; set; }
 
         #endregion
     }

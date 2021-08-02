@@ -161,6 +161,8 @@ namespace KrugerNationalPark.Agents
             Position = Position.CreateGeoPosition(lon, lat);
         }
 
+        public int StableId { get; }
+
         public void Die(MattersOfDeath mannerOfDeath)
         {
             //Console.WriteLine("Elephant: Agent died: " + mannerOfDeath + ". " + Latitude + ", " + Longitude);
@@ -360,7 +362,7 @@ namespace KrugerNationalPark.Agents
                 //seek shadow 
                 // TODO: it would be better to make that dependable from temperature
                 case 14:
-                
+
                     var shadePosition =
                         _shadeLayer.ExploreClosestFullPotentialField(Position.Latitude, Position.Longitude, 100);
 
@@ -372,7 +374,7 @@ namespace KrugerNationalPark.Agents
                     }
 
                     MoveTowardsPosition(shadePosition.Latitude, shadePosition.Longitude);
-                    
+
                     BurnSatiety(SatietyIntakeHourly[_elephantLifePeriod] * 0.5);
                     break;
 
@@ -708,7 +710,5 @@ namespace KrugerNationalPark.Agents
         }
 
         #endregion
-
-        public int StableId { get; }
     }
 }
