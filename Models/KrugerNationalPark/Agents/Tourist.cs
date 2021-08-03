@@ -183,88 +183,89 @@ namespace KrugerNationalPark.Agents
 
         private Route FindRoute2(ISpatialNode start, ISpatialNode goal, double timeLimit)
         {
-            var node = start;
-            var lastEdge = node.OutgoingEdges.Values.ToList()[0];
-
-            var oldFrom = lastEdge.From;
-
+            var currentNode = start;
+            var prevEdge = currentNode.OutgoingEdges.Values.ToList()[0]; // 
+            var prevNode = prevEdge.From;
             var rt = new Route();
 
             // build route with edges until return time is reached
             do
             {
-                var outEdges = node.OutgoingEdges.Values.ToList();
+                var outEdges = currentNode.OutgoingEdges.Values.ToList();
+                var outEdgesCount = outEdges.Count;
 
+                //var newOutEdges = new List<ISpatialEdge>();
+                
                 // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
                 // das ist uns unklar und nicht erwartungskonform!
 
                 // tripTime == 0 -> erster durchlauf, keine kante entfernen
                 // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
+                //
+                // remove "returning edge" identified on the node, since the edges are uniue in each direction
+                // this removal prevents u-turn behaviour of agents
+                // todo: to discuss, allow u-turn on larger street segments (like >10km e.g.)
                 if (rt.Count > 0  && outEdges.Count != 1)
                 {
+                    var newOutEdges = new List<ISpatialEdge>();
+                    
                     // find edge, leading back to the last origin
-                    var count2 = outEdges.Count;
-
-                    for (var i = 0; i < count2; i++)
+                    for (var i = 0; i < outEdgesCount; i++)
                     {
                         var e = outEdges[i];
-                        if (e.To.Equals(oldFrom))
+                        if (e.To.Equals(prevNode))
                         {
-                            outEdges.Remove(e);
-                            break;
+                            //outEdges.Remove(e);
+                            //break;
+                        }
+                        else
+                        {
+                            newOutEdges.Add(e);
                         }
                     }
-                
-                
-                    //outEdges.Remove(lastEdge);
+
+                    outEdges = newOutEdges;
                 }
 
-                var rnd = new Random(); 
-                
+                // randomize all remaining edges to create random behaviour of agents
+                // in selecting their route
+                var rnd = new Random();
                 outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
 
-                var count = outEdges.Count;
-                    
-                for (var i = 0; i < count; i++)
+                // select next route segment that adheres to time constraint
+                outEdgesCount = outEdges.Count; // re calculate, returning edge *might* be removed!
+                for (var i = 0; i < outEdgesCount; i++)
                 {
-                    lastEdge = outEdges[i];
-                    oldFrom = lastEdge.From;
+                    prevEdge = outEdges[i];
+                    prevNode = prevEdge.From;
                     
-                    var edgeDuration =  (lastEdge.Length / lastEdge.MaxSpeed);
+                    var edgeDuration =  (prevEdge.Length / prevEdge.MaxSpeed);
                     
                     // edge leads to this node
                     // from this node we have to be able to reach out goal within the time limit
-                    var targetNode = lastEdge.To;
+                    var targetNode = prevEdge.To;
                     var tmpRoute = _streetLayer.StreetEnvironment.FindRoute(targetNode, goal);
-                    var duration = GetRouteDuration(tmpRoute);
+                    var routeDuration = GetRouteDuration(tmpRoute);
 
-                    if ((duration + edgeDuration) < timeLimit)
+                    if ((routeDuration + edgeDuration) < timeLimit)
                     {
                         // route edge is Okay to drive on
-                        rt.Add(lastEdge);
-                        node = lastEdge.To;
+                        rt.Add(prevEdge);
+                        currentNode = prevEdge.To;
                         timeLimit -= edgeDuration;
                         break;
                     }
                 }
-                
-            } while (!node.Equals(goal));
+            } while (!currentNode.Equals(goal));
 
             return rt;
         }
-
-        public void Shuffle<T>(IList<T> list)  
-        {  
-            int n = list.Count;  
-            while (n > 1) {  
-                n--;  
-                int k = rng.Next(n + 1);  
-                T value = list[k];  
-                list[k] = list[n];  
-                list[n] = value;  
-            }  
-        }
-
+        
+        /// <summary>
+        /// Determines the complete duration it takes to drive a route.
+        /// </summary>
+        /// <param name="rt"></param>
+        /// <returns>duration in seconds</returns>
         private double GetRouteDuration(Route rt)
         {
             double duration = 0.0;
