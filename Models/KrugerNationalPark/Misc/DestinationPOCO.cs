@@ -10,7 +10,14 @@ namespace KrugerNationalPark.Misc
         public string Type { get; set; }
         public Position Position { get; set; }
         
+        /// <summary>
+        /// Duration to reach this POI  from the origin in seconds.
+        /// </summary>
         public double Duration { get; set; }
+        
+        /// <summary>
+        /// Distance to reach this POI from the origin in meters.
+        /// </summary>
         public double Length { get; set; }
     }
 }
