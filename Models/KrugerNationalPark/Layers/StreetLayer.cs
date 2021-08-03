@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using KrugerNationalPark.Agents;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
@@ -23,6 +25,7 @@ namespace KrugerNationalPark.Layers
             ElephantLayer = elephantLayer;
         }
         
+        
         public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle,
             UnregisterAgent unregisterAgentHandle)
         {
@@ -44,7 +47,12 @@ namespace KrugerNationalPark.Layers
                 },
                 NodeIndex = true
             });
-            
+
+
+            // Export StreetLayer as GeoJSON
+            //var geoJson = SpatialGraphHelper.ToGeoJson(StreetEnvironment);
+            //File.WriteAllText("streetLayer.geojson", geoJson);
+
             return true;
         }
 
