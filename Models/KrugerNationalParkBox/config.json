@@ -34,7 +34,7 @@
     },
     {
       "name": "StreetLayer",
-      "file": "resources/knp_graph.graphml"
+      "file": "resources/knp_graph.geojson"
     },
     {
       "name": "POILayer",
