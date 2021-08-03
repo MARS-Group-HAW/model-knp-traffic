@@ -279,66 +279,7 @@ namespace KrugerNationalPark.Agents
             return duration;
         }
 
-
-        /// <summary>
-        /// Find a random route starting from start, that has the max duration of half difference from the
-        /// current time and endTime (so we have the time to go home).
-        /// 
-        /// Keeps track of the driving duration in _edgeTimings.
-        /// </summary>
-        /// <param name="start">Start position for route</param>
-        /// <returns></returns>
-        private Route FindRoute(ISpatialNode start)
-        {
-            var node = start;
-            var tripTime = 0.0; // in seconds
-
-            // determine delta between current start time and max end time
-            // divide by 2 to make sure we have the same time to drive home - > point of no return 
-            var returnTime = Convert.ToDouble(_endTime.Subtract(_startTime).TotalSeconds / 2);
-
-            var lastEdge = node.OutgoingEdges.Values.ToList()[0];
-
-            var rt = new Route();
-
-            // build route with edges until return time is reached
-            do
-            {
-                var outEdges = node.OutgoingEdges.Values.ToList();
-
-                // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
-                // das ist uns unklar und nicht erwartungskonform!
-
-                // tripTime == 0 -> erster durchlauf, keine kante entfernen
-                // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
-                if (tripTime != 0 && outEdges.Count != 1)
-                {
-                    outEdges.Remove(lastEdge);
-                }
-
-                var count = outEdges.Count;
-                var rnd = new Random();
-                var i = rnd.Next(0, count);
-
-                lastEdge = outEdges[i];
-
-                // TODO: MARS method is broken (see next line for correct calculation)
-                //tripTime += lastEdge.TravelTime; 
-                tripTime += lastEdge.Length / lastEdge.MaxSpeed;
-
-                // zeit der schließung - Zeitspanne von diesem node nach hause 
-                // => beim Abfahren der route, darf dieser punkt nicht nach dieser uhrzeit übertreten werden.
-                var latestTimeToReachHomeFromThisNode = _endTime.Subtract(TimeSpan.FromSeconds(tripTime));
-                _edgeTimings.Enqueue(latestTimeToReachHomeFromThisNode);
-
-                rt.Add(lastEdge);
-
-                node = outEdges[i].To;
-            } while (tripTime < returnTime);
-
-            return rt;
-        }
-
+        
         #endregion
 
         #region Tick
@@ -347,28 +288,7 @@ namespace KrugerNationalPark.Agents
         {
             // @todo: random in range
             const int lookDuration = 15; // in minutes
-
-            // keep track of our timings and start way home when latest return is reached.
-            /*if (!_goingHome)
-            {
-                var currentEdge = VehicleHandle.Route[0].Edge;
-
-                if (!currentEdge.Equals(_edgeFromPreviousTick))
-                {
-                    var currentTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
-                    var lastOkTimeForEdge = _edgeTimings.Dequeue();
-
-                    _edgeFromPreviousTick = currentEdge;
-
-                    if (lastOkTimeForEdge.Subtract(currentTime).TotalSeconds <= 0)
-                    {
-                        // Go home with Fastest route
-                        VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(currentEdge.From, _originNode);
-                        _goingHome = true;
-                    }
-                }
-            } */
-
+            
             // we are driving around and wait for an anima sighting event
             // todo: on the qy home should we prevent looking for animals?
             if (State == TouristState.Driving)
