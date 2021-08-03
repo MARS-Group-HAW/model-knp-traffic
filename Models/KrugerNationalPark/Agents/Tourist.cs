@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
 using Mars.Components.Agents.Trips;
+using Mars.Components.Environments;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -143,16 +145,15 @@ namespace KrugerNationalPark.Agents
             
             _originNode = layer.StreetEnvironment.NearestNode(Position);
             layer.StreetEnvironment.Insert(car, _originNode);
+            
 
-
-
-            var p1 = new Position(31.4447138, -24.9883233);
+            /*var p1 = new Position(31.4447138, -24.9883233);
             var p2 = new Position(31.4277741, -25.0153934);
             var n1 = layer.StreetEnvironment.NearestNode(p1);
             var n2 = layer.StreetEnvironment.NearestNode(p2);
             
             var rt1 = _streetLayer.StreetEnvironment.FindRoute(n1, n2);
-            var rt2 = _streetLayer.StreetEnvironment.FindRoute(n2, n1);
+            var rt2 = _streetLayer.StreetEnvironment.FindRoute(n2, n1);*/
 
             // Random walk with time constraint without "destination"
             //handle.Route = FindRoute(_originNode);
@@ -169,13 +170,18 @@ namespace KrugerNationalPark.Agents
             var destinationPoco = availableDestinations[i];
 
             
-            var destNode = layer.StreetEnvironment.NearestNode(destinationPoco.Position);
+            var destinationNode = layer.StreetEnvironment.NearestNode(destinationPoco.Position);
 
             
    
-            handle.Route = FindRoute2(_originNode, destNode, 3600);
+            handle.Route = FindRoute2(_originNode, _originNode, 3600);
             VehicleHandle = handle;
             
+            // save route to geojson
+            var geoJson = SpatialGraphHelper.ToGeoJson(handle.Route);
+            File.WriteAllText("route_" + ID + ".json", geoJson);
+
+
             // search all gates/camps inside time constrainaed
             // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
 
