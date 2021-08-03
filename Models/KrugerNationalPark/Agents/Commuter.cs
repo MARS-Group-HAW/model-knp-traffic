@@ -33,10 +33,8 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         [PropertyDescription] 
         public UnregisterAgent UnregisterHandle { get; set; }
-
-        private Position Origin;
+        
         private ISpatialNode OriginNode;
-        private Position Workplace;
         private ISpatialNode WorkplaceNode;
         
         /// <summary>
@@ -106,7 +104,6 @@ namespace KrugerNationalPark.Agents
 
             // todo: Source is a Point, no Random needed?
             Position = SourceGeometry.RandomPositionFromGeometry();
-            Origin = Position;
 
             car.TryEnterDriver(this, out var handle);
 
@@ -125,7 +122,6 @@ namespace KrugerNationalPark.Agents
             // for the StreetEnvironment we need a SpatialNode, not a Position.
             // -> get nearest Node to chosen target position
             WorkplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
-            Workplace = WorkplaceNode.Position;
 
             handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, WorkplaceNode);
             VehicleHandle = handle;
