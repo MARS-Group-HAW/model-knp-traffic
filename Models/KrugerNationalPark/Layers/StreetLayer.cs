@@ -59,6 +59,15 @@ namespace KrugerNationalPark.Layers
         
         public ISpatialGraphEnvironment StreetEnvironment { get; set; }
         
+        /// <summary>
+        ///
+        /// TODO: (?) does not take acceleration of cars into account. 
+        /// 
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="goal"></param>
+        /// <param name="timeLimit"></param>
+        /// <returns></returns>
         public Route FindRoute(ISpatialNode start, ISpatialNode goal, double timeLimit)
         {
             var currentNode = start;
@@ -125,7 +134,7 @@ namespace KrugerNationalPark.Layers
                     var tmpRoute = StreetEnvironment.FindRoute(targetNode, goal);
                     var routeDuration = GetRouteDuration(tmpRoute);
 
-                    if ((routeDuration + edgeDuration) < timeLimit)
+                    if ((routeDuration + edgeDuration) <= timeLimit)
                     {
                         // route edge is Okay to drive on
                         rt.Add(prevEdge);
