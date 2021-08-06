@@ -90,6 +90,8 @@ namespace KrugerNationalPark.Layers
                 
                 // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
                 // das ist uns unklar und nicht erwartungskonform!
+                
+                var uTurnEdges = new List<ISpatialEdge>();
 
                 // tripTime == 0 -> erster durchlauf, keine kante entfernen
                 // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
@@ -107,8 +109,7 @@ namespace KrugerNationalPark.Layers
                         var e = outEdges[i];
                         if (e.To.Equals(prevNode))
                         {
-                            //outEdges.Remove(e);
-                            //break;
+                            uTurnEdges.Add(e);
                         }
                         else
                         {
@@ -123,6 +124,12 @@ namespace KrugerNationalPark.Layers
                 // in selecting their route
                 var rnd = new Random();
                 outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
+                
+                // append u-turn edges as "fall back" at the end of the list
+                // -> will be checked last.
+                // this is necessary since the check from the previous segemnt might identified the current origin
+                // as valid, but only, if we drive back the same segment we came from
+                outEdges.AddRange(uTurnEdges);
 
                 // select next route segment that adheres to time constraint
                 var segmentFound = false;
@@ -164,7 +171,7 @@ namespace KrugerNationalPark.Layers
 
             return rt;
         }
-        
+
         /// <summary>
         /// Determines the complete duration it takes to drive a route.
         /// </summary>
