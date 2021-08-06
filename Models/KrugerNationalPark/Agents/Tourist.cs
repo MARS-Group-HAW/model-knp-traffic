@@ -174,7 +174,7 @@ namespace KrugerNationalPark.Agents
 
             
    
-            handle.Route = FindRoute2(_originNode, _originNode, 3600);
+            handle.Route = _streetLayer.FindRoute(_originNode, _originNode, 3600);
             VehicleHandle = handle;
             
             // save route to geojson
@@ -186,106 +186,7 @@ namespace KrugerNationalPark.Agents
             // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
 
         }
-
-        private Route FindRoute2(ISpatialNode start, ISpatialNode goal, double timeLimit)
-        {
-            var currentNode = start;
-            var prevEdge = currentNode.OutgoingEdges.Values.ToList()[0]; // 
-            var prevNode = prevEdge.From;
-            var rt = new Route();
-
-            // build route with edges until return time is reached
-            do
-            {
-                var outEdges = currentNode.OutgoingEdges.Values.ToList();
-                var outEdgesCount = outEdges.Count;
-
-                //var newOutEdges = new List<ISpatialEdge>();
-                
-                // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
-                // das ist uns unklar und nicht erwartungskonform!
-
-                // tripTime == 0 -> erster durchlauf, keine kante entfernen
-                // outEdges.Count == 1 -> kein andere option als den selben weg zurückzufahren 
-                //
-                // remove "returning edge" identified on the node, since the edges are uniue in each direction
-                // this removal prevents u-turn behaviour of agents
-                // todo: to discuss, allow u-turn on larger street segments (like >10km e.g.)
-                if (rt.Count > 0  && outEdges.Count != 1)
-                {
-                    var newOutEdges = new List<ISpatialEdge>();
-                    
-                    // find edge, leading back to the last origin
-                    for (var i = 0; i < outEdgesCount; i++)
-                    {
-                        var e = outEdges[i];
-                        if (e.To.Equals(prevNode))
-                        {
-                            //outEdges.Remove(e);
-                            //break;
-                        }
-                        else
-                        {
-                            newOutEdges.Add(e);
-                        }
-                    }
-
-                    outEdges = newOutEdges;
-                }
-
-                // randomize all remaining edges to create random behaviour of agents
-                // in selecting their route
-                var rnd = new Random();
-                outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
-
-                // select next route segment that adheres to time constraint
-                outEdgesCount = outEdges.Count; // re calculate, returning edge *might* be removed!
-                for (var i = 0; i < outEdgesCount; i++)
-                {
-                    prevEdge = outEdges[i];
-                    prevNode = prevEdge.From;
-                    
-                    var edgeDuration =  (prevEdge.Length / prevEdge.MaxSpeed);
-                    
-                    // edge leads to this node
-                    // from this node we have to be able to reach out goal within the time limit
-                    var targetNode = prevEdge.To;
-                    var tmpRoute = _streetLayer.StreetEnvironment.FindRoute(targetNode, goal);
-                    var routeDuration = GetRouteDuration(tmpRoute);
-
-                    if ((routeDuration + edgeDuration) < timeLimit)
-                    {
-                        // route edge is Okay to drive on
-                        rt.Add(prevEdge);
-                        currentNode = prevEdge.To;
-                        timeLimit -= edgeDuration;
-                        break;
-                    }
-                }
-            } while (!currentNode.Equals(goal));
-
-            return rt;
-        }
         
-        /// <summary>
-        /// Determines the complete duration it takes to drive a route.
-        /// </summary>
-        /// <param name="rt"></param>
-        /// <returns>duration in seconds</returns>
-        private double GetRouteDuration(Route rt)
-        {
-            double duration = 0.0;
-            
-            foreach (var edgeStop in rt)
-            {
-                var edge = edgeStop.Edge;
-                // TODO: MARS method is broken (see next line for correct calculation)
-                //tripTime += lastEdge.TravelTime; 
-                duration += edge.Length / edge.MaxSpeed;
-            }
-            return duration;
-        }
-
         
         #endregion
 
