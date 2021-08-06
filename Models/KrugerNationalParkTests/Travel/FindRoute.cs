@@ -42,6 +42,8 @@ namespace KrugerNationalParkTests.Travel
             var rt1 = layer.FindRoute(node1, node3, 10);
             Assert.Equal(2, rt1.Count);
             Assert.Equal(100, rt1.RouteLength);
+            Assert.True(GetRouteDuration(rt1) <= 10, "Route took more seconds than limit");
+
             
             // n1 -> n2 not enough time
             Assert.Throws<ArgumentException>(() => layer.FindRoute(node1, node3, 9));
@@ -88,17 +90,12 @@ namespace KrugerNationalParkTests.Travel
             layer.StreetEnvironment = environment;
 
             
-            
-            // TODO: diese tests failen, weil die Fahrt auf n2 valide ist n2->n1 ist noch im Limit
-            // aber n2->n1 wird wegen dem entfernen der rückfahrlante entfernt
-            // daher hat gibt es keine valide route mehr
-        
             // n1 -> n1 
             var rt2 = layer.FindRoute(node1, node1, 15);
             Assert.Equal(3, rt2.Count);
             Assert.Equal(75, rt2.RouteLength);
+            Assert.True(GetRouteDuration(rt2) <= 15, "Route took more seconds than limit");
         }
-
 
         [Fact]
         public void TestTimeLimitAASingle()
@@ -133,24 +130,22 @@ namespace KrugerNationalParkTests.Travel
             var rt1 = layer.FindRoute(node1, node3, 10);
             Assert.Equal(2, rt1.Count);
             Assert.Equal(75, rt1.RouteLength);
-            
+            Assert.True(GetRouteDuration(rt1) <= 10, "Route took more seconds than limit");
+
             // n1 -> n2 not enough time
             Assert.Throws<ArgumentException>(() => layer.FindRoute(node1, node3, 9));
             
-            
-            // TODO: diese tests failen, weil die Fahrt auf n2 valide ist n2->n1 ist noch im Limit
-            // aber n2->n1 wird wegen dem entfernen der rückfahrlante entfernt
-            // daher hat gibt es keine valide route mehr
-        
             // n1 -> n1 
             var rt2 = layer.FindRoute(node1, node1, 10);
-            Assert.Equal(1, rt2.Count);
+            Assert.Equal(2, rt2.Count);
             Assert.Equal(50, rt2.RouteLength);
-            
+            Assert.True(GetRouteDuration(rt2) <= 10, "Route took more seconds than limit");
+
             // n1 -> n1 
             var rt3 = layer.FindRoute(node1, node1, 20);
             Assert.Equal(4, rt3.Count);
             Assert.Equal(150, rt3.RouteLength);
+            Assert.True(GetRouteDuration(rt1) <= 20, "Route took more seconds than limit");
         }
 
                 
@@ -323,9 +318,26 @@ namespace KrugerNationalParkTests.Travel
 
             var t = new Tourist();
             t.Init(layer);*/
-
-
+            
         }
         
+        private double GetRouteDuration(Route rt)
+        {
+            double duration = 0.0;
+
+            if (rt is null)
+            {
+                return duration;
+            }
+            
+            foreach (var edgeStop in rt)
+            {
+                var edge = edgeStop.Edge;
+                // TODO: MARS method is broken (see next line for correct calculation)
+                //tripTime += lastEdge.TravelTime; 
+                duration += edge.Length / edge.MaxSpeed;
+            }
+            return duration;
+        }
     }
 }
