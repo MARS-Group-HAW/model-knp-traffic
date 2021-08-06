@@ -156,6 +156,11 @@ namespace KrugerNationalPark.Layers
         private double GetRouteDuration(Route rt)
         {
             double duration = 0.0;
+
+            if (rt is null)
+            {
+                return duration;
+            }
             
             foreach (var edgeStop in rt)
             {
