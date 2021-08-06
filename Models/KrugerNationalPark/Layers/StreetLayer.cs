@@ -20,9 +20,9 @@ namespace KrugerNationalPark.Layers
     /// </summary>
     public class StreetLayer : AbstractLayer
     {
-        public StreetLayer(ElephantLayer elephantLayer)
+        public StreetLayer()
         {
-            ElephantLayer = elephantLayer;
+
         }
         
         
@@ -55,13 +55,7 @@ namespace KrugerNationalPark.Layers
 
             return true;
         }
-
-        
-
-        [PropertyDescription]
-        public ElephantLayer ElephantLayer { get; }
         
         public ISpatialGraphEnvironment StreetEnvironment { get; set; }
-        
     }
 }
