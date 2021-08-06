@@ -130,7 +130,7 @@ namespace KrugerNationalPark.Layers
                 for (var i = 0; i < outEdgesCount; i++)
                 {
                     prevEdge = outEdges[i];
-                    prevNode = prevEdge.From;
+                    
                     
                     var edgeDuration =  (prevEdge.Length / prevEdge.MaxSpeed);
                     
@@ -146,6 +146,8 @@ namespace KrugerNationalPark.Layers
                         rt.Add(prevEdge);
                         currentNode = prevEdge.To;
                         timeLimit -= edgeDuration;
+                        prevNode = prevEdge.From;
+                        
                         segmentFound = true;
                         break;
                     }
