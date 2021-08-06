@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -41,6 +42,10 @@ namespace KrugerNationalPark.Layers
                         File = layerInitData.LayerInitConfig.File,
                         InputConfiguration = new InputConfiguration
                         {
+                            // TODO: wenn ich das richtig verstehe, macht das aus jeder kante 
+                            // -> hin und <- rückweg
+                            // wahrscheinlich brauchen wir das, für generelle straßen, nur wenn "oneway"
+                            // true ist, wollen wir das nicht?!
                             IsBiDirectedImport = true,
                             Modalities = new HashSet<SpatialModalityType> {SpatialModalityType.CarDriving}
                         }
@@ -120,6 +125,7 @@ namespace KrugerNationalPark.Layers
                 outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
 
                 // select next route segment that adheres to time constraint
+                var segmentFound = false;
                 outEdgesCount = outEdges.Count; // re calculate, returning edge *might* be removed!
                 for (var i = 0; i < outEdgesCount; i++)
                 {
@@ -140,9 +146,18 @@ namespace KrugerNationalPark.Layers
                         rt.Add(prevEdge);
                         currentNode = prevEdge.To;
                         timeLimit -= edgeDuration;
+                        segmentFound = true;
                         break;
                     }
                 }
+
+                // no valid segment for next was found -> route can't be found
+                // if we do not abort, we would be stuck in a endless loop
+                if (!segmentFound)
+                {
+                    throw new ArgumentException("No viable route to goal within timeLimit.");
+                }
+                
             } while (!currentNode.Equals(goal));
 
             return rt;
