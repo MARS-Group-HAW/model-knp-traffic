@@ -39,7 +39,7 @@ namespace KrugerNationalPark.Layers
             Entities = new ConcurrentDictionary<Guid, Elephant>();
             _herdMap = new ConcurrentDictionary<int, ElephantHerd>();
 
-            var baseExtent = new Envelope(vegetationLayerDgvm.Extent);
+            var baseExtent = new BoundingBox(vegetationLayerDgvm.Extent);
             baseExtent.ExpandedBy(waterPotentialLayer.Extent);
             baseExtent.ExpandedBy(temperatureLayer.Extent);
             baseExtent.ExpandedBy(rasterFenceLayer.Extent);
