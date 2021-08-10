@@ -57,12 +57,12 @@ namespace KrugerNationalPark.Layers
         public ConcurrentDictionary<Guid, Elephant> Entities { get; set; }
 
         bool ILayer.InitLayer
-            (LayerInitData layerInitData, RegisterAgent registerAgentHandle, UnregisterAgent unregisterAgentHandle)
+            (LayerInitData layerInitData, RegisterAgent registerAgentHandle, UnregisterAgent unregisterAgent)
         {
-            base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
+            base.InitLayer(layerInitData, registerAgentHandle, unregisterAgent);
             //params needed for calf spawn
             _registerAgent = registerAgentHandle;
-            _unregisterAgent = unregisterAgentHandle;
+            _unregisterAgent = unregisterAgent;
 
             var agentInitConfig =
                 layerInitData.AgentInitConfigs.FirstOrDefault(mapping => mapping.Type.MetaType == typeof(Elephant));
@@ -71,7 +71,7 @@ namespace KrugerNationalPark.Layers
             {
                 // Spawn all elephant agents
                 Entities = AgentManager.GetAgentsByAgentInitConfig<Elephant>
-                (agentInitConfig, registerAgentHandle, unregisterAgentHandle,
+                (agentInitConfig, registerAgentHandle, unregisterAgent,
                     new List<ILayer>
                     {
                         this, _waterPotentialLayer, _temperatureLayer, _shadeLayer, _vegetationLayerDgvm,
@@ -99,7 +99,7 @@ namespace KrugerNationalPark.Layers
                     }
 
                     var other = h.Where(e => !e.Leading).ToList();
-                    _herdMap.Add(leader.HerdId, new ElephantHerd(leader.HerdId, leader, other));
+                    _herdMap.Add(leader.HerdId, new ElephantHerd(leader, other));
                 }
 
                 Console.WriteLine("[ElephantLayer]: Filled Herds");
@@ -172,6 +172,7 @@ namespace KrugerNationalPark.Layers
             Entities.TryAdd(newElephant.ID, newElephant);
         }
 
+/*
         private void KillElephantHerd()
         {
             var herdId = _herdMap.Keys.FirstOrDefault();
@@ -195,6 +196,7 @@ namespace KrugerNationalPark.Layers
                 Console.WriteLine("[ElephantLayer] error killing a herd");
             }
         }
+*/
 
         public int GetNextNormalDistribution()
         {
@@ -206,7 +208,7 @@ namespace KrugerNationalPark.Layers
     {
         private readonly double _maximumDeviation;
         private readonly double _meanValue;
-        private readonly Random _rand = new Random();
+        private readonly Random _rand = new();
         private readonly double _standardDeviation;
 
         public NormalDistributionGenerator(double meanValue, double maximumDeviation)

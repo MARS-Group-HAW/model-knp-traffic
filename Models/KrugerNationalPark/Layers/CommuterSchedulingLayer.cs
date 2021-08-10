@@ -1,6 +1,5 @@
 ﻿using KrugerNationalPark.Agents;
 using Mars.Components.Layers;
-using SOHDomain.Common;
 
 namespace KrugerNationalPark.Layers
 {

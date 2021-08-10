@@ -16,11 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using KrugerNationalPark.Layers;
 using Mars.Common;
 using Mars.Components.Agents;
-using Mars.Components.Agents.Trips;
 using Mars.Components.Environments;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -28,7 +28,8 @@ using Mars.Interfaces.Layers;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Elephant : Agent, IPositionable, ITripSavingAgent
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    public class Elephant : Agent, IPositionable
     {
         [ActiveConstructor]
         public Elephant
@@ -58,7 +59,7 @@ namespace KrugerNationalPark.Agents
         {
             _random = new Random(ID.GetHashCode());
 
-            TripsCollection = new TripsCollection(layer.Context);
+            StableId = 1;
             BiomassCellDifference = biomassCellDifference;
             TickSearchForFood = tickSearchForFood;
             BiomassNeighbourSearchLvl = biomassNeighbourSearchLvl;
@@ -160,6 +161,8 @@ namespace KrugerNationalPark.Agents
             Position = Position.CreateGeoPosition(lon, lat);
         }
 
+        public int StableId { get; }
+
         public void Die(MattersOfDeath mannerOfDeath)
         {
             //Console.WriteLine("Elephant: Agent died: " + mannerOfDeath + ". " + Latitude + ", " + Longitude);
@@ -207,7 +210,7 @@ namespace KrugerNationalPark.Agents
         /// <summary>
         ///     Stage of life when change the type
         /// </summary>
-        private readonly Dictionary<string, ElephantType> _elephantTypeMap = new Dictionary<string, ElephantType>
+        private readonly Dictionary<string, ElephantType> _elephantTypeMap = new()
         {
             {"ELEPHANT_COW", ElephantType.ElephantCow},
             {"ELEPHANT_BULL", ElephantType.ElephantBull},
@@ -219,7 +222,7 @@ namespace KrugerNationalPark.Agents
         ///     Water consumption per day in litres
         /// </summary>
         private readonly Dictionary<ElephantLifePeriod, double> _hydrationMapDaily =
-            new Dictionary<ElephantLifePeriod, double>
+            new()
             {
                 {ElephantLifePeriod.Calf, 140.0}, // 140 liters a day
                 {ElephantLifePeriod.Adolescent, 190.0}, // 190 liters a day
@@ -255,8 +258,6 @@ namespace KrugerNationalPark.Agents
 
         internal double Satiety { get; set; } // food related
 
-        public string TreeInteraction { get; set; } = "none";
-
         public int HerdId { get; }
 
         public double BiomassCellDifference { get; set; }
@@ -286,7 +287,6 @@ namespace KrugerNationalPark.Agents
 
         protected override void Reason()
         {
-            TripsCollection.Add(Position);
             if (_elephantLayer.Context.CurrentTimePoint != null)
                 _currentHourOfTheDay = _elephantLayer.Context.CurrentTimePoint.Value.Hour;
             else
@@ -362,7 +362,7 @@ namespace KrugerNationalPark.Agents
                 //seek shadow 
                 // TODO: it would be better to make that dependable from temperature
                 case 14:
-                
+
                     var shadePosition =
                         _shadeLayer.ExploreClosestFullPotentialField(Position.Latitude, Position.Longitude, 100);
 
@@ -374,7 +374,7 @@ namespace KrugerNationalPark.Agents
                     }
 
                     MoveTowardsPosition(shadePosition.Latitude, shadePosition.Longitude);
-                    
+
                     BurnSatiety(SatietyIntakeHourly[_elephantLifePeriod] * 0.5);
                     break;
 
@@ -710,8 +710,5 @@ namespace KrugerNationalPark.Agents
         }
 
         #endregion
-
-        public int StableId { get; }
-        public TripsCollection TripsCollection { get; }
     }
 }

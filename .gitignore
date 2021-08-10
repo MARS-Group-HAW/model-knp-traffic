@@ -362,5 +362,8 @@ Models/SOHPlayground/out
 Visualization/venv/
 Visualization/lib
 Visualization/include
+pyvenv.
+*.sqlite
 pyvenv.cfg
 .ipynb_checkpoints
+**/.cache/
