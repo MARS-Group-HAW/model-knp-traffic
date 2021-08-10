@@ -2,7 +2,7 @@ using System;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
-using Mars.Components.Agents.Trips;
+using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -10,6 +10,7 @@ using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
+using SOHDomain.Graph;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
@@ -19,7 +20,7 @@ namespace KrugerNationalPark.Agents
     /// Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
     /// Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
     /// </summary>
-    public class Commuter : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Commuter : IAgent<KnpStreetLayer>, ICarSteeringCapable
     {
         #region Properties
 
@@ -91,15 +92,15 @@ namespace KrugerNationalPark.Agents
 
         #region Initialization
 
-        public void Init(StreetLayer layer)
+        public void Init(KnpStreetLayer layer)
         {
             State = CommuterState.GoingToWork;
             _streetLayer = layer;
             TripsCollection = new TripsCollection(layer.Context);
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
-            car.Environment = layer.StreetEnvironment;
-            car.StreetLayer = layer;
+            car.Environment = layer.Environment;
+            ((Car) car).StreetLayer = layer;
             Car = car;
 
             // todo: Source is a Point, no Random needed?
@@ -116,14 +117,14 @@ namespace KrugerNationalPark.Agents
             var targetCor = target[index];
             var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
-            OriginNode = layer.StreetEnvironment.NearestNode(Position);
-            layer.StreetEnvironment.Insert(car, OriginNode);
+            OriginNode = layer.Environment.NearestNode(Position);
+            layer.Environment.Insert(car, OriginNode);
 
             // for the StreetEnvironment we need a SpatialNode, not a Position.
             // -> get nearest Node to chosen target position
-            WorkplaceNode = layer.StreetEnvironment.NearestNode(targetPos);
+            WorkplaceNode = layer.Environment.NearestNode(targetPos);
 
-            handle.Route = layer.StreetEnvironment.FindRoute(OriginNode, WorkplaceNode);
+            handle.Route = layer.Environment.FindRoute(OriginNode, WorkplaceNode);
             VehicleHandle = handle;
         }
 
@@ -147,7 +148,7 @@ namespace KrugerNationalPark.Agents
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
-                    VehicleHandle.Route = _streetLayer.StreetEnvironment.FindRoute(WorkplaceNode, OriginNode);
+                    VehicleHandle.Route = _streetLayer.Environment.FindRoute(WorkplaceNode, OriginNode);
                 }
                 else if (State == CommuterState.GoingHome)
                 {

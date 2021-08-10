@@ -4,7 +4,6 @@ using System.IO;
 using Mars.Components.Environments;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
-using Mars.Interfaces.Model.Import;
 using Xunit;
 
 
@@ -18,7 +17,7 @@ namespace KrugerNationalParkTests.SpatialGraph
             var path = Path.Combine("resources", "kruger_drive_loop_test.geojson");
             Assert.True(File.Exists(path));
             
-            var environment = new SpatialGraphEnvironment(new Source
+            var environment = new SpatialGraphEnvironment(new Input
             {
                 File = path,
                 InputConfiguration = new InputConfiguration
@@ -39,7 +38,7 @@ namespace KrugerNationalParkTests.SpatialGraph
             Assert.True(File.Exists(path));
             
             
-            var environment1 = new SpatialGraphEnvironment(new Source
+            var environment1 = new SpatialGraphEnvironment(new Input
             {
                 File = path,
                 InputConfiguration = new InputConfiguration
@@ -60,7 +59,7 @@ namespace KrugerNationalParkTests.SpatialGraph
             File.WriteAllText("kruger_drive_loop_test_export_nodbidirectional.geojson", SpatialGraphHelper.ToGeoJson(environment1));
 
             
-            var environment = new SpatialGraphEnvironment(new Source
+            var environment = new SpatialGraphEnvironment(new Input
             {
                 File = path,
                 InputConfiguration = new InputConfiguration

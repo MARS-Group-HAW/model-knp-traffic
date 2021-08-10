@@ -6,6 +6,7 @@
     "endTime": "2019-01-01T10:00:00.000Z",
     "output": "csv",
     "console" : true,
+    "debug": true,
     "options": {
       "numberFormat": "G"
     },
@@ -33,7 +34,7 @@
       "file": "resources/merged_waters_fixed_with_fence_buffer.geojson"
     },
     {
-      "name": "StreetLayer",
+      "name": "KnpStreetLayer",
       "file": "resources/knp_graph.geojson"
     },
     {

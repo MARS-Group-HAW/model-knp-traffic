@@ -5,12 +5,12 @@ using System.IO;
 using Mars.Components.Environments;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
-using Mars.Interfaces.Model.Import;
 using Mars.Interfaces.Model.Options;
 using System.Text.Json;
 using KrugerNationalPark.Misc;
 
-namespace KrugerNationalParkStarter
+
+namespace KrugerNationalParkBox
 {
     public static class GetRouteTimings
     {
@@ -19,7 +19,7 @@ namespace KrugerNationalParkStarter
             // Build Spatial graph env.
             ISpatialGraphEnvironment spatialGraphEnvironment = new SpatialGraphEnvironment(new SpatialGraphOptions
             {
-                GraphImports = new List<Source>
+                GraphImports = new List<Input>
                 {
                     new()
                     {

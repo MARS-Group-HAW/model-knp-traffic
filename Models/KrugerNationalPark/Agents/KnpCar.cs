@@ -16,11 +16,11 @@ namespace KrugerNationalPark.Agents
             TrafficCode = "south-african";
         }
 
-        [PropertyDescription] public StreetLayer KnpStreetLayer { get; set; }
+        [PropertyDescription] public KnpStreetLayer StreetLayer { get; set; }
 
         protected override CarSteeringHandle CreateSteeringHandle(ICarSteeringCapable steeringCapable)
         {
-            return new KnpCarSteeringHandle(KnpStreetLayer, Environment, this);
+            return new KnpCarSteeringHandle(StreetLayer, Environment, this);
         }
     }
 }

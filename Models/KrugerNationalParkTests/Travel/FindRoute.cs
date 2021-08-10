@@ -35,7 +35,7 @@ namespace KrugerNationalParkTests.Travel
             var edge23 = environment.AddEdge(node2, node3, 50);
             edge23.MaxSpeed = 10;
 
-            var layer = new StreetLayer();
+            var layer = new KnpStreetLayer();
             layer.StreetEnvironment = environment;
 
             // n1 -> n2 in time
@@ -86,7 +86,7 @@ namespace KrugerNationalParkTests.Travel
             var edge41 = environment.AddEdge(node4, node1, 25);
             edge41.MaxSpeed = 5;
             
-            var layer = new StreetLayer();
+            var layer = new KnpStreetLayer();
             layer.StreetEnvironment = environment;
 
             
@@ -122,7 +122,7 @@ namespace KrugerNationalParkTests.Travel
             var edge32 = environment.AddEdge(node3, node2, 50);
             edge32.MaxSpeed = 10;
             
-            var layer = new StreetLayer();
+            var layer = new KnpStreetLayer();
             layer.StreetEnvironment = environment;
 
             
@@ -183,7 +183,7 @@ namespace KrugerNationalParkTests.Travel
             var edge34 = environment.AddEdge(node3, node4, 1);
             edge34.MaxSpeed = 30;
 
-            var layer = new StreetLayer();
+            var layer = new KnpStreetLayer();
             layer.StreetEnvironment = environment;
 
 
@@ -198,7 +198,7 @@ namespace KrugerNationalParkTests.Travel
         [Fact]
         public void TestCreateMultipleRandomRoutesOnKNPGraph()
         {
-            var layer = new StreetLayer();
+            var layer = new KnpStreetLayer();
             layer.InitLayer(new LayerInitData
             {
                 LayerInitConfig =
@@ -240,11 +240,11 @@ namespace KrugerNationalParkTests.Travel
         public void FindRouteTest()
         {
             var description = new ModelDescription();
-            description.AddLayer<StreetLayer>();
+            description.AddLayer<KnpStreetLayer>();
             description.AddLayer<POILayer>();
             description.AddLayer<TouristSchedulingLayer>();
             
-            description.AddAgent<Tourist, StreetLayer>();
+            description.AddAgent<Tourist, KnpStreetLayer>();
             
             description.AddEntity<KnpCar>();
             
@@ -265,7 +265,7 @@ namespace KrugerNationalParkTests.Travel
                 {
                     new()
                     {
-                        Name = nameof(StreetLayer),
+                        Name = nameof(KnpStreetLayer),
                         File = Path.Combine("resources", "knp_graph.geojson")
                     },
                     new()

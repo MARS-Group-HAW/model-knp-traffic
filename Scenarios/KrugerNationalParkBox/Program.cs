@@ -7,13 +7,12 @@ using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
-using Mars.Components.Agents.Trips;
-using Mars.Components.Agents.Trips.Output;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
+using SOHDomain.Graph;
 
-namespace KrugerNationalParkStarter
+namespace KrugerNationalParkBox
 {
     public static class Program
     {
@@ -44,15 +43,17 @@ namespace KrugerNationalParkStarter
             description.AddLayer<VectorWaterLayer>();
             description.AddLayer<ElephantLayer>();
             
-            description.AddLayer<StreetLayer>(); // Straßennetzt im KNP
+            //             description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetzt im KNP
+
+            description.AddLayer<KnpStreetLayer>( ); // Straßennetzt im KNP
             description.AddLayer<POILayer>(); // Camps and Gates
             
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
 
             // Second register the agent types with their respective layer type
-            description.AddAgent<Tourist, StreetLayer>();
-            description.AddAgent<Commuter, StreetLayer>();
+            description.AddAgent<Tourist, KnpStreetLayer>();
+            description.AddAgent<Commuter, KnpStreetLayer>();
             description.AddAgent<Elephant, ElephantLayer>();
             description.AddEntity<KnpCar>();
 
@@ -81,10 +82,7 @@ namespace KrugerNationalParkStarter
                 var starter = SimulationStarter.Start(description, simConfig);
                 result = starter.Run();
             }
-
-            // Generate proprietary trips output
-            TripsOutputAdapter.PrintTripResult(result.Model.ExecutionAgentTypeGroups.Values
-                .SelectMany(agents => agents.Values).OfType<ITripSavingAgent>());
+            
             watch.Stop();
             Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
         }

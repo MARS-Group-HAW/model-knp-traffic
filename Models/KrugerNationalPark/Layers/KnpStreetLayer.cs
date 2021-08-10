@@ -11,8 +11,9 @@ using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Interfaces.Model;
-using Mars.Interfaces.Model.Import;
+
 using Mars.Interfaces.Model.Options;
+using SOHDomain.Graph;
 
 namespace KrugerNationalPark.Layers
 {
@@ -20,9 +21,9 @@ namespace KrugerNationalPark.Layers
     ///     This class represents the agent layer implementation for the <see cref="KnpCar" /> and keeps references
     ///     to all other required layer e.g., the <see cref="ElephantLayer" />
     /// </summary>
-    public class StreetLayer : AbstractLayer
+    public class KnpStreetLayer : StreetLayer
     {
-        public StreetLayer()
+        public KnpStreetLayer()
         {
 
         }
@@ -35,7 +36,7 @@ namespace KrugerNationalPark.Layers
 
             StreetEnvironment = new SpatialGraphEnvironment(new SpatialGraphOptions
             {
-                GraphImports = new List<Source>
+                GraphImports = new List<Input>
                 {
                     new()
                     {

@@ -3,7 +3,6 @@ using System.IO;
 using Mars.Components.Environments;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
-using Mars.Interfaces.Model.Import;
 using Xunit;
 
 namespace KrugerNationalParkTests.SpatialGraph
@@ -16,7 +15,7 @@ namespace KrugerNationalParkTests.SpatialGraph
             var path = Path.Combine("resources", "knp_graph.geojson");
             Assert.True(File.Exists(path));
             
-            var environment = new SpatialGraphEnvironment(new Source
+            var environment = new SpatialGraphEnvironment(new Input
             {
                 File = path,
                 InputConfiguration = new InputConfiguration

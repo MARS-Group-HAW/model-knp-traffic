@@ -1,24 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
-using Mars.Components.Agents.Trips;
 using Mars.Components.Environments;
+using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
+using SOHDomain.Graph;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Tourist : IAgent<StreetLayer>, ICarSteeringCapable, ITripSavingAgent
+    public class Tourist : IAgent<KnpStreetLayer>, ICarSteeringCapable
     {
         #region Properties
 
@@ -95,7 +95,7 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         private const double InsertAnimalSightingDistanceAhead = 33.0;
 
-        private StreetLayer _streetLayer;
+        private KnpStreetLayer _streetLayer;
 
         public Car Car { get; set; }
 
@@ -121,7 +121,7 @@ namespace KrugerNationalPark.Agents
 
         #region Initialization
 
-        public void Init(StreetLayer layer)
+        public void Init(KnpStreetLayer layer)
         {
             _streetLayer = layer;
             ElephantCounter = 0;
@@ -136,7 +136,7 @@ namespace KrugerNationalPark.Agents
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = layer.StreetEnvironment;
-            car.StreetLayer = layer;
+            ((Car) car).StreetLayer = layer;
             Car = car;
 
             // todo: Source is a Point, no Random needed? 
@@ -219,7 +219,7 @@ namespace KrugerNationalPark.Agents
                         // 2. Create our car to force braking
                         _animalSighting = _streetLayer.EntityManager.Create<KnpCar>("type", "Golf");
                         _animalSighting.Environment = _streetLayer.StreetEnvironment;
-                        _animalSighting.StreetLayer = _streetLayer;
+                        ((Car) _animalSighting).StreetLayer = _streetLayer;
 
                         var edge = VehicleHandle.Route[0].Edge; // <- current edge of our car
 
