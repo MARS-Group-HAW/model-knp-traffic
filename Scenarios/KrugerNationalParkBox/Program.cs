@@ -52,11 +52,17 @@ namespace KrugerNationalParkBox
             description.AddLayer<CommuterSchedulingLayer>();
 
             // Second register the agent types with their respective layer type
-            description.AddAgent<Tourist, KnpStreetLayer>();
-            description.AddAgent<Commuter, KnpStreetLayer>();
-            description.AddAgent<Elephant, ElephantLayer>();
-            description.AddEntity<KnpCar>();
+            var a = description.AddAgent<Tourist, KnpStreetLayer>();
+            var aa = description.AddAgent<Commuter, KnpStreetLayer>();
+            var b = description.AddAgent<Elephant, ElephantLayer>();
+            
+            var c = description.AddEntity<KnpCar>();
 
+            var a_out = a.OutputProperties;
+            var aa_out = aa.OutputProperties;
+            var b_out = b.OutputProperties;
+            var c_out = c.OutputProperties;
+            
             // Starting up
             SimulationWorkflowState result = null;
             if (args != null)
