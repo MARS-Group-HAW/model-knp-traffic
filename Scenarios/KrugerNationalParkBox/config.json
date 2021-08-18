@@ -80,7 +80,20 @@
       ]
     },
     {
-      "name": "Commuter"
+      "name": "Commuter",
+      "outputs": [
+        {
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
+        },
+        {
+          "kind": "csv"
+        }
+      ]
     }
   ] 
 }
