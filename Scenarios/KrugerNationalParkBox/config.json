@@ -5,7 +5,7 @@
     "startTime": "2019-01-01T06:00:00.000Z",
     "endTime": "2019-01-01T10:00:00.000Z",
     "output": "csv",
-    "console" : true,
+    "console" : false,
     "debug": true,
     "options": {
       "numberFormat": "G"
@@ -64,7 +64,20 @@
       "outputtype": "individual"
     },
     {
-      "name": "Tourist"
+      "name": "Tourist",
+      "outputs": [
+        {
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
+        },
+        {
+          "kind": "csv"
+        }
+      ]
     },
     {
       "name": "Commuter"

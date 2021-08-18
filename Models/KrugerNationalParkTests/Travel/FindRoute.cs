@@ -8,6 +8,8 @@ using Mars.Components.Starter;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
+using Newtonsoft.Json;
+using ServiceStack.Text;
 using Xunit;
 
 namespace KrugerNationalParkTests.Travel
@@ -291,11 +293,29 @@ namespace KrugerNationalParkTests.Travel
                 {
                     new AgentMapping
                     {
-                        Name = nameof(Tourist), InstanceCount = 1
+                        Name = nameof(Tourist), InstanceCount = 1,
+                        Outputs = new List<Output>
+                        {
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Trips,
+                                OutputConfiguration = new OutputConfiguration()
+                                {
+                                    TripsDiscriminatorFields = new []{"ActiveCapability"}
+                                }
+                            },
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Csv
+                            }
+                        }
                     }
                 }
             };
-
+            
+            File.WriteAllText("simConfig.json", simConfig.Serialize());
+            
+            
             var result = SimulationStarter.Start(description, simConfig).Run();
 
 
