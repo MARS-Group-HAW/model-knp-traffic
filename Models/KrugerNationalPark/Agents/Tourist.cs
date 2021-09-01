@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
+using KrugerNationalPark.Misc.Events;
 using Mars.Common;
+using Mars.Common.IO.Mapped;
 using Mars.Components.Environments;
+using Mars.Components.Services.Events;
 using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
@@ -123,6 +126,8 @@ namespace KrugerNationalPark.Agents
 
         public void Init(KnpStreetLayer layer)
         {
+            MarsEventHandler.Instance.RegisterHandler<KnpEvent>(this, HandleKnpEvent);
+            
             _streetLayer = layer;
             ElephantCounter = 0;
             State = TouristState.Driving;
@@ -186,8 +191,7 @@ namespace KrugerNationalPark.Agents
             // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
 
         }
-        
-        
+
         #endregion
 
         #region Tick
@@ -276,6 +280,12 @@ namespace KrugerNationalPark.Agents
         public void Notify(PassengerMessage passengerMessage)
         {
         }
+        private void HandleKnpEvent(KnpEvent obj)
+        {
+            EventReceived += 1;
+        }
+
+        public int EventReceived { get; set; }
 
         #endregion
     }

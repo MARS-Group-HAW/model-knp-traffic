@@ -2,14 +2,18 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc.Events;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
+using Mars.Components.Services.Events;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SOHDomain.Graph;
 
 namespace KrugerNationalParkBox
@@ -18,7 +22,7 @@ namespace KrugerNationalParkBox
     {
         public static void Main(string[] args)
         {
-            
+
             // only one binary output per project is possible -> use argument to trigger
             // execution of POI timings script. Use `$ dotnet run -poi` to run.
             if (args.Any(s => s.Equals("-poi")))
@@ -65,6 +69,7 @@ namespace KrugerNationalParkBox
             
             // Starting up
             SimulationWorkflowState result = null;
+
             if (args != null)
             {
                 if (args.Any(s => s.Equals("-l")))
@@ -86,9 +91,20 @@ namespace KrugerNationalParkBox
 
                 var simConfig = SimulationConfig.Deserialize(file);
                 var starter = SimulationStarter.Start(description, simConfig);
+                
+                void Worker()
+                {
+                    Thread.Sleep(5000);
+                    MarsEventHandler.Instance.Invoke(new KnpEvent());
+                }
+                new Thread(Worker).Start();
+                
                 result = starter.Run();
+                
+                
             }
             
+
             watch.Stop();
             Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
         }

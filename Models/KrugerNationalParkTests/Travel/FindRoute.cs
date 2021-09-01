@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc.Events;
 using Mars.Components.Environments;
+using Mars.Components.Services.Events;
 using Mars.Components.Starter;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
@@ -46,11 +50,11 @@ namespace KrugerNationalParkTests.Travel
             Assert.Equal(100, rt1.RouteLength);
             Assert.True(GetRouteDuration(rt1) <= 10, "Route took more seconds than limit");
 
-            
+
             // n1 -> n2 not enough time
             Assert.Throws<ArgumentException>(() => layer.FindRoute(node1, node3, 9));
         }
-        
+
         [Fact]
         public void TestTimeLimitAATriangle()
         {
@@ -60,7 +64,7 @@ namespace KrugerNationalParkTests.Travel
             var node1 = environment.AddNode(1, 1);
             var node2 = environment.AddNode(2, 1);
             var node3 = environment.AddNode(3, 1);
-            
+
             var node4 = environment.AddNode(2, 2);
 
             Assert.Equal(1, node1.Position.X);
@@ -82,16 +86,16 @@ namespace KrugerNationalParkTests.Travel
             edge23.MaxSpeed = 10;
             var edge32 = environment.AddEdge(node3, node2, 50);
             edge32.MaxSpeed = 10;
-            
+
             var edge24 = environment.AddEdge(node2, node4, 25);
             edge24.MaxSpeed = 5;
             var edge41 = environment.AddEdge(node4, node1, 25);
             edge41.MaxSpeed = 5;
-            
+
             var layer = new KnpStreetLayer();
             layer.StreetEnvironment = environment;
 
-            
+
             // n1 -> n1 
             var rt2 = layer.FindRoute(node1, node1, 15);
             Assert.Equal(3, rt2.Count);
@@ -123,11 +127,11 @@ namespace KrugerNationalParkTests.Travel
             edge23.MaxSpeed = 10;
             var edge32 = environment.AddEdge(node3, node2, 50);
             edge32.MaxSpeed = 10;
-            
+
             var layer = new KnpStreetLayer();
             layer.StreetEnvironment = environment;
 
-            
+
             // n1 -> n2 in time
             var rt1 = layer.FindRoute(node1, node3, 10);
             Assert.Equal(2, rt1.Count);
@@ -136,7 +140,7 @@ namespace KrugerNationalParkTests.Travel
 
             // n1 -> n2 not enough time
             Assert.Throws<ArgumentException>(() => layer.FindRoute(node1, node3, 9));
-            
+
             // n1 -> n1 
             var rt2 = layer.FindRoute(node1, node1, 10);
             Assert.Equal(2, rt2.Count);
@@ -150,7 +154,7 @@ namespace KrugerNationalParkTests.Travel
             Assert.True(GetRouteDuration(rt1) <= 20, "Route took more seconds than limit");
         }
 
-                
+
         [Fact]
         public void TestOneDirection()
         {
@@ -195,7 +199,7 @@ namespace KrugerNationalParkTests.Travel
 
             var rt = layer.FindRoute(node1, node4, 3600);
         }
-        
+
 
         [Fact]
         public void TestCreateMultipleRandomRoutesOnKNPGraph()
@@ -208,7 +212,6 @@ namespace KrugerNationalParkTests.Travel
                     File = Path.Combine("resources", "knp_graph.geojson")
                 }
             }, null, null);
-
 
 
             var p1 = new Position(31.484812, -24.980938); // Kruger Gate
@@ -224,20 +227,16 @@ namespace KrugerNationalParkTests.Travel
                 var rt1 = layer.FindRoute(n1, n1, 21600);
 
                 var geoJson = SpatialGraphHelper.ToGeoJson(rt1);
-                File.WriteAllText("FindRouteTest_"+i+".geojson", geoJson);
+                File.WriteAllText("FindRouteTest_" + i + ".geojson", geoJson);
             }
-            
 
 
             // Random walk with time constraint without "destination"
             //handle.Route = FindRoute(_originNode);
             //VehicleHandle = handle;
-
-           
         }
-        
-        
-        
+
+
         [Fact]
         public void FindRouteTest()
         {
@@ -245,15 +244,15 @@ namespace KrugerNationalParkTests.Travel
             description.AddLayer<KnpStreetLayer>();
             description.AddLayer<POILayer>();
             description.AddLayer<TouristSchedulingLayer>();
-            
+
             description.AddAgent<Tourist, KnpStreetLayer>();
-            
+
             description.AddEntity<KnpCar>();
-            
-            
+
+
             var start = new DateTime(2019, 1, 1, 6, 0, 00);
             var end = start + TimeSpan.FromHours(4);
-            
+
             var simConfig = new SimulationConfig
             {
                 Globals =
@@ -301,7 +300,7 @@ namespace KrugerNationalParkTests.Travel
                                 OutputTarget = OutputTargetType.Trips,
                                 OutputConfiguration = new OutputConfiguration()
                                 {
-                                    TripsDiscriminatorFields = new []{"ActiveCapability"}
+                                    TripsDiscriminatorFields = new[] { "ActiveCapability" }
                                 }
                             },
                             new()
@@ -312,15 +311,23 @@ namespace KrugerNationalParkTests.Travel
                     }
                 }
             };
-            
+
             File.WriteAllText("simConfig.json", simConfig.Serialize());
-            
-            
+
+            void Worker()
+            {
+                while (true)
+                {
+                    Thread.Sleep(100);
+                    MarsEventHandler.Instance.Invoke(new KnpEvent());
+                }
+            }
+
+            new Thread(Worker).Start();
+
             var result = SimulationStarter.Start(description, simConfig).Run();
 
 
-            
-            
             /*var description = new ModelDescription();
 
             description.AddLayer<StreetLayer>();
@@ -338,9 +345,8 @@ namespace KrugerNationalParkTests.Travel
 
             var t = new Tourist();
             t.Init(layer);*/
-            
         }
-        
+
         private double GetRouteDuration(Route rt)
         {
             double duration = 0.0;
@@ -349,7 +355,7 @@ namespace KrugerNationalParkTests.Travel
             {
                 return duration;
             }
-            
+
             foreach (var edgeStop in rt)
             {
                 var edge = edgeStop.Edge;
@@ -357,6 +363,7 @@ namespace KrugerNationalParkTests.Travel
                 //tripTime += lastEdge.TravelTime; 
                 duration += edge.Length / edge.MaxSpeed;
             }
+
             return duration;
         }
     }
