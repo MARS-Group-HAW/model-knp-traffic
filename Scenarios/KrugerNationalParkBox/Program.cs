@@ -118,7 +118,7 @@ namespace KrugerNationalParkBox
                         NumberFormat = "en-EN"
                     },
                     ShowConsoleProgress = true,
-                    EnableSimpleVisualization = true
+                    EnableSimpleVisualization = false
                 },
                 LayerMappings = new List<LayerMapping>
                 {

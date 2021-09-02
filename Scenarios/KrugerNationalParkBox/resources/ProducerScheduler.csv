@@ -1,2 +1,2 @@
-startTime,endTime,spawningIntervalInMinutes,spawningAmount
-6:00,6:01,1,1
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,gateName,source,destination
+6:00,6:02,1,1,Kruger Gate,POINT (31.484812 -24.980938),"MULTIPOINT (31.28163172149577 -25.0153934)"
