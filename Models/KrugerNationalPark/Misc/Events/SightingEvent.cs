@@ -1,15 +1,17 @@
 ﻿
+using System;
+using Mars.Interfaces.Environments;
+
 namespace KrugerNationalPark.Misc.Events
 {
     public class SightingEvent : KnpEvent
     {
-        public readonly double lat;
-        public readonly double lon;
-
-        public SightingEvent(double lat, double lon)
+        public SightingEvent(double lat, double lon, DateTime startTime) : base(lat, lon, startTime)
         {
-            this.lat = lat;
-            this.lon = lon;
+        }
+
+        public SightingEvent(Position pos, DateTime startTime) : base(pos, startTime)
+        {
         }
     }
 }

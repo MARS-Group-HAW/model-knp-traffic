@@ -313,17 +313,7 @@ namespace KrugerNationalParkTests.Travel
             };
 
             File.WriteAllText("simConfig.json", simConfig.Serialize());
-
-            void Worker()
-            {
-                while (true)
-                {
-                    Thread.Sleep(100);
-                    MarsEventHandler.Instance.Invoke(new KnpEvent());
-                }
-            }
-
-            new Thread(Worker).Start();
+            
 
             var result = SimulationStarter.Start(description, simConfig).Run();
 

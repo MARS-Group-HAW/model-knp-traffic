@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using KrugerNationalPark.Misc.Events;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
+using Mars.Components.Layers;
 using Mars.Components.Services.Events;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
@@ -22,7 +24,6 @@ namespace KrugerNationalParkBox
     {
         public static void Main(string[] args)
         {
-
             // only one binary output per project is possible -> use argument to trigger
             // execution of POI timings script. Use `$ dotnet run -poi` to run.
             if (args.Any(s => s.Equals("-poi")))
@@ -46,27 +47,24 @@ namespace KrugerNationalParkBox
             description.AddLayer<RasterVegetationLayer>();
             description.AddLayer<VectorWaterLayer>();
             description.AddLayer<ElephantLayer>();
-            
+
             //             description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetzt im KNP
 
-            description.AddLayer<KnpStreetLayer>( ); // Straßennetzt im KNP
+            description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
             description.AddLayer<POILayer>(); // Camps and Gates
-            
+
             description.AddLayer<TouristSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
+            description.AddLayer<ProducerSchedulingLayer>();
 
             // Second register the agent types with their respective layer type
-            var a = description.AddAgent<Tourist, KnpStreetLayer>();
-            var aa = description.AddAgent<Commuter, KnpStreetLayer>();
-            var b = description.AddAgent<Elephant, ElephantLayer>();
-            
-            var c = description.AddEntity<KnpCar>();
+            description.AddAgent<Tourist, KnpStreetLayer>();
+            description.AddAgent<Commuter, KnpStreetLayer>();
+            description.AddAgent<Elephant, ElephantLayer>();
+            description.AddAgent<EventProducer, KnpStreetLayer>();
 
-            var a_out = a.OutputProperties;
-            var aa_out = aa.OutputProperties;
-            var b_out = b.OutputProperties;
-            var c_out = c.OutputProperties;
-            
+            description.AddEntity<KnpCar>();
+
             // Starting up
             SimulationWorkflowState result = null;
 
@@ -78,35 +76,164 @@ namespace KrugerNationalParkBox
                     LoggerFactory.ActivateConsoleLogging();
                 }
 
+                SimulationConfig simConfig;
                 string file;
                 if (args.Any(s => s.Equals("-sm")))
                 {
                     var index = args.IndexOf(s => s == "-sm");
                     file = File.ReadAllText(args[index + 1]);
+                    simConfig = SimulationConfig.Deserialize(file);
                 }
                 else
                 {
-                    file = File.ReadAllText("config.json");
+                    simConfig = SimConfig();
                 }
 
-                var simConfig = SimulationConfig.Deserialize(file);
+
                 var starter = SimulationStarter.Start(description, simConfig);
-                
-                void Worker()
-                {
-                    Thread.Sleep(5000);
-                    MarsEventHandler.Instance.Invoke(new KnpEvent());
-                }
-                new Thread(Worker).Start();
-                
+
                 result = starter.Run();
-                
-                
             }
-            
+
 
             watch.Stop();
             Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
+        }
+
+        public static SimulationConfig SimConfig()
+        {
+            var start = new DateTime(2019, 1, 1, 6, 0, 00);
+            var end = start + TimeSpan.FromHours(4);
+            return new SimulationConfig
+            {
+                Globals =
+                {
+                    StartPoint = start,
+                    EndPoint = end,
+                    DeltaTUnit = TimeSpanUnit.Seconds,
+                    OutputTarget = OutputTargetType.Csv,
+                    CsvOptions =
+                    {
+                        Delimiter = ";",
+                        NumberFormat = "en-EN"
+                    },
+                    ShowConsoleProgress = true,
+                    EnableSimpleVisualization = true
+                },
+                LayerMappings = new List<LayerMapping>
+                {
+                    new LayerMapping
+                    {
+                        Name = nameof(RasterTempLayer),
+                        File = "resources/RCP8.5_2010_2050_temp.zip"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(RasterFenceLayer),
+                        File = "resources/gis_raster_border.zip"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(RasterShadeLayer),
+                        File = "resources/gis_raster_shade.zip"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(RasterVegetationLayer),
+                        File = "resources/gis_raster_biomass_ts.zip"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(VectorWaterLayer),
+                        File = "resources/merged_waters_fixed_with_fence_buffer.geojson"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(KnpStreetLayer),
+                        File = "resources/knp_graph.geojson"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(POILayer),
+                        File = "resources/pois.geojson"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(TouristSchedulingLayer),
+                        File = "resources/TouristScheduler_debug_1.csv"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(CommuterSchedulingLayer),
+                        File = "resources/_emptyScheduler.csv"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(ProducerSchedulingLayer),
+                        File = "resources/ProducerScheduler.csv"
+                    }
+                },
+                EntityMappings = new List<EntityMapping>
+                {
+                    new()
+                    {
+                        Name = "KnpCar",
+                        File = Path.Combine("resources", "car.csv")
+                    }
+                },
+                AgentMappings =
+                {
+                    new AgentMapping
+                    {
+                        Name = nameof(Tourist),
+                        Outputs = new List<Output>
+                        {
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Trips,
+                                OutputConfiguration = new OutputConfiguration()
+                                {
+                                    TripsDiscriminatorFields = new[] { "ActiveCapability" }
+                                }
+                            },
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Csv
+                            }
+                        }
+                    },
+                    new AgentMapping
+                    {
+                        Name = nameof(Commuter),
+                        Outputs = new List<Output>
+                        {
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Trips,
+                                OutputConfiguration = new OutputConfiguration()
+                                {
+                                    TripsDiscriminatorFields = new[] { "ActiveCapability" }
+                                }
+                            },
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Csv
+                            }
+                        }
+                    },
+                    new AgentMapping
+                    {
+                        Name = nameof(EventProducer),
+                        Outputs = new List<Output>
+                        {
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Csv
+                            }
+                        }
+                    }
+                }
+            };
         }
     }
 }

@@ -48,6 +48,10 @@
     {
       "name": "CommuterSchedulingLayer",
       "file": "resources/_emptyScheduler.csv"
+    },
+    {
+      "name": "ProducerSchedulingLayer",
+      "file": "resources/ProducerScheduler.csv"
     }
   ],
   "entities": [
@@ -62,6 +66,9 @@
       "file": "resources/elephant1989_constant_population_15k.csv",
       "count": 0,
       "outputtype": "individual"
+    },
+    {
+      "name": "EventProducer"
     },
     {
       "name": "Tourist",
