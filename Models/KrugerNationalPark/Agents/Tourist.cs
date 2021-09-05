@@ -11,6 +11,7 @@ using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
+using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
@@ -23,6 +24,12 @@ namespace KrugerNationalPark.Agents
     {
         #region Initialization
 
+        /// <summary>
+        /// Needed fo "removing" the agent and preventing further tick() call to it.
+        /// </summary>
+        [PropertyDescription] 
+        public UnregisterAgent UnregisterHandle { get; set; }
+        
         public void Init(KnpStreetLayer layer)
         {
             KnpEventComponent = new KnpEventComponent(this);
@@ -102,6 +109,16 @@ namespace KrugerNationalPark.Agents
             // we are driving around and wait for an anima sighting event
             // todo: on the qy home should we prevent looking for animals?
 
+            // just temp code for logging agent internals 
+            // -> track if we have an virtual car before us so we need to brake
+            HasAnimalSighting = 0;
+            SightingEventCarVelocity = 0;
+            if (_animalSighting is not null)
+            {
+                SightingEventCarVelocity = (int) Math.Round(_animalSighting.Velocity, 0);
+                HasAnimalSighting = 1;
+            }
+
             if (State == TouristState.Braking)
             {
                 if (Car.Velocity == 0)
@@ -118,16 +135,26 @@ namespace KrugerNationalPark.Agents
                 if (_departureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     _streetLayer.StreetEnvironment.Remove(_animalSighting);
+                    _animalSighting = null;
                     State = TouristState.Driving;
                 }
             }
 
+ 
+            
             // Always call Move, since braking is "handled" by the AnimalSighting car ahead
             VehicleHandle.Move();
 
             CarVelocity = Car.Velocity;
+            CarVelocityInt = (int) Math.Round(Car.Velocity, 0); // todo: save it into an int, double is broken in csv writer
             TripsCollection.Add(Position);
         }
+
+        public int HasAnimalSighting { get; set; }
+
+        public int SightingEventCarVelocity { get; set; }
+
+        public int CarVelocityInt { get; set; }
 
         #endregion
 
