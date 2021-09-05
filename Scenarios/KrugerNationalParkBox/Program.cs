@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
-using KrugerNationalPark.Misc.Events;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
-using Mars.Components.Layers;
-using Mars.Components.Services.Events;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Model;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SOHDomain.Graph;
-
 namespace KrugerNationalParkBox
 {
     public static class Program
@@ -117,7 +110,7 @@ namespace KrugerNationalParkBox
                         Delimiter = ";",
                         NumberFormat = "en-EN"
                     },
-                    ShowConsoleProgress = true,
+                    ShowConsoleProgress = false,
                     EnableSimpleVisualization = false
                 },
                 LayerMappings = new List<LayerMapping>

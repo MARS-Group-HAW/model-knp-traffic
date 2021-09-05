@@ -25,8 +25,7 @@ namespace KrugerNationalPark.Agents
 
         public void Init(KnpStreetLayer layer)
         {
-            MarsEventHandler.Instance.RegisterHandler<KnpEvent>(this, HandleKnpEvent);
-
+            KnpEventComponent = new KnpEventComponent(this);
             _streetLayer = layer;
             ElephantCounter = 0;
             State = TouristState.Driving;
@@ -89,6 +88,8 @@ namespace KrugerNationalPark.Agents
             // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
         }
 
+        public IEventComponent KnpEventComponent { get; set; }
+
         #endregion
 
         #region Tick
@@ -100,42 +101,8 @@ namespace KrugerNationalPark.Agents
 
             // we are driving around and wait for an anima sighting event
             // todo: on the qy home should we prevent looking for animals?
-            if (State == TouristState.Driving)
-            {
-                var rnd = new Random();
 
-                //if (false)
-                if (rnd.NextDouble() > 0.9999) // @todo: what number is good, or layer with probabilities?
-                    //if (_streetLayer.Context.CurrentTick == 1400)                
-                {
-                    // 1. determine our position
-                    var remainingDistance = VehicleHandle.RemainingDistanceOnEdge;
-
-                    // if the next intersection is closer than our break distance, 
-                    // don't look for the animal and keep driving
-                    // @todo: this removed the hassle of determining the next edge and position the car there,
-                    //        but maybe this is better for us anyway? discuss!
-                    if (remainingDistance > InsertAnimalSightingDistanceAhead)
-                    {
-                        // 2. Create our car to force braking
-                        _animalSighting = _streetLayer.EntityManager.Create<KnpCar>("type", "Golf");
-                        _animalSighting.Environment = _streetLayer.StreetEnvironment;
-                        _animalSighting.StreetLayer = _streetLayer;
-
-                        var edge = VehicleHandle.Route[0].Edge; // <- current edge of our car
-
-                        // 3. insert our baking trigger into the graph
-                        // @todo: we should check if between our position and the pos where we insert the car the road is empty
-                        // -> so we don't block an commuter ahead of us e.g.
-                        _streetLayer.StreetEnvironment.Insert(_animalSighting, edge,
-                            Car.PositionOnCurrentEdge + InsertAnimalSightingDistanceAhead);
-
-                        // 4. enter braking state 
-                        State = TouristState.Braking;
-                    }
-                }
-            }
-            else if (State == TouristState.Braking)
+            if (State == TouristState.Braking)
             {
                 if (Car.Velocity == 0)
                 {
@@ -231,7 +198,7 @@ namespace KrugerNationalPark.Agents
         /// <summary>
         ///     Reference to the object positioned before our agent to trigger braking.
         /// </summary>
-        private KnpCar _animalSighting;
+        public KnpCar _animalSighting;
 
         // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
         // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
@@ -239,9 +206,9 @@ namespace KrugerNationalPark.Agents
         ///     The distance from the agent's current position at which the agent should stop upon an animal sighting (achieved by
         ///     placing a virtual car on the road)
         /// </summary>
-        private const double InsertAnimalSightingDistanceAhead = 33.0;
+        public const double InsertAnimalSightingDistanceAhead = 33.0;
 
-        private KnpStreetLayer _streetLayer;
+        public KnpStreetLayer _streetLayer;
 
         public Car Car { get; set; }
 
@@ -255,7 +222,7 @@ namespace KrugerNationalPark.Agents
         public bool CurrentlyCarDriving => true;
         public double CarVelocity { get; set; }
 
-        private CarSteeringHandle VehicleHandle { get; set; }
+        public CarSteeringHandle VehicleHandle { get; set; }
 
         public TripsCollection TripsCollection { get; set; }
 
@@ -276,12 +243,9 @@ namespace KrugerNationalPark.Agents
         {
         }
 
-        private void HandleKnpEvent(KnpEvent obj)
-        {
-            EventReceived += 1;
-        }
-
         public int EventReceived { get; set; }
+        public int EventPossibleRelevant { get; set; }
+        public int EventHandled { get; set; }
 
         #endregion
     }
