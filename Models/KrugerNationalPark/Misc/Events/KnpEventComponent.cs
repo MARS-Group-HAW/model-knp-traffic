@@ -1,4 +1,5 @@
-﻿using KrugerNationalPark.Agents;
+﻿using System;
+using KrugerNationalPark.Agents;
 using Mars.Components.Services.Events;
 using Mars.Interfaces.Environments;
 using SOHCarModel.Model;
@@ -7,9 +8,15 @@ namespace KrugerNationalPark.Misc.Events
 {
     public class KnpEventComponent : EventComponent<Tourist>
     {
+        
+        private EventsCollection EventsCollection;
+        
         public KnpEventComponent(Tourist entity) : base(entity)
         {
             MarsEventHandler.Instance.RegisterHandler<KnpEvent>(entity, HandleEvent);
+         
+            EventsCollection = new EventsCollection();
+            EventsCollection.setFileName("events_handled_" + entity.ID + ".geojson");
         }
 
         private new void HandleEvent(KnpEvent e)
@@ -52,6 +59,11 @@ namespace KrugerNationalPark.Misc.Events
 
                 // 4. enter braking state 
                 Entity.State = TouristState.Braking;
+                
+                // log event
+                // todo: call write to file only after sim has finished, not always.
+                EventsCollection.Add(e);
+                EventsCollection.TearDown();
             }
         }
     }

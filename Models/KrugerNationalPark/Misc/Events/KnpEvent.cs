@@ -11,6 +11,8 @@ namespace KrugerNationalPark.Misc.Events
         public readonly DateTime StartTime;
         public readonly DateTime EndTime;
 
+        public double Radius = 100.0;
+
         public KnpEvent(double lat, double lon, DateTime startTime) : this(Position.CreatePosition(lon, lat), startTime)
         {
         }
