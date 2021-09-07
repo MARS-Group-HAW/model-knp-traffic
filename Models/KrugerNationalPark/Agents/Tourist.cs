@@ -127,6 +127,10 @@ namespace KrugerNationalPark.Agents
                     _arrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     _departureTime = _arrivalTime.AddMinutes(lookDuration);
                     State = TouristState.Looking;
+                    
+                    
+                    _tmpRoute = VehicleHandle.Route;
+                    VehicleHandle.Route = null;
                 }
             }
             else if (State == TouristState.Looking)
@@ -137,6 +141,8 @@ namespace KrugerNationalPark.Agents
                     _streetLayer.StreetEnvironment.Remove(_animalSighting);
                     _animalSighting = null;
                     State = TouristState.Driving;
+
+                    VehicleHandle.Route = _tmpRoute;
                 }
             }
 
@@ -256,6 +262,7 @@ namespace KrugerNationalPark.Agents
         public int ElephantCounter { set; get; }
 
         private readonly HashSet<Guid> _knownElephants;
+        public Route _tmpRoute;
 
         #endregion
 
