@@ -1,7 +1,6 @@
 using KrugerNationalPark.Layers;
 using Mars.Interfaces.Annotations;
 using SOHCarModel.Model;
-using SOHCarModel.Steering;
 
 namespace KrugerNationalPark.Agents
 {
@@ -18,9 +17,5 @@ namespace KrugerNationalPark.Agents
 
         [PropertyDescription] public StreetLayer KnpStreetLayer { get; set; }
 
-        protected override CarSteeringHandle CreateSteeringHandle(ICarSteeringCapable steeringCapable)
-        {
-            return new KnpCarSteeringHandle(KnpStreetLayer, Environment, this);
-        }
     }
 }
