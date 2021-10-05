@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Mars.Interfaces;
+using System.IO;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
@@ -20,13 +18,13 @@ namespace KrugerNationalPark.Misc.Events
             _geoJsonWriter = new GeoJsonWriter();
         }
 
+        public List<KnpEvent> Result { get; } = new();
+
         public void setFileName(string f)
         {
             fileName = f;
         }
-        
-        public List<KnpEvent> Result { get; } = new();
-        
+
         public void Add(KnpEvent e)
         {
             Result.Add(e);
@@ -44,18 +42,18 @@ namespace KrugerNationalPark.Misc.Events
                 var dict = new Dictionary<string, object>
                 {
                     {"creation_id", e.ID.ToString()},
-                    {"event_type",  e.GetType().FullName},
-                    {"radius",      e.Radius},
-                    {"start_time",  (int) e.StartTime.ToUnixTime()},
-                    {"end_time",    (int) e.EndTime.ToUnixTime()},
+                    {"event_type", e.GetType().FullName},
+                    {"radius", e.Radius},
+                    {"start_time", (int) e.StartTime.ToUnixTime()},
+                    {"end_time", (int) e.EndTime.ToUnixTime()}
                 };
-                
+
                 var f = new Feature(geometry, new AttributesTable(dict));
                 collection.Add(f);
             }
-            
+
             var json = _geoJsonWriter.Write(collection);
-            System.IO.File.WriteAllText(fileName, json);
+            File.WriteAllText(fileName, json);
         }
     }
 }

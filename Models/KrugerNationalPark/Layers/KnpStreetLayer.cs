@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using KrugerNationalPark.Agents;
 using Mars.Components.Environments;
-using Mars.Components.Layers;
-using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Interfaces.Model;
-
 using Mars.Interfaces.Model.Options;
 using SOHDomain.Graph;
 
@@ -23,12 +18,9 @@ namespace KrugerNationalPark.Layers
     /// </summary>
     public class KnpStreetLayer : StreetLayer
     {
-        public KnpStreetLayer()
-        {
+        public ISpatialGraphEnvironment StreetEnvironment { get; set; }
 
-        }
-        
-        
+
         public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle,
             UnregisterAgent unregisterAgentHandle)
         {
@@ -62,13 +54,9 @@ namespace KrugerNationalPark.Layers
 
             return true;
         }
-        
-        public ISpatialGraphEnvironment StreetEnvironment { get; set; }
-        
+
         /// <summary>
-        ///
-        /// TODO: (?) does not take acceleration of cars into account. 
-        /// 
+        ///     TODO: (?) does not take acceleration of cars into account.
         /// </summary>
         /// <param name="start"></param>
         /// <param name="goal"></param>
@@ -88,10 +76,10 @@ namespace KrugerNationalPark.Layers
                 var outEdgesCount = outEdges.Count;
 
                 //var newOutEdges = new List<ISpatialEdge>();
-                
+
                 // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
                 // das ist uns unklar und nicht erwartungskonform!
-                
+
                 var uTurnEdges = new List<ISpatialEdge>();
 
                 // tripTime == 0 -> erster durchlauf, keine kante entfernen
@@ -100,22 +88,18 @@ namespace KrugerNationalPark.Layers
                 // remove "returning edge" identified on the node, since the edges are uniue in each direction
                 // this removal prevents u-turn behaviour of agents
                 // todo: to discuss, allow u-turn on larger street segments (like >10km e.g.)
-                if (rt.Count > 0  && outEdges.Count != 1)
+                if (rt.Count > 0 && outEdges.Count != 1)
                 {
                     var newOutEdges = new List<ISpatialEdge>();
-                    
+
                     // find edge, leading back to the last origin
                     for (var i = 0; i < outEdgesCount; i++)
                     {
                         var e = outEdges[i];
                         if (e.To.Equals(prevNode))
-                        {
                             uTurnEdges.Add(e);
-                        }
                         else
-                        {
                             newOutEdges.Add(e);
-                        }
                     }
 
                     outEdges = newOutEdges;
@@ -125,7 +109,7 @@ namespace KrugerNationalPark.Layers
                 // in selecting their route
                 var rnd = new Random();
                 outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
-                
+
                 // append u-turn edges as "fall back" at the end of the list
                 // -> will be checked last.
                 // this is necessary since the check from the previous segemnt might identified the current origin
@@ -138,24 +122,24 @@ namespace KrugerNationalPark.Layers
                 for (var i = 0; i < outEdgesCount; i++)
                 {
                     prevEdge = outEdges[i];
-                    
-                    
-                    var edgeDuration =  (prevEdge.Length / prevEdge.MaxSpeed);
-                    
+
+
+                    var edgeDuration = prevEdge.Length / prevEdge.MaxSpeed;
+
                     // edge leads to this node
                     // from this node we have to be able to reach out goal within the time limit
                     var targetNode = prevEdge.To;
                     var tmpRoute = StreetEnvironment.FindRoute(targetNode, goal);
                     var routeDuration = GetRouteDuration(tmpRoute);
 
-                    if ((routeDuration + edgeDuration) <= timeLimit)
+                    if (routeDuration + edgeDuration <= timeLimit)
                     {
                         // route edge is Okay to drive on
                         rt.Add(prevEdge);
                         currentNode = prevEdge.To;
                         timeLimit -= edgeDuration;
                         prevNode = prevEdge.From;
-                        
+
                         segmentFound = true;
                         break;
                     }
@@ -163,30 +147,23 @@ namespace KrugerNationalPark.Layers
 
                 // no valid segment for next was found -> route can't be found
                 // if we do not abort, we would be stuck in a endless loop
-                if (!segmentFound)
-                {
-                    throw new ArgumentException("No viable route to goal within timeLimit.");
-                }
-                
+                if (!segmentFound) throw new ArgumentException("No viable route to goal within timeLimit.");
             } while (!currentNode.Equals(goal));
 
             return rt;
         }
 
         /// <summary>
-        /// Determines the complete duration it takes to drive a route.
+        ///     Determines the complete duration it takes to drive a route.
         /// </summary>
         /// <param name="rt"></param>
         /// <returns>duration in seconds</returns>
         private double GetRouteDuration(Route rt)
         {
-            double duration = 0.0;
+            var duration = 0.0;
 
-            if (rt is null)
-            {
-                return duration;
-            }
-            
+            if (rt is null) return duration;
+
             foreach (var edgeStop in rt)
             {
                 var edge = edgeStop.Edge;
@@ -194,8 +171,8 @@ namespace KrugerNationalPark.Layers
                 //tripTime += lastEdge.TravelTime; 
                 duration += edge.Length / edge.MaxSpeed;
             }
+
             return duration;
         }
-        
     }
 }

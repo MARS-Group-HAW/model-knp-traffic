@@ -1,10 +1,5 @@
-using System;
-using System.Linq;
 using KrugerNationalPark.Layers;
-using KrugerNationalPark.Misc;
-using Mars.Common.Core;
 using Mars.Interfaces.Environments;
-using Mars.Numerics;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
 using SOHDomain.Steering.Handles;
@@ -15,11 +10,12 @@ namespace KrugerNationalPark.Agents
     {
         private readonly KnpStreetLayer _carLayer;
 
-        public KnpCarSteeringHandle(KnpStreetLayer carLayer, ISpatialGraphEnvironment environment, Car car) : base(environment, car)
+        public KnpCarSteeringHandle(KnpStreetLayer carLayer, ISpatialGraphEnvironment environment, Car car) : base(
+            environment, car)
         {
             _carLayer = carLayer;
         }
-        
+
         /// <summary>
         ///     Provides an entry point for specialized types to provide some extra logic into
         ///     the movement operation before the
@@ -35,16 +31,15 @@ namespace KrugerNationalPark.Agents
 
         private double HandleWildlifeAhead(double deceleration, double speedElephantAhead, double distanceElephantAhead)
         {
-            
             //Console.WriteLine("deceleration in: " + deceleration);
-            
+
             // Calculate the full stop speed change when wildlife was detected
             var speedChange = VehicleAccelerator.CalculateSpeedChange(Vehicle.Velocity, SpeedLimit,
                 distanceElephantAhead, speedElephantAhead);
 
             // Is used when the movement is performed
-            var outv  =  speedChange < deceleration ? speedChange : deceleration;
-            
+            var outv = speedChange < deceleration ? speedChange : deceleration;
+
             //Console.WriteLine("deceleration in: " + outv);
             return outv;
         }

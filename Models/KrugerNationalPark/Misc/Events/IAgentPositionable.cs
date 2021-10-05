@@ -5,6 +5,5 @@ namespace KrugerNationalPark.Misc.Events
 {
     public interface IAgentPositionable : IAgent, IPositionable
     {
-        
     }
 }

@@ -1,40 +1,30 @@
-﻿using System;
-using KrugerNationalPark.Agents;
-using Mars.Common.IO;
+﻿using KrugerNationalPark.Agents;
 using Mars.Components.Services.Events;
 using Mars.Interfaces.Environments;
-using SOHCarModel.Model;
 
 namespace KrugerNationalPark.Misc.Events
 {
     public class KnpEventComponent : EventComponent<Tourist>
     {
-        
-        private EventsCollection EventsCollection;
-        
+        private readonly EventsCollection EventsCollection;
+
         public KnpEventComponent(Tourist entity) : base(entity)
         {
             MarsEventHandler.Instance.RegisterHandler<KnpEvent>(entity, HandleEvent);
-         
+
             EventsCollection = new EventsCollection();
             EventsCollection.setFileName("events_handled_" + entity.ID + ".geojson");
         }
 
-        private new void HandleEvent(KnpEvent e)
+        private void HandleEvent(KnpEvent e)
         {
             Entity.EventReceived += 1;
             var distance = e.Position.DistanceInMTo(Entity.Position);
-            if (distance >= 500)
-            {
-                return;
-            }
-            
+            if (distance >= 500) return;
+
             Entity.EventPossibleRelevant += 1;
             // @todo: what number is good, or layer with probabilities?
-            if (Entity.State != TouristState.Driving)
-            {
-                return;
-            }
+            if (Entity.State != TouristState.Driving) return;
             // 1. determine our position
             var remainingDistance = Entity.VehicleHandle.RemainingDistanceOnEdge;
 
@@ -60,8 +50,8 @@ namespace KrugerNationalPark.Misc.Events
 
                 // 4. enter braking state 
                 Entity.State = TouristState.Braking;
-                
-                
+
+
                 // log event
                 // todo: call write to file only after sim has finished, not always.
                 EventsCollection.Add(e);

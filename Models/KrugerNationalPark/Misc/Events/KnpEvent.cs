@@ -6,10 +6,10 @@ namespace KrugerNationalPark.Misc.Events
 {
     public class KnpEvent : MarsEvent
     {
-        public readonly Position Position;
         public readonly double Duration = 1800.0;
-        public readonly DateTime StartTime;
         public readonly DateTime EndTime;
+        public readonly Position Position;
+        public readonly DateTime StartTime;
 
         public double Radius = 100.0;
 

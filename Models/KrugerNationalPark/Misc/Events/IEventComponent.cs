@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using Mars.Components.Services.Events;
-using Mars.Interfaces.Agents;
+﻿using Mars.Components.Services.Events;
 
 namespace KrugerNationalPark.Misc.Events
 {

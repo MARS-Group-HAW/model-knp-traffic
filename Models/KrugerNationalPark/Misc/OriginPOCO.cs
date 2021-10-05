@@ -3,7 +3,6 @@ using Mars.Interfaces.Environments;
 
 namespace KrugerNationalPark.Misc
 {
-
     public class OriginPOCO
     {
         public string Name { get; set; }
@@ -11,5 +10,4 @@ namespace KrugerNationalPark.Misc
         public Position Position { get; set; }
         public List<DestinationPOCO> Destinations { get; set; }
     }
-    
 }

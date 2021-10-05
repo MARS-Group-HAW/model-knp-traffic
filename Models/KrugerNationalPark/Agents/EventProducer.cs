@@ -1,7 +1,6 @@
 ﻿using System;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc.Events;
-using Mars.Common;
 using Mars.Components.Services.Events;
 using Mars.Interfaces.Agents;
 
@@ -12,7 +11,7 @@ namespace KrugerNationalPark.Agents
         private KnpStreetLayer _streetLayer;
 
         private EventsCollection EventsCollection;
-        
+
         #region Initialization
 
         public void Init(KnpStreetLayer layer)
@@ -35,7 +34,6 @@ namespace KrugerNationalPark.Agents
                 var edges = node.OutgoingEdges;
 
                 foreach (var edge in edges.Values)
-                {
                     if (edge.Length > 100)
                     {
                         // put event on a random POINT of the given edge, so they are not always on 
@@ -43,18 +41,17 @@ namespace KrugerNationalPark.Agents
                         var rndEdgePosI = new Random();
                         var i = rndEdgePosI.Next(edge.Geometry.Length);
                         var pos = edge.Geometry[i];
-                        
+
                         var e = new KnpEvent(pos, eventStartTime);
-                        
+
                         // todo: this is just a random radius to show on kepler.gl, refactor so agents actually use it
                         e.Radius = (int) (random.NextDouble() * 1000);
                         MarsEventHandler.Instance.Invoke(e);
-                
+
                         EventsCollection.Add(e);
                         // calling the log function for ALL events makes the sim really slow
                         //EventsCollection.TearDown();
                     }
-                }
             }
         }
 

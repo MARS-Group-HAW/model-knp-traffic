@@ -6,7 +6,6 @@ using KrugerNationalPark.Misc;
 using KrugerNationalPark.Misc.Events;
 using Mars.Common;
 using Mars.Components.Environments;
-using Mars.Components.Services.Events;
 using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
@@ -25,11 +24,11 @@ namespace KrugerNationalPark.Agents
         #region Initialization
 
         /// <summary>
-        /// Needed fo "removing" the agent and preventing further tick() call to it.
+        ///     Needed fo "removing" the agent and preventing further tick() call to it.
         /// </summary>
-        [PropertyDescription] 
+        [PropertyDescription]
         public UnregisterAgent UnregisterHandle { get; set; }
-        
+
         public void Init(KnpStreetLayer layer)
         {
             KnpEventComponent = new KnpEventComponent(this);
@@ -72,7 +71,7 @@ namespace KrugerNationalPark.Agents
             // tourist determines destination
             var sourcePoi = PoiLayer.Nearest(Position);
 
-            var availableDestinations = sourcePoi.getDestinationPOIs(3600, new List<string> { "Rest camp", "Gate" });
+            var availableDestinations = sourcePoi.getDestinationPOIs(3600, new List<string> {"Rest camp", "Gate"});
 
             var l = availableDestinations.Count;
             var rnd = new Random();
@@ -127,8 +126,8 @@ namespace KrugerNationalPark.Agents
                     _arrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     _departureTime = _arrivalTime.AddMinutes(lookDuration);
                     State = TouristState.Looking;
-                    
-                    
+
+
                     _tmpRoute = VehicleHandle.Route;
                     VehicleHandle.Route = null;
                 }
@@ -146,13 +145,13 @@ namespace KrugerNationalPark.Agents
                 }
             }
 
- 
-            
+
             // Always call Move, since braking is "handled" by the AnimalSighting car ahead
             VehicleHandle.Move();
 
             CarVelocity = Car.Velocity;
-            CarVelocityInt = (int) Math.Round(Car.Velocity, 0); // todo: save it into an int, double is broken in csv writer
+            CarVelocityInt =
+                (int) Math.Round(Car.Velocity, 0); // todo: save it into an int, double is broken in csv writer
             TripsCollection.Add(Position);
         }
 

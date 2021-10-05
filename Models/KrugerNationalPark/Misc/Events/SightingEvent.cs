@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using Mars.Interfaces.Environments;
 
 namespace KrugerNationalPark.Misc.Events

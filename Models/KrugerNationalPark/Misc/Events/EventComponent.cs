@@ -1,7 +1,5 @@
-﻿using Mars.Components.Services.Events;
-using Mars.Interfaces.Agents;
-using Mars.Interfaces.Environments;
-using SOHDomain.Steering.Capables;
+﻿using System;
+using Mars.Components.Services.Events;
 
 namespace KrugerNationalPark.Misc.Events
 {
@@ -13,10 +11,11 @@ namespace KrugerNationalPark.Misc.Events
         }
 
         public T Entity { get; set; }
+
         public void HandleEvent(MarsEvent marsEvent)
         {
             // please implement this method in the child class
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

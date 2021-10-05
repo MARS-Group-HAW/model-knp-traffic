@@ -9,7 +9,6 @@ using Mars.Components.Services;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
-using NetTopologySuite.Geometries;
 
 namespace KrugerNationalPark.Layers
 {
