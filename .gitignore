@@ -364,6 +364,5 @@ Visualization/lib
 Visualization/include
 pyvenv.
 *.sqlite
-pyvenv.cfg
-.ipynb_checkpoints
 **/.cache/
+.ipynb_checkpoints
