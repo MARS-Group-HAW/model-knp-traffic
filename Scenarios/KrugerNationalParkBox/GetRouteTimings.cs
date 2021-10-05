@@ -30,8 +30,7 @@ namespace KrugerNationalParkBox
                             Modalities = new HashSet<SpatialModalityType> {SpatialModalityType.CarDriving}
                         }
                     }
-                },
-                NodeIndex = true
+                }
             });
             
             // load POIs

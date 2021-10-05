@@ -43,8 +43,7 @@ namespace KrugerNationalPark.Layers
                             Modalities = new HashSet<SpatialModalityType> {SpatialModalityType.CarDriving}
                         }
                     }
-                },
-                NodeIndex = true
+                }
             });
 
 
