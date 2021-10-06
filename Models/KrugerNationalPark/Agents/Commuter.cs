@@ -20,19 +20,19 @@ namespace KrugerNationalPark.Agents
     ///     Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
     ///     Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
     /// </summary>
-    public class Commuter : IAgent<KnpStreetLayer>, ICarSteeringCapable
+    public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     {
         #region Initialization
 
-        public void Init(KnpStreetLayer layer)
+        public void Init(VisitorTravelerLayer layer)
         {
             State = CommuterState.GoingToWork;
-            _streetLayer = layer;
+            _sgmLayer = layer.SpatialGraphMediatorLayer;
+            
             TripsCollection = new TripsCollection(layer.Context);
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
-            car.Environment = layer.Environment;
-            car.StreetLayer = layer;
+            car.Environment = _sgmLayer.Environment;
             Car = car;
 
             // todo: Source is a Point, no Random needed?
@@ -49,14 +49,14 @@ namespace KrugerNationalPark.Agents
             var targetCor = target[index];
             var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
 
-            OriginNode = layer.Environment.NearestNode(Position);
-            layer.Environment.Insert(car, OriginNode);
+            OriginNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+            _sgmLayer.Environment.Insert(car, OriginNode);
 
             // for the StreetEnvironment we need a SpatialNode, not a Position.
             // -> get nearest Node to chosen target position
-            WorkplaceNode = layer.Environment.NearestNode(targetPos);
+            WorkplaceNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
 
-            handle.Route = layer.Environment.FindRoute(OriginNode, WorkplaceNode);
+            handle.Route = _sgmLayer.Environment.FindRoute(OriginNode, WorkplaceNode);
             VehicleHandle = handle;
         }
 
@@ -72,15 +72,15 @@ namespace KrugerNationalPark.Agents
                 {
                     // we reached our working destination
                     State = CommuterState.Working;
-                    _arrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     _departureTime = _arrivalTime.AddMinutes(WorkDuration);
                 }
                 else if (State == CommuterState.Working && _departureTime
-                    .Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+                    .Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
-                    VehicleHandle.Route = _streetLayer.Environment.FindRoute(WorkplaceNode, OriginNode);
+                    VehicleHandle.Route = _sgmLayer.Environment.FindRoute(WorkplaceNode, OriginNode);
                 }
                 else if (State == CommuterState.GoingHome)
                 {
@@ -158,7 +158,7 @@ namespace KrugerNationalPark.Agents
         /// <summary>
         ///     The agent's reference to the KNP traffic network
         /// </summary>
-        private StreetLayer _streetLayer;
+        private SpatialGraphMediatorLayer _sgmLayer;
 
         /// <summary>
         ///     Position of our car/agent on the map.

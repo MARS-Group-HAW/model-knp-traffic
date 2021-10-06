@@ -34,8 +34,19 @@
       "file": "resources/merged_waters_fixed_with_fence_buffer.geojson"
     },
     {
-      "name": "KnpStreetLayer",
-      "file": "resources/knp_graph.geojson"
+      "name": "VisitorTravelerLayer"
+    },
+    {
+      "name": "SpatialGraphMediatorLayer",
+      "inputs": [
+        {
+          "file": "resources/knp_graph.geojson",
+          "inputConfiguration": {
+            "modalities": ["CarDriving"],
+            "isBidirectedGraph": true
+          }
+        }
+      ]
     },
     {
       "name": "POILayer",

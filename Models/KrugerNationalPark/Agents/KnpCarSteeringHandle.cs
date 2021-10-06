@@ -8,9 +8,9 @@ namespace KrugerNationalPark.Agents
 {
     public class KnpCarSteeringHandle : CarSteeringHandle
     {
-        private readonly KnpStreetLayer _carLayer;
+        private readonly VisitorTravelerLayer _carLayer;
 
-        public KnpCarSteeringHandle(KnpStreetLayer carLayer, ISpatialGraphEnvironment environment, Car car) : base(
+        public KnpCarSteeringHandle(VisitorTravelerLayer carLayer, ISpatialGraphEnvironment environment, Car car) : base(
             environment, car)
         {
             _carLayer = carLayer;

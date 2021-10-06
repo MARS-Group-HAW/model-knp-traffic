@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SOHCarModel\SOHCarModel.csproj"/>
-        <ProjectReference Include="..\SOHDomain\SOHDomain.csproj"/>
-        <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj"/>
+        <ProjectReference Include="..\SOHCarModel\SOHCarModel.csproj" />
+        <ProjectReference Include="..\SOHDomain\SOHDomain.csproj" />
+        <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
     </ItemGroup>
 
 </Project>

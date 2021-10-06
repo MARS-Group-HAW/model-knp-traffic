@@ -14,12 +14,13 @@ using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
+using SOHDomain.Graph;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
-    public class Tourist : IAgent<KnpStreetLayer>, ICarSteeringCapable
+    public class Tourist : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     {
         #region Initialization
 
@@ -29,14 +30,15 @@ namespace KrugerNationalPark.Agents
         [PropertyDescription]
         public UnregisterAgent UnregisterHandle { get; set; }
 
-        public void Init(KnpStreetLayer layer)
+        public void Init(VisitorTravelerLayer layer)
         {
             KnpEventComponent = new KnpEventComponent(this);
-            _streetLayer = layer;
+            _travelLayer = layer;
+            _sgmLayer = layer.SpatialGraphMediatorLayer;
             ElephantCounter = 0;
             State = TouristState.Driving;
 
-            _startTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
+            _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
 
             // TODO: Parameterisierung aus CSV oder Dynamik mit +/- Random Wert, um Varianz im Tourist-Verhalten abzubilden
             _endTime = new DateTime(_startTime.Year, _startTime.Month, _startTime.Day, 10, 0, 0);
@@ -44,16 +46,15 @@ namespace KrugerNationalPark.Agents
             TripsCollection = new TripsCollection(layer.Context);
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
-            car.Environment = layer.StreetEnvironment;
-            car.StreetLayer = layer;
+            car.Environment = _sgmLayer.Environment;
             Car = car;
 
             // todo: Source is a Point, no Random needed? 
             Position = SourceGeometry.RandomPositionFromGeometry();
             car.TryEnterDriver(this, out var handle);
 
-            _originNode = layer.StreetEnvironment.NearestNode(Position);
-            layer.StreetEnvironment.Insert(car, _originNode);
+            _originNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+            _sgmLayer.Environment.Insert(car, _originNode);
 
 
             /*var p1 = new Position(31.4447138, -24.9883233);
@@ -79,10 +80,10 @@ namespace KrugerNationalPark.Agents
             var destinationPoco = availableDestinations[i];
 
 
-            var destinationNode = layer.StreetEnvironment.NearestNode(destinationPoco.Position);
+            var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Position, SpatialModalityType.CarDriving);
 
 
-            handle.Route = _streetLayer.FindRoute(_originNode, _originNode, 3600);
+            handle.Route = _travelLayer.FindRoute(_originNode, _originNode, 3600);
             VehicleHandle = handle;
 
             // save route to geojson
@@ -123,7 +124,7 @@ namespace KrugerNationalPark.Agents
                 if (Car.Velocity == 0)
                 {
                     // we are at a stand now, start timer to remove AnimalSighting "car"
-                    _arrivalTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     _departureTime = _arrivalTime.AddMinutes(lookDuration);
                     State = TouristState.Looking;
 
@@ -135,9 +136,9 @@ namespace KrugerNationalPark.Agents
             else if (State == TouristState.Looking)
             {
                 //@todo : logik valdieiren, in der simulkation sah es so aus lob die dauernd bremsen
-                if (_departureTime.Subtract(_streetLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+                if (_departureTime.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
-                    _streetLayer.StreetEnvironment.Remove(_animalSighting);
+                    _sgmLayer.Environment.Remove(_animalSighting);
                     _animalSighting = null;
                     State = TouristState.Driving;
 
@@ -240,7 +241,7 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         public const double InsertAnimalSightingDistanceAhead = 33.0;
 
-        public KnpStreetLayer _streetLayer;
+        public SpatialGraphMediatorLayer _sgmLayer;
 
         public Car Car { get; set; }
 
@@ -262,6 +263,7 @@ namespace KrugerNationalPark.Agents
 
         private readonly HashSet<Guid> _knownElephants;
         public Route _tmpRoute;
+        private VisitorTravelerLayer _travelLayer;
 
         #endregion
 

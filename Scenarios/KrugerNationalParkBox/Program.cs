@@ -10,7 +10,10 @@ using Mars.Common.Core.Logging;
 using Mars.Common.Core.Logging.Enums;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
+using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
+using SOHDomain.Graph;
+
 namespace KrugerNationalParkBox
 {
     public static class Program
@@ -43,7 +46,15 @@ namespace KrugerNationalParkBox
 
             //             description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetzt im KNP
 
-            description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
+            
+            description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
+            
+            
+            description.AddLayer<VisitorTravelerLayer>();
+            
+            
+            //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
+            
             description.AddLayer<POILayer>(); // Camps and Gates
 
             description.AddLayer<TouristSchedulingLayer>();
@@ -51,10 +62,11 @@ namespace KrugerNationalParkBox
             description.AddLayer<ProducerSchedulingLayer>();
 
             // Second register the agent types with their respective layer type
-            description.AddAgent<Tourist, KnpStreetLayer>();
-            description.AddAgent<Commuter, KnpStreetLayer>();
+            description.AddAgent<Tourist, VisitorTravelerLayer>();
+            description.AddAgent<Commuter, VisitorTravelerLayer>();
+            
             description.AddAgent<Elephant, ElephantLayer>();
-            description.AddAgent<EventProducer, KnpStreetLayer>();
+            description.AddAgent<EventProducer, VisitorTravelerLayer>();
 
             description.AddEntity<KnpCar>();
 
@@ -76,6 +88,9 @@ namespace KrugerNationalParkBox
                     var index = args.IndexOf(s => s == "-sm");
                     file = File.ReadAllText(args[index + 1]);
                     simConfig = SimulationConfig.Deserialize(file);
+                    
+                    Console.WriteLine(simConfig.Serialize());
+                    
                 }
                 else
                 {
@@ -140,10 +155,26 @@ namespace KrugerNationalParkBox
                         Name = nameof(VectorWaterLayer),
                         File = "resources/merged_waters_fixed_with_fence_buffer.geojson"
                     },
+                    
                     new LayerMapping
                     {
-                        Name = nameof(KnpStreetLayer),
-                        File = "resources/knp_graph.geojson"
+                        Name = nameof(VisitorTravelerLayer),
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(SpatialGraphMediatorLayer),
+                        Inputs = new List<Input>
+                        {
+                            new Input
+                            {
+                                File = "resources/knp_graph.geojson",
+                                InputConfiguration = new InputConfiguration
+                                {
+                                    Modalities = new HashSet<SpatialModalityType>{ SpatialModalityType.CarDriving },
+                                    IsBiDirectedImport = true
+                                }
+                            }
+                        }
                     },
                     new LayerMapping
                     {

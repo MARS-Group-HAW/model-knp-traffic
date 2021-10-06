@@ -1,59 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using KrugerNationalPark.Agents;
-using Mars.Components.Environments;
-using Mars.Interfaces.Data;
+using Mars.Components.Layers;
+using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
-using Mars.Interfaces.Layers;
-using Mars.Interfaces.Model;
-using Mars.Interfaces.Model.Options;
 using SOHDomain.Graph;
+using SOHMultimodalModel.Multimodal;
 
 namespace KrugerNationalPark.Layers
 {
-    /// <summary>
-    ///     This class represents the agent layer implementation for the <see cref="KnpCar" /> and keeps references
-    ///     to all other required layer e.g., the <see cref="ElephantLayer" />
-    /// </summary>
-    public class KnpStreetLayer : StreetLayer
-    {
-        public ISpatialGraphEnvironment StreetEnvironment { get; set; }
-
-
-        public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle,
-            UnregisterAgent unregisterAgentHandle)
-        {
-            base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
-
-            StreetEnvironment = new SpatialGraphEnvironment(new SpatialGraphOptions
-            {
-                GraphImports = new List<Input>
-                {
-                    new()
-                    {
-                        File = layerInitData.LayerInitConfig.File,
-                        InputConfiguration = new InputConfiguration
-                        {
-                            // TODO: wenn ich das richtig verstehe, macht das aus jeder kante 
-                            // -> hin und <- rückweg
-                            // wahrscheinlich brauchen wir das, für generelle straßen, nur wenn "oneway"
-                            // true ist, wollen wir das nicht?!
-                            IsBiDirectedImport = true,
-                            Modalities = new HashSet<SpatialModalityType> {SpatialModalityType.CarDriving}
-                        }
-                    }
-                }
-            });
-
-
-            // Export StreetLayer as GeoJSON
-            //var geoJson = SpatialGraphHelper.ToGeoJson(StreetEnvironment);
-            //File.WriteAllText("streetLayer.geojson", geoJson);
-
-            return true;
-        }
-
+    public class VisitorTravelerLayer : AbstractLayer
+    { 
         /// <summary>
         ///     TODO: (?) does not take acceleration of cars into account.
         /// </summary>
@@ -128,7 +85,9 @@ namespace KrugerNationalPark.Layers
                     // edge leads to this node
                     // from this node we have to be able to reach out goal within the time limit
                     var targetNode = prevEdge.To;
-                    var tmpRoute = StreetEnvironment.FindRoute(targetNode, goal);
+                    
+                    // @todo: FindRoute hat nur Filter für Attribute? Keinen Filter für Modalität?
+                    var tmpRoute = SpatialGraphMediatorLayer.Environment.FindRoute(targetNode, goal);
                     var routeDuration = GetRouteDuration(tmpRoute);
 
                     if (routeDuration + edgeDuration <= timeLimit)
@@ -173,5 +132,10 @@ namespace KrugerNationalPark.Layers
 
             return duration;
         }
+        
+        
+        
+        [PropertyDescription]
+        public SpatialGraphMediatorLayer SpatialGraphMediatorLayer { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using Mars.Components.Layers;
 
 namespace KrugerNationalPark.Layers
 {
-    public class CommuterSchedulingLayer : AgentSchedulerLayer<Commuter, KnpStreetLayer>
+    public class CommuterSchedulingLayer : AgentSchedulerLayer<Commuter, VisitorTravelerLayer>
     {
     }
 }

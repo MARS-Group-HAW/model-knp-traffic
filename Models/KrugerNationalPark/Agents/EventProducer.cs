@@ -6,17 +6,17 @@ using Mars.Interfaces.Agents;
 
 namespace KrugerNationalPark.Agents
 {
-    public class EventProducer : IAgent<KnpStreetLayer>
+    public class EventProducer : IAgent<VisitorTravelerLayer>
     {
-        private KnpStreetLayer _streetLayer;
+        private VisitorTravelerLayer _travellerLayer;
 
         private EventsCollection EventsCollection;
 
         #region Initialization
 
-        public void Init(KnpStreetLayer layer)
+        public void Init(VisitorTravelerLayer layer)
         {
-            _streetLayer = layer;
+            _travellerLayer = layer;
             EventsCollection = new EventsCollection();
         }
 
@@ -29,8 +29,8 @@ namespace KrugerNationalPark.Agents
             var random = new Random();
             if (random.NextDouble() >= 0.5)
             {
-                var eventStartTime = _streetLayer.Context.CurrentTimePoint.GetValueOrDefault();
-                var node = _streetLayer.StreetEnvironment.GetRandomNode();
+                var eventStartTime = _travellerLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                var node = _travellerLayer.SpatialGraphMediatorLayer.Environment.GetRandomNode();
                 var edges = node.OutgoingEdges;
 
                 foreach (var edge in edges.Values)
