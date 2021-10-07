@@ -108,17 +108,7 @@ namespace KrugerNationalPark.Agents
 
             // we are driving around and wait for an anima sighting event
             // todo: on the qy home should we prevent looking for animals?
-
-            // just temp code for logging agent internals 
-            // -> track if we have an virtual car before us so we need to brake
-            HasAnimalSighting = 0;
-            SightingEventCarVelocity = 0;
-            if (_animalSighting is not null)
-            {
-                SightingEventCarVelocity = (int) Math.Round(_animalSighting.Velocity, 0);
-                HasAnimalSighting = 1;
-            }
-
+            
             if (State == TouristState.Braking)
             {
                 if (Car.Velocity == 0)
@@ -127,22 +117,15 @@ namespace KrugerNationalPark.Agents
                     _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     _departureTime = _arrivalTime.AddMinutes(lookDuration);
                     State = TouristState.Looking;
-
-
-                    _tmpRoute = VehicleHandle.Route;
-                    VehicleHandle.Route = null;
                 }
             }
             else if (State == TouristState.Looking)
             {
-                //@todo : logik valdieiren, in der simulkation sah es so aus lob die dauernd bremsen
+                //@todo : logik validieren, in der simulation sah es so aus lob die dauernd bremsen
                 if (_departureTime.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
-                    _sgmLayer.Environment.Remove(_animalSighting);
-                    _animalSighting = null;
+                    Car.Driver.BrakingActivated = false;
                     State = TouristState.Driving;
-
-                    VehicleHandle.Route = _tmpRoute;
                 }
             }
 
@@ -228,11 +211,6 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         private DateTime _departureTime;
 
-        /// <summary>
-        ///     Reference to the object positioned before our agent to trigger braking.
-        /// </summary>
-        public KnpCar _animalSighting;
-
         // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
         // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
         /// <summary>
@@ -263,7 +241,7 @@ namespace KrugerNationalPark.Agents
         public int ElephantCounter { set; get; }
 
         private readonly HashSet<Guid> _knownElephants;
-        public Route _tmpRoute;
+
         private VisitorTravelerLayer _travelLayer;
 
         #endregion

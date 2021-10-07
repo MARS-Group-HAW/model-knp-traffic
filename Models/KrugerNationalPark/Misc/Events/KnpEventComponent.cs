@@ -35,21 +35,10 @@ namespace KrugerNationalPark.Misc.Events
             if (remainingDistance > Tourist.InsertAnimalSightingDistanceAhead)
             {
                 Entity.EventHandled += 1;
-                // 2. Create our car to force braking
-                Entity._animalSighting = Entity._sgmLayer.EntityManager.Create<KnpCar>("type", "Golf");
-                Entity._animalSighting.Environment = Entity._sgmLayer.Environment;
-
-                var edge = Entity.VehicleHandle.Route[0].Edge; // <- current edge of our car
-
-                // 3. insert our baking trigger into the graph
-                // @todo: we should check if between our position and the pos where we insert the car the road is empty
-                // -> so we don't block an commuter ahead of us e.g.
-                Entity._sgmLayer.Environment.Insert(Entity._animalSighting, edge,
-                    Entity.Car.PositionOnCurrentEdge + Tourist.InsertAnimalSightingDistanceAhead);
+                Entity.Car.Driver.BrakingActivated = true;
 
                 // 4. enter braking state 
                 Entity.State = TouristState.Braking;
-
 
                 // log event
                 // todo: call write to file only after sim has finished, not always.
