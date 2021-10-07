@@ -252,6 +252,7 @@ namespace KrugerNationalPark.Agents
         }
 
         public bool OvertakingActivated { get; }
+        public bool BrakingActivated { get; }
         public bool CurrentlyCarDriving => true;
         public double CarVelocity { get; set; }
 
