@@ -167,7 +167,7 @@ namespace KrugerNationalParkBox
                         {
                             new Input
                             {
-                                File = "resources/knp_graph.geojson",
+                                File = "resources/roads_all_2019.geojson",
                                 InputConfiguration = new InputConfiguration
                                 {
                                     Modalities = new HashSet<SpatialModalityType>{ SpatialModalityType.CarDriving },
