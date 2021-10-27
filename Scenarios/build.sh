@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # When a new simulation is added, pleas append the name of the C# project to this string
-models="SOHFerryTransferBox SOHGreen4BikesBox SOHBicycleRealTimeBox"
+models="SOHFerryTransferBox SOHGreen4BikesBox SOHBicycleRealTimeBox SOHKellinghusenBox"
 
 for val in $models; do
     echo "Build box for model ${val}" 
