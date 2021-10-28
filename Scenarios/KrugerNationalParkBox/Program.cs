@@ -167,11 +167,14 @@ namespace KrugerNationalParkBox
                         {
                             new Input
                             {
-                                File = "resources/roads_all_2019.geojson",
+                                File = "resources/roads_all_2019_public.geojson",
                                 InputConfiguration = new InputConfiguration
                                 {
                                     Modalities = new HashSet<SpatialModalityType>{ SpatialModalityType.CarDriving },
-                                    IsBiDirectedImport = true
+                                    IsBiDirectedImport = true,
+                                    NodeToleranceInMeter = 20,
+                                    NodeIntegrationKind = NodeIntegrationKind.LinkNode,
+                                    GeometryAsNodesEnabled = false // alle punkte als node -> langsam
                                 }
                             }
                         }
