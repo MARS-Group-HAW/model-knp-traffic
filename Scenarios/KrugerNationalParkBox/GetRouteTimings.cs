@@ -8,6 +8,7 @@ using Mars.Interfaces.Model;
 using Mars.Interfaces.Model.Options;
 using System.Text.Json;
 using KrugerNationalPark.Misc;
+using Microsoft.VisualBasic.FileIO;
 
 
 namespace KrugerNationalParkBox
@@ -23,7 +24,7 @@ namespace KrugerNationalParkBox
                 {
                     new()
                     {
-                        File = "resources/knp_graph.graphml",
+                        File = "resources/knp_graph.geojson",
                         InputConfiguration = new InputConfiguration
                         {
                             IsBiDirectedImport = true,
@@ -34,72 +35,72 @@ namespace KrugerNationalParkBox
             });
             
             // load POIs
-            var pois = new List<Position>();
-            var originNames = new List<(string, string)>();
-
-            using (var reader = new StreamReader(@"./resources/pois.csv"))
+            var pois = new List<Poi>();
+            
+            
+            var path = @"./resources/pois.csv";
+            using (TextFieldParser csvParser = new TextFieldParser(path))
             {
-                // skip header of input file
-                reader.ReadLine();
-                // read first relevant line
-                var line = reader.ReadLine();
-                if (line != null)
-                {
-                    // dynamically identify the separator used in input file
-                    var commaIndex = line.IndexOf(',');
-                    var semicolonIndex = line.IndexOf(';');
-                    var separator = semicolonIndex == -1 ? line[commaIndex] : line[Math.Min(commaIndex, semicolonIndex)];
-                    while (line != null)
-                    {
-                        var lineValues = line.Split(separator);
+                csvParser.CommentTokens = new string[] { "#" };
+                csvParser.SetDelimiters(new string[] { "," });
+                csvParser.HasFieldsEnclosedInQuotes = true;
 
-                        var originName = lineValues[0];
-                        var originCampType = lineValues[1];
-                        originNames.Add((originName, originCampType));
-                        var originPos = new Position(Convert.ToDouble(lineValues[2], CultureInfo.InvariantCulture),
-                            Convert.ToDouble(lineValues[3], CultureInfo.InvariantCulture));
-                        pois.Add(originPos);
-                        line = reader.ReadLine();
-                    }
+                // Skip the row with the column names
+                csvParser.ReadLine();
+
+                while (!csvParser.EndOfData)
+                {
+                    string[] fields = csvParser.ReadFields();
+                    var poi = new Poi
+                    {
+                        Name = fields[0],
+                        Type = fields[1],
+                        Access = fields[2],
+                        Position = new Position(Convert.ToDouble(fields[3], CultureInfo.InvariantCulture),
+                            Convert.ToDouble(fields[4], CultureInfo.InvariantCulture))
+                    };
+                    pois.Add(poi);
                 }
             }
-
+            
             var routeInfoList = new List<OriginPOCO>();
+            
             for (var i = 0; i < pois.Count; i++)
             {
-                var originPos = pois[i];
-                var originName = originNames[i].Item1;
-                var originCampType = originNames[i].Item2;
-                var originNode = spatialGraphEnvironment.NearestNode(originPos);
-
+                var originPoi = pois[i];
+                var originNode = spatialGraphEnvironment.NearestNode(originPoi.Position);
                 var timings = new List<DestinationPOCO>();
 
-                Console.WriteLine("Origin: " + originName);
+                Console.WriteLine("Origin: " + originPoi.Name + " (" + originPoi.Type + ")");
+
+                if (originNode == null)
+                {
+                    Console.WriteLine("No NearestNode (origin)");
+                    continue;
+                }
 
                 for (var j = 0; j < pois.Count; j++)
                 {
+                    var destinationPoi = pois[j];
+                    var destinationNode = spatialGraphEnvironment.NearestNode(destinationPoi.Position);
+
+                    if (destinationNode == null)
+                    {
+                        Console.WriteLine("No NearestNode (destination)");
+                        continue;
+                    }
                     
-                    
-                    var destinationPos = pois[j];
-                    var destinationNode = spatialGraphEnvironment.NearestNode(destinationPos);
-
-                    if (originPos.Equals(destinationPos)) continue;
-
-                    var destinationName = originNames[j].Item1;
-                    var destinationCampType = originNames[j].Item2;
-
+                    if (destinationPoi.Position.Equals(originPoi.Position)) continue;
                     
                     var route = spatialGraphEnvironment.FindRoute(originNode, destinationNode);
 
                     if (route == null)
                     {
-                        Console.WriteLine("No route for: " + originName + " -> " + destinationName);
+                        Console.WriteLine("No route for: " + originPoi.Name + " -> " + destinationPoi.Name);
                         continue;
                     }
                     
                     var edgeStops = route.Stops;
-
-
                     
                     var tripTime = 0.0; // in seconds
                     var tripLength = route.RouteLength;
@@ -107,26 +108,34 @@ namespace KrugerNationalParkBox
                     for (var k = 0; k < route.Count; k++)
                     {
                         var edge = edgeStops[k].Edge;
-                        tripTime += edge.Length / edge.MaxSpeed;
+
+                        // edges might not have a set MaxSpeed, we use a defualt of 40 km/h.
+                        // San Parks (https://www.sanparks.org/parks/kruger/tourism/code.php):
+                        // > Stick to the speed limit! All general rules of the road apply within the Kruger National
+                        // > Park. The speed limit is 50 km/h on tar roads and 40 km/h on gravel roads. Please note
+                        // > that not all roads are accessible to caravans.
+                        var maxSpeed = 11.11111111111111; // 40 km/h
+                        if (edge.MaxSpeed > 0)
+                        {
+                            maxSpeed = edge.MaxSpeed;
+                        }
+                        
+                        tripTime += edge.Length / maxSpeed;
                     }
 
                     var routeInfoPoco = new DestinationPOCO
                     {
-                        Position = destinationPos,
-                        Name = destinationName,
-                        Type = destinationCampType,
+                        Poi = destinationPoi,
                         Duration = tripTime,
                         Length = tripLength
                     };
-
+                    
                     timings.Add(routeInfoPoco);
                 }
 
                 var originPoco = new OriginPOCO
                 {
-                    Position = originPos,
-                    Name = originName,
-                    Type = originCampType,
+                    Poi = originPoi,
                     Destinations = timings
                 };
 

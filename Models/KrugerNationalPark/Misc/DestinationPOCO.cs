@@ -4,10 +4,7 @@ namespace KrugerNationalPark.Misc
 {
     public class DestinationPOCO
     {
-        public string Name { get; set; }
-
-        public string Type { get; set; }
-        public Position Position { get; set; }
+        public Poi Poi { get; set; }
 
         /// <summary>
         ///     Duration to reach this POI  from the origin in seconds.

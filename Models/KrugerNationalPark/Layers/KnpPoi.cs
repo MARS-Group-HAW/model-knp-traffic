@@ -59,7 +59,7 @@ namespace KrugerNationalPark.Layers
                 if (d.Duration > timeLimit) continue;
 
                 // if only special types are requested, search only for wanted
-                if (allowedTypes != null && !allowedTypes.Contains(d.Type)) continue;
+                if (allowedTypes != null && !allowedTypes.Contains(d.Poi.Type)) continue;
 
                 results.Add(d);
             }

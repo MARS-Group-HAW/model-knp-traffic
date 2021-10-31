@@ -80,7 +80,7 @@ namespace KrugerNationalPark.Agents
             var destinationPoco = availableDestinations[i];
 
 
-            var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Position, SpatialModalityType.CarDriving);
+            var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Poi.Position, SpatialModalityType.CarDriving);
 
 
             handle.Route = _travelLayer.FindRoute(_originNode, _originNode, 3600);
