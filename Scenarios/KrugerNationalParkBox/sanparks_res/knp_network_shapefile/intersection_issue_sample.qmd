@@ -1,0 +1,115 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.20.1-Odense">
+  <identifier>roads_all_2019</identifier>
+  <parentidentifier></parentidentifier>
+  <language>ENG</language>
+  <type>dataset</type>
+  <title>roads_all_2019</title>
+  <abstract>All the roads within Kruger National Park including tourist roads, management roads, firebreaks and disused roads. The roads in the 2016 version has been refined from the previous 1:50 000 scale to about 1: 5 000 scale using the 2011 &amp; 2018 aerial imagery.
+Access definitions:
+Private - roads that are accessable to staff and authorised guests only
+Public - roads that are accessable to staff and all guests 
+Staff - roads that are accessable to staff only
+Surface definitions:
+Tar - sealed roads that provide a good all weather surface
+Graded - unsealed roads that are regularly maintained and are suitable for sedan vehicles
+Gravel - unsealed roads that have only basic surface maintenance done. High clearence vehicles may be needed
+Two spoor - unsealed roads that are not maintained. High clearence vehicles needed at a minimum, but 4x4 capability may be needed in places.
+Disused - unsealed roads that are no longer in regular use and may be overgrown and washed away in places.
+Rehab - roads that have been permanently closed and actively rehabilitated 
+
+All the roads within Kruger National Park including tourist roads, management roads, firebreaks and disused roads. The roads in the 2016 version has been refined from the previous 1:50 000 scale to about 1: 5 000 scale using the 2011 &amp; 2018 aerial imagery.
+
+This GIS layer for all roads (including tourist roads, management tracks and firebreaks) in the Kruger National Park.
+
+All the roads within Kruger National Park including tourist roads, management roads, firebreaks and disused roads. The roads in the 2016 version has been refined from the previous 1:50 000 scale to about 1: 5 000 scale using the 2011 aerial imagery.
+
+It is our intention to maintain roads in our database which have fallen into disuse. These are important for historical analysis as they formed boundaries to burn-blocks, ranger sections and other regional divisions. 
+
+It is our intention to maintain roads in our database which have fallen into disuse. These are important for historical analysis as they formed boundaries to burn-blocks, ranger sections and other regional divisions.</abstract>
+  <keywords vocabulary="Search keys">
+    <keyword>Roads</keyword>
+    <keyword>Kruger National Park</keyword>
+    <keyword>Tourist</keyword>
+    <keyword>Management</keyword>
+  </keywords>
+  <keywords vocabulary="gmd:topicCategory">
+    <keyword>Roads</keyword>
+    <keyword>Kruger National Park</keyword>
+    <keyword>Firebreaks</keyword>
+    <keyword>Kruger National Park</keyword>
+  </keywords>
+  <contact>
+    <contactAddress>
+      <type>both</type>
+      <address>Kruger National Park, Private Bag X402</address>
+      <city>Skukuza</city>
+      <administrativearea>Mpumalanga</administrativearea>
+      <postalcode>1350</postalcode>
+      <country>ZA</country>
+    </contactAddress>
+    <name>Don Ntsala</name>
+    <organization>South African National Parks</organization>
+    <position>KNP Scientific Services GIS Administrator</position>
+    <voice>+27 (0)13 735-4236</voice>
+    <fax></fax>
+    <email>gismaster@parks-sa.co.za</email>
+    <role>Point of contact</role>
+  </contact>
+  <contact>
+    <contactAddress>
+      <type>mailing and physical address</type>
+      <address>Kruger National Park, Private Bag X402</address>
+      <city>Skukuza</city>
+      <administrativearea>Mpumalanga</administrativearea>
+      <postalcode>1350</postalcode>
+      <country>South Africa</country>
+    </contactAddress>
+    <name>South African National Parks</name>
+    <organization>South African National Parks</organization>
+    <position></position>
+    <voice>+27 (0)13 735-4236</voice>
+    <fax>+27 (0)13 735-4055</fax>
+    <email>gismaster@parks-sa.co.za</email>
+    <role>Point of contact</role>
+  </contact>
+  <links>
+    <link mimeType="" url="" size="" description="" format="" type="" name=""/>
+  </links>
+  <history>Data source: </history>
+  <history>Data source: </history>
+  <history>Data source: Arc vector data without attributes</history>
+  <history>Data source: </history>
+  <fees></fees>
+  <constraints type="Access">None</constraints>
+  <rights>See Liability and Accuracy sections</rights>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys>
+      <wkt>PROJCRS["WGS 84 / UTM zone 36S",BASEGEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["UTM zone 36S",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",33,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",10000000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["unknown"],AREA["World - S hemisphere - 30°E to 36°E - by country"],BBOX[-80,30,0,36]],ID["EPSG",32736]]</wkt>
+      <proj4>+proj=utm +zone=36 +south +datum=WGS84 +units=m +no_defs</proj4>
+      <srsid>3186</srsid>
+      <srid>32736</srid>
+      <authid>EPSG:32736</authid>
+      <description>WGS 84 / UTM zone 36S</description>
+      <projectionacronym>utm</projectionacronym>
+      <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial maxy="-22.32824000000000098" crs="EPSG:32736" minz="0" dimensions="2" maxz="0" minx="30.84210900000000066" miny="-25.52854400000000012" maxx="32.05398399999999981"/>
+    <temporal>
+      <period>
+        <start>2000-11-29T23:00:00Z</start>
+        <end></end>
+      </period>
+    </temporal>
+    <temporal>
+      <period>
+        <start></start>
+        <end></end>
+      </period>
+    </temporal>
+  </extent>
+</qgis>
