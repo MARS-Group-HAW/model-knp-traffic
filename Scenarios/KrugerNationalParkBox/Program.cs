@@ -122,8 +122,8 @@ namespace KrugerNationalParkBox
                     OutputTarget = OutputTargetType.Csv,
                     CsvOptions =
                     {
-                        Delimiter = ";",
-                        NumberFormat = "en-EN"
+                        Delimiter = ",",
+                        NumberFormat = "G"
                     },
                     ShowConsoleProgress = false,
                     EnableSimpleVisualization = false

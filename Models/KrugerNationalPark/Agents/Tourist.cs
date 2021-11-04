@@ -134,16 +134,12 @@ namespace KrugerNationalPark.Agents
             VehicleHandle.Move();
 
             CarVelocity = Car.Velocity;
-            CarVelocityInt =
-                (int) Math.Round(Car.Velocity, 0); // todo: save it into an int, double is broken in csv writer
             TripsCollection.Add(Position);
         }
 
         public int HasAnimalSighting { get; set; }
 
         public int SightingEventCarVelocity { get; set; }
-
-        public int CarVelocityInt { get; set; }
 
         #endregion
 
