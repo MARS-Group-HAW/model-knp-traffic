@@ -1,0 +1,72 @@
+{
+  "globals": {
+    "deltaT": 1,
+    "deltaTUnit": "seconds",
+    "startTime": "2019-01-01T06:00:00.000Z",
+    "endTime": "2019-01-01T10:00:00.000Z",
+    "output": "csv",
+    "console" : true,
+    "options": {
+      "numberFormat": "G"
+    },
+    "knpCloseTimeHour": 18
+  },
+  "layers": [
+    {
+      "name": "RasterTempLayer",
+      "file": "resources/RCP8.5_2010_2050_temp.zip"
+    },
+    {
+      "name": "RasterFenceLayer",
+      "file": "resources/gis_raster_border.zip"
+    },
+    {
+      "name": "RasterShadeLayer",
+      "file": "resources/gis_raster_shade.zip"
+    },
+    {
+      "name": "RasterVegetationLayer",
+      "file": "resources/gis_raster_biomass_ts.zip"
+    },
+    {
+      "name": "VectorWaterLayer",
+      "file": "resources/merged_waters_fixed_with_fence_buffer.geojson"
+    },
+    {
+      "name": "StreetLayer",
+      "file": "resources/knp_graph.graphml"
+    },
+    {
+      "name": "POILayer",
+      "file": "resources/poi.geojson"
+    },
+    {
+      "name": "TouristSchedulingLayer",
+      "file": "resources/_emptyScheduler.csv"
+    },
+    {
+      "name": "CommuterSchedulingLayer",
+      "file": "resources/CommScheduler.csv"
+    }
+  ],
+  "entities": [
+    {
+      "name": "KnpCar",
+      "file": "resources/car.csv"
+    }
+  ],
+  "agents": [
+    {
+      "name": "Elephant",
+      "file": "resources/elephant1989_constant_population_15k.csv",
+      "count": 0,
+      "outputtype": "individual"
+    },
+    {
+      "name": "Tourist"
+    },
+    {
+      "name": "Commuter"
+    }
+  ] 
+}
