@@ -14,6 +14,7 @@ using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
 using Newtonsoft.Json;
 using ServiceStack.Text;
+using SOHDomain.Graph;
 using Xunit;
 
 namespace KrugerNationalParkTests.Travel
@@ -41,9 +42,12 @@ namespace KrugerNationalParkTests.Travel
             var edge23 = environment.AddEdge(node2, node3, 50);
             edge23.MaxSpeed = 10;
 
-            var layer = new KnpStreetLayer();
-            layer.StreetEnvironment = environment;
+            var mediator = new SpatialGraphMediatorLayer();
+            mediator.Environment = environment;
 
+            var layer = new VisitorTravelerLayer();
+            layer.SpatialGraphMediatorLayer = mediator;
+            
             // n1 -> n2 in time
             var rt1 = layer.FindRoute(node1, node3, 10);
             Assert.Equal(2, rt1.Count);
@@ -92,8 +96,11 @@ namespace KrugerNationalParkTests.Travel
             var edge41 = environment.AddEdge(node4, node1, 25);
             edge41.MaxSpeed = 5;
 
-            var layer = new KnpStreetLayer();
-            layer.StreetEnvironment = environment;
+            var mediator = new SpatialGraphMediatorLayer();
+            mediator.Environment = environment;
+
+            var layer = new VisitorTravelerLayer();
+            layer.SpatialGraphMediatorLayer = mediator;
 
 
             // n1 -> n1 
@@ -128,9 +135,11 @@ namespace KrugerNationalParkTests.Travel
             var edge32 = environment.AddEdge(node3, node2, 50);
             edge32.MaxSpeed = 10;
 
-            var layer = new KnpStreetLayer();
-            layer.StreetEnvironment = environment;
+            var mediator = new SpatialGraphMediatorLayer();
+            mediator.Environment = environment;
 
+            var layer = new VisitorTravelerLayer();
+            layer.SpatialGraphMediatorLayer = mediator;
 
             // n1 -> n2 in time
             var rt1 = layer.FindRoute(node1, node3, 10);
@@ -189,8 +198,11 @@ namespace KrugerNationalParkTests.Travel
             var edge34 = environment.AddEdge(node3, node4, 1);
             edge34.MaxSpeed = 30;
 
-            var layer = new KnpStreetLayer();
-            layer.StreetEnvironment = environment;
+            var mediator = new SpatialGraphMediatorLayer();
+            mediator.Environment = environment;
+
+            var layer = new VisitorTravelerLayer();
+            layer.SpatialGraphMediatorLayer = mediator;
 
 
             var geoJson = SpatialGraphHelper.ToGeoJson(environment);
@@ -201,27 +213,45 @@ namespace KrugerNationalParkTests.Travel
         }
 
 
+
+        
         [Fact]
         public void TestCreateMultipleRandomRoutesOnKNPGraph()
         {
-            var layer = new KnpStreetLayer();
-            layer.InitLayer(new LayerInitData
+            var mediator = new SpatialGraphMediatorLayer();
+            mediator.InitLayer(new LayerInitData
             {
                 LayerInitConfig =
                 {
-                    File = Path.Combine("resources", "knp_graph.geojson")
+                    Inputs = new List<Input>
+                    {
+                        new Input
+                        {
+                            File = Path.Combine("resources", "knp_graph.geojson"),
+                            InputConfiguration = new InputConfiguration
+                            {
+                                Modalities = new HashSet<SpatialModalityType>{SpatialModalityType.CarDriving},
+                                IsBiDirectedImport = true
+                            }
+                        }
+                    }
                 }
             }, null, null);
 
 
             var p1 = new Position(31.484812, -24.980938); // Kruger Gate
             var p2 = new Position(31.8938518629925, -25.3581762165958); // Crocodile Bridge
-            var n1 = layer.StreetEnvironment.NearestNode(p1);
-            var n2 = layer.StreetEnvironment.NearestNode(p2);
-
-            // loop, never stops, points are not reachable in 1h
+            var n1 = mediator.Environment.NearestNode(p1);
+            var n2 = mediator.Environment.NearestNode(p2);
+            
+            // loop, never stops, points
+            // are not reachable in 1h
             //var rt1 = layer.FindRoute(n1, n2, 3600);
-
+            
+            var layer = new VisitorTravelerLayer();
+            layer.SpatialGraphMediatorLayer = mediator;
+            
+            
             for (var i = 0; i < 10; i++)
             {
                 var rt1 = layer.FindRoute(n1, n1, 21600);
@@ -236,7 +266,7 @@ namespace KrugerNationalParkTests.Travel
             //VehicleHandle = handle;
         }
 
-
+/*
         [Fact]
         public void FindRouteTest()
         {
@@ -335,7 +365,8 @@ namespace KrugerNationalParkTests.Travel
 
             var t = new Tourist();
             t.Init(layer);*/
-        }
+        //}
+        
 
         private double GetRouteDuration(Route rt)
         {
