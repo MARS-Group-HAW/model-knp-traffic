@@ -1,31 +1,41 @@
   
-![Nuget](https://img.shields.io/nuget/v/Mars.Life.Simulations?label=mars) ![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations) [![pipeline status](https://git.haw-hamburg.de/mars/life/badges/feature/soh-debugging/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/feature/master) [![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
+![Nuget](https://img.shields.io/nuget/v/Mars.Life.Simulations?label=mars) 
+![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations) 
+[![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
+[![pipeline status](https://git.haw-hamburg.de/mars/life/badges/master/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
 
 <h1  align="center">MARS Runtime System | <a  href="https://mars-group.org">Website</a></h1>
 
-The **Mars runtime system** provides agent-based simulation and geographical query processing methods with a set of common mathematical functions and data structures for .NET Core.
+The **Mars runtime system** can be used to design and build agent-based simulation and spatio-temporal processing systems, providing a set of common mathematical functions and data structures for .NET Core.
 
-Therefore it contains the simulation core of the MARS framework whic executes the simulation with variable stepsize. It can be used on **Windows**, **MacOS**, **Linux** and in conjunction with other popular frameworks such as rendering engines **Unity3D** or **Veldrid** or just for geographic and temporal data processing. The framework offers a unified API for modelling and agent-based systems and process spatio-temporal data from heterogenous data sources.
+The framework executes time-discrete simulations with variable stepsize and is designed for cross-plattform execution on **Windows**, **MacOS** and **Linux**. 
 
 ## Documentation
 
-All documentation about the framework can be found [here](https://mars.haw-hamburg.de/).
-For domain-experts without knowledge in modelling and software development we provide the MARS DSL,  an easy to use modelling language. For more information, please use the extra [modelling handbook](https://mars-group.org/modeling-handbook/)
+Documentation can be found [online here](https://mars.haw-hamburg.de/) and contains the API descriptions and tutorials for constructing and running models. Without knowledge in modelling and software development, domain experts can use the MARS DSL as a simplified modelling language. The documentation of the MARS DSL can be found in an extra [modelling handbook](https://mars-group.org/modeling-handbook/).
   
 
 ## Installing
 
-To build the solution on your own, please download and install the newest [.NETCore SDK](https://dotnet.microsoft.com/download) for your operating system.
+To build the framework, please download and install the newest [.NETCore SDK](https://dotnet.microsoft.com/download) for your operating system.
 
-All modelling components are provided as`netstandard2.0`  packages from [nuget](https://www.nuget.org/packages/Mars.Life.Simulations/). To use them as dependencies in your application, please use the public `nuget` feed from Microsoft. Use the **dotnet cli** in your model project. Navigate to your project directory and execute the following command a command terminal:
+All modelling components are provided libraries targeting `netstandard2.0` so each version (>= .NETCore 2.0) will work. We use the public [nuget](https://www.nuget.org/packages/Mars.Life.Simulations/) to distribute the framework. 
+
+Create new project (here with the name `MyModelProject`):
 
 ```bash
-dotnet add package Mars.Life.Simulations
+dotnet new console -n MyModelProject
+cd MyModelProject
 ```
+This creates .NETCore project in a new directory called `MyModelProject` and navigates into this 
+Use the `dotnet cli` in your model project. Navigate to your project directory and execute the following command in a terminal:
 
-This adds the `Mars.Life.Simulations` dependency and all other required ones to your .NETCore application.
+```bash
+dotnet add MyModelProject package Mars.Life.Simulations
+```
+This adds the `Mars.Life.Simulations` dependency and all other required ones to the new created `Mars.Life.Simulations` model project.
   
-## Sample Models
+## Examples
 Visit the [model repo](https://git.haw-hamburg.de/mars/model-deployments) for all sample agent models and public scenarios. Multiple cases are also contained in this repo, showing the basic usage of multiple component.s Look into the _Mars.Test_ project for more.
 More ready-to-use scenarios to show some MARS features are described and can  directly downloaded [here](https://mars.haw-hamburg.de/articles/soh/scenarios/index.html).  
 
