@@ -72,6 +72,8 @@ namespace KrugerNationalPark.Agents
             // tourist determines destination
             var sourcePoi = PoiLayer.Nearest(Position);
 
+            
+            /* 
             var availableDestinations = sourcePoi.getDestinationPOIs(3600, new List<string> {"Rest camp", "Gate"});
 
             var l = availableDestinations.Count;
@@ -82,6 +84,7 @@ namespace KrugerNationalPark.Agents
 
             var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Poi.Position, SpatialModalityType.CarDriving);
 
+            */
 
             handle.Route = _travelLayer.FindRoute(_originNode, _originNode, 3600);
             VehicleHandle = handle;
