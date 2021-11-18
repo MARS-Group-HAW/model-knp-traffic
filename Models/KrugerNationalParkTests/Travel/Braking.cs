@@ -1,13 +1,31 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KrugerNationalPark.Agents;
+using KrugerNationalPark.Layers;
+using KrugerNationalPark.Misc.Events;
+using Mars.Common.Core.Collections.HashStructures;
 using Mars.Components.Environments;
+using Mars.Components.Services.Events;
+using Mars.Components.Starter;
+using Mars.Core.Data.Wrapper.Memory;
+using Mars.Core.Simulation.Entities;
 using Mars.Interfaces;
+using Mars.Interfaces.Agents;
+using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
+using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
+using NetTopologySuite.IO.Converters;
+using ServiceStack;
 using SOHDomain.Graph;
 using SOHTests;
 using SOHTests.Commons.Agent;
 using Xunit;
+using Feature = ServiceStack.Feature;
+using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalParkTests.Travel
 {
@@ -15,6 +33,124 @@ namespace KrugerNationalParkTests.Travel
     {
 
 
+
+        [Fact]
+        public void brakeOnEvent()
+        {
+            var description = new ModelDescription();
+            
+            description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
+            description.AddLayer<VisitorTravelerLayer>();   
+            description.AddLayer<POILayer>();
+            description.AddLayer<TouristSchedulingLayer>();
+            
+            description.AddAgent<Tourist, VisitorTravelerLayer>();
+            
+            description.AddEntity<KnpCar>();
+            
+            var start = new DateTime(2019, 1, 1, 6, 0, 00);
+            var end = start + TimeSpan.FromHours(1);
+
+            var simConfig = new SimulationConfig
+            {
+                Globals =
+                {
+                    StartPoint = start,
+                    EndPoint = end,
+                    DeltaTUnit = TimeSpanUnit.Seconds,
+                    OutputTarget = OutputTargetType.Csv
+                },
+                LayerMappings = new List<LayerMapping>
+                {
+                    new LayerMapping
+                    {
+                        Name = nameof(VisitorTravelerLayer)
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(SpatialGraphMediatorLayer),
+                        Inputs = new List<Input>
+                        {
+                            new Input
+                            {
+                                File = "resources/networks/drive_graph_veddeler_damm.geojson",
+                                //File = "resources/networks/line.geojson",
+                                //File = "resources/roads_all_2019_public.geojson",
+                                InputConfiguration = new InputConfiguration
+                                {
+                                    Modalities = new HashSet<SpatialModalityType>{ SpatialModalityType.CarDriving },
+                                    IsBiDirectedImport = true
+                                }
+                            }
+                        }
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(POILayer),
+                        File = "resources/pois.geojson"
+                    },
+                    new LayerMapping
+                    {
+                        Name = nameof(TouristSchedulingLayer),
+                        File = "resources/TouristScheduler_brakeOnEvent.csv"
+                    }
+                },
+                EntityMappings = new List<EntityMapping>
+                {
+                    new()
+                    {
+                        Name = "KnpCar",
+                        File = Path.Combine("resources", "car.csv")
+                    }
+                },
+                AgentMappings =
+                {
+                    new AgentMapping
+                    {
+                        Name = nameof(Tourist), InstanceCount = 1,
+                        Outputs = new List<Output>
+                        {
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Trips,
+                                OutputConfiguration = new OutputConfiguration()
+                                {
+                                    TripsDiscriminatorFields = new[] { "ActiveCapability" }
+                                }
+                            },
+                            new()
+                            {
+                                OutputTarget = OutputTargetType.Csv
+                            }
+                        }
+                    }
+                }
+            };
+            File.WriteAllText("simConfig.json", simConfig.Serialize());
+            
+            var simulation = SimulationStarter.Build(description, simConfig);
+            simulation.PrepareSimulation(description, simConfig);
+            var eventsCollection = new EventsCollection();
+            
+            SimulationWorkflowState result = null;
+            for (var i = 0; i < 3600; i++) {
+
+                if (i == 200)
+                {
+                    var pos = new Position(x:  9.991003079370975, y: 53.52606263568983);
+                    var e = new KnpEvent(pos, start);
+                    e.Radius = (int) 50;
+                    MarsEventHandler.Instance.Invoke(e);
+            
+                    eventsCollection.Add(e);
+                }
+
+                result = simulation.StepSimulation();
+            }
+            
+            eventsCollection.TearDown();
+            simulation.Dispose(); // explicitly call to create trips.geojson
+        }
 
         [Fact]
         public void test()
@@ -30,7 +166,7 @@ namespace KrugerNationalParkTests.Travel
             
             
             var mediator = new SpatialGraphMediatorLayer();
-            mediator.Environment = environment;
+            mediator.Environment = graph;
 
             var layer = new VisitorTravelerLayer();
             layer.SpatialGraphMediatorLayer = mediator;
