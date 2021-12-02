@@ -7,13 +7,16 @@ using System.Threading;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc.Events;
+using Mars.Common.IO;
 using Mars.Components.Environments;
 using Mars.Components.Services.Events;
 using Mars.Components.Starter;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
+using NetTopologySuite.IO;
 using Newtonsoft.Json;
+using NuGet.Frameworks;
 using ServiceStack.Text;
 using SOHDomain.Graph;
 using Xunit;
@@ -88,6 +91,83 @@ namespace KrugerNationalParkTests.Travel
             Assert.Null(noRoute);
         }
         
+        
+                [Fact]
+        public void TestFindRouteWithAccessAttributeOnVisitorLayer()
+        {
+            var environment = new SpatialGraphEnvironment();
+            
+            var node1 = environment.AddNode(0, 1);
+            var node2 = environment.AddNode(1, 1);
+            var node3 = environment.AddNode(0, 0);
+            var node4 = environment.AddNode(1, 0);
+            var node5 = environment.AddNode(2, 0);
+            
+            // 1   v    2
+            // O---10-->O
+            // |        |
+            // 10 o      10 v
+            // |        |
+            // \/   o   \/   o
+            // O<--10-->O---10-->0
+            // 3        4        5
+
+            var visitorAttritbutes = new Dictionary<string, object>();
+            visitorAttritbutes.Add("access", "Public");
+
+            var osvAttritbutes = new Dictionary<string, object>();
+            osvAttritbutes.Add("access", "Staff");
+            
+            var privateAttritbutes = new Dictionary<string, object>();
+            privateAttritbutes.Add("access", "Private");
+
+
+            var edge12 = environment.AddEdge(node1, node2, 10, visitorAttritbutes, SpatialModalityType.CarDriving);
+            edge12.MaxSpeed = 10;
+            var edge24 = environment.AddEdge(node2, node4, 10, visitorAttritbutes, SpatialModalityType.CarDriving);
+            edge24.MaxSpeed = 10;
+            var edge13 = environment.AddEdge(node1, node3, 10, osvAttritbutes , SpatialModalityType.CarDriving);
+            edge13.MaxSpeed = 1;
+            var edge34 = environment.AddEdge(node3, node4, 10, osvAttritbutes, SpatialModalityType.CarDriving);
+            edge34.MaxSpeed = 10;
+            var edge43 = environment.AddEdge(node4, node3, 10, osvAttritbutes, SpatialModalityType.CarDriving);
+            edge43.MaxSpeed = 10;
+            var edge45 = environment.AddEdge(node4, node5, 10, osvAttritbutes, SpatialModalityType.CarDriving);
+            edge45.MaxSpeed = 10;
+            var edge14 = environment.AddEdge(node1, node4, 10, privateAttritbutes, SpatialModalityType.CarDriving);
+            edge14.MaxSpeed = 10;
+            
+            var mediator = new SpatialGraphMediatorLayer();
+            mediator.Environment = environment;
+
+            var layer = new VisitorTravelerLayer();
+            layer.SpatialGraphMediatorLayer = mediator;
+
+            
+            // test that visitor takes the longer route, and not the shorter OSV / Staff route
+            var route = layer.FindOSVRoute(node1, node5, 5);
+            AssertEdgeAccess(route, new String[] {"Public", "Staff"});
+
+            var geoJson = SpatialGraphHelper.ToGeoJson(route);
+            File.WriteAllText("TestFindRouteWithAccessAttributeOnVisitorLayer.geojson", geoJson);
+            
+            // test that visitor takes the longer route, and not the shorter OSV / Staff route
+            var route2 = layer.FindVisitorRoute(node1, node4, 2);
+            AssertEdgeAccess(route2, new String[] {"Public"});
+            
+            Assert.Throws<ArgumentException>(() => layer.FindOSVRoute(node1, node4, 1));
+
+            Assert.Throws<ArgumentException>(() => layer.FindVisitorRoute(node1, node4, 1));
+        }
+
+        private void AssertEdgeAccess(Route rt, String[] access)
+        {
+            for (int i = 0; i < rt.Count; i++)
+            {
+                var edge = rt[i].Edge;
+                Assert.Contains(edge.Attributes["access"], access);
+            }
+        }
         
         [Fact]
         public void TestTimeLimitAB()

@@ -1,16 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mars.Common.Core;
+using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
+using ServiceStack;
 using SOHDomain.Graph;
 using SOHMultimodalModel.Multimodal;
 
 namespace KrugerNationalPark.Layers
 {
     public class VisitorTravelerLayer : AbstractLayer
-    { 
+    {
+
+        public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
+        {
+            return FindRoute(from, to, timeLimit, edge => ((String) edge.Attributes["access"] == "Public"));
+        }
+        
+        public Route FindOSVRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
+        {
+            // Todo: OSVs are allowed to drive on Public and Staff routes, but not "Private" routes.
+            // at the moment it's not clear if we want to import Private marked routes or not
+            String[] allowed = {"Public", "Staff"};
+            return FindRoute(from, to, timeLimit, edge => (allowed.Contains((String) edge.Attributes["access"])));
+        }
+
         /// <summary>
         ///     TODO: (?) does not take acceleration of cars into account.
         /// </summary>
@@ -18,7 +35,7 @@ namespace KrugerNationalPark.Layers
         /// <param name="goal"></param>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-        public Route FindRoute(ISpatialNode start, ISpatialNode goal, double timeLimit)
+        public Route FindRoute(ISpatialNode start, ISpatialNode goal, double timeLimit, Func<ISpatialEdge, bool> filter = null)
         {
             var currentNode = start;
             var prevEdge = currentNode.OutgoingEdges.Values.ToList()[0]; // 
@@ -28,7 +45,14 @@ namespace KrugerNationalPark.Layers
             // build route with edges until return time is reached
             do
             {
-                var outEdges = currentNode.OutgoingEdges.Values.ToList();
+                //var outEdges = currentNode.OutgoingEdges.Values.ToList();
+                
+                var nextEdges = filter != null
+                    ? currentNode.OutgoingEdges.Where(pair => filter(pair.Value))
+                    : currentNode.OutgoingEdges;
+                
+                var outEdges = (from kvp in nextEdges where true select kvp.Value).ToList();
+
                 var outEdgesCount = outEdges.Count;
 
                 //var newOutEdges = new List<ISpatialEdge>();
@@ -87,7 +111,8 @@ namespace KrugerNationalPark.Layers
                     var targetNode = prevEdge.To;
                     
                     // @todo: FindRoute hat nur Filter für Attribute? Keinen Filter für Modalität?
-                    var tmpRoute = SpatialGraphMediatorLayer.Environment.FindRoute(targetNode, goal);
+                    var tmpRoute = SpatialGraphMediatorLayer.Environment.FindRoute(targetNode, goal, PathHeuristics.Shortest, filter);
+                    
                     var routeDuration = GetRouteDuration(tmpRoute);
 
                     if (routeDuration + edgeDuration <= timeLimit)
