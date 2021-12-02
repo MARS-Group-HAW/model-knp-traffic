@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
@@ -21,6 +22,73 @@ namespace KrugerNationalParkTests.Travel
 {
     public class FindRoute
     {
+
+        [Fact]
+        public void TestFindRouteWithAccessAttribute()
+        {
+            var environment = new SpatialGraphEnvironment();
+
+            var node1 = environment.AddNode(1, 1);
+            var node2 = environment.AddNode(2, 1);
+            var node3 = environment.AddNode(2, 2);
+            var node4 = environment.AddNode(1, 2);
+            var node5 = environment.AddNode(3, 2);
+
+            Assert.Equal(1, node1.Position.X);
+            Assert.Equal(1, node1.Position.Y);
+
+            // 1        2
+            // O---10-->O
+            // |        |
+            // 5        10
+            // |        |
+            // \/       \/
+            // O---10-->O---10-->0
+            // 3        4        5
+
+            var visitorAttritbutes = new Dictionary<string, object>();
+            visitorAttritbutes.Add("access", "Public");
+
+            var osvAttritbutes = new Dictionary<string, object>();
+            osvAttritbutes.Add("access", "Staff");
+            
+
+            var edge12 = environment.AddEdge(node1, node2, 10, visitorAttritbutes, SpatialModalityType.CarDriving);
+            var edge24 = environment.AddEdge(node2, node4, 10, visitorAttritbutes, SpatialModalityType.CarDriving);
+            var edge13 = environment.AddEdge(node1, node3, 5, osvAttritbutes , SpatialModalityType.CarDriving);
+            var edge34 = environment.AddEdge(node3, node4, 10, osvAttritbutes, SpatialModalityType.CarDriving);
+            environment.AddEdge(node4, node5, 10, osvAttritbutes, SpatialModalityType.CarDriving);
+            
+            // test that visitor takes the longer route, and not the shorter OSV / Staff route
+            var route = environment.FindRoute(node1, node4, (_, edge, _) => edge.Length,
+                edge => ((String) edge.Attributes["access"] == "Public"));
+            
+            Assert.NotNull(route);
+            Assert.Equal(2, route.Count);
+            Assert.False(route.GoalReached);
+            Assert.Equal(edge12, route[0].Edge);
+            Assert.Equal(edge24, route[1].Edge);
+            
+            // test that OSV takes the correct route
+            String[] allowed = {"Public", "Staff"};
+            var route2 = environment.FindRoute(node1, node4, (_, edge, _) => edge.Length,
+                edge => (allowed.Contains((String) edge.Attributes["access"])));
+            
+            Assert.NotNull(route2);
+            Assert.Equal(2, route2.Count);
+            Assert.False(route2.GoalReached);
+            Assert.Equal(edge13, route2[0].Edge);
+            Assert.Equal(edge34, route2[1].Edge);
+            
+            
+            // Tourist can't reach node 5
+            var noRoute = environment.FindRoute(node1, node5, (_, edge, _) => edge.Length,
+                edge => ((String) edge.Attributes["access"] == "Public"));
+
+            Assert.Null(noRoute);
+        }
+        
+        
         [Fact]
         public void TestTimeLimitAB()
         {
