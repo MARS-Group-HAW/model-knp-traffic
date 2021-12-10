@@ -111,7 +111,7 @@ namespace KrugerNationalParkBox
         public static SimulationConfig SimConfig()
         {
             var start = new DateTime(2019, 1, 1, 6, 0, 00);
-            var end = start + TimeSpan.FromHours(4);
+            var end = start + TimeSpan.FromHours(12);
             return new SimulationConfig
             {
                 Globals =

@@ -5,17 +5,20 @@ using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using KrugerNationalPark.Misc.Events;
 using Mars.Common;
+using Mars.Common.Core.Logging;
 using Mars.Components.Environments;
 using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
 using SOHDomain.Graph;
 using SOHDomain.Steering.Common;
+using WebSocketSharp;
 using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
@@ -32,6 +35,10 @@ namespace KrugerNationalPark.Agents
 
         public void Init(VisitorTravelerLayer layer)
         {
+            
+            log = LoggerFactory.GetLogger(typeof(Tourist));
+
+            
             KnpEventComponent = new KnpEventComponent(this);
             _travelLayer = layer;
             _sgmLayer = layer.SpatialGraphMediatorLayer;
@@ -71,22 +78,18 @@ namespace KrugerNationalPark.Agents
 
             // tourist determines destination
             var sourcePoi = PoiLayer.Nearest(Position);
-
+            currentSourcePoi = sourcePoi;
             
-            /* 
-            var availableDestinations = sourcePoi.getDestinationPOIs(3600, new List<string> {"Rest camp", "Gate"});
+            var availableDestinations = sourcePoi.getDestinationPOIs(4 * 3600, new List<string> {"Rest camp"});
 
             var l = availableDestinations.Count;
             var rnd = new Random();
             var i = rnd.Next(0, l);
-            var destinationPoco = availableDestinations[i];
+            currentDestinationPoi = availableDestinations[i];
+            var destinationNode = _sgmLayer.Environment.NearestNode(currentDestinationPoi.Poi.Position, SpatialModalityType.CarDriving);
 
-
-            var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Poi.Position, SpatialModalityType.CarDriving);
-
-            */
-
-            handle.Route = _travelLayer.FindRoute(_originNode, _originNode, 3600);
+  
+            handle.Route = _travelLayer.FindRoute(_originNode, destinationNode, 4 * 3600);
             VehicleHandle = handle;
 
             // save route to geojson
@@ -131,7 +134,51 @@ namespace KrugerNationalPark.Agents
                     State = TouristState.Driving;
                 }
             }
+            
+            if (VehicleHandle.Route.GoalReached)
+            {
+                if (_departureTimePoi == null)
+                {
+                    _arrivalTimePoi = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                    _departureTimePoi = _arrivalTimePoi?.AddMinutes(30);
+                    //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Tourist arrived at {currentDestinationPoi.Poi.Name}");
+  
+                    Console.WriteLine($"{_sgmLayer.Context.CurrentTick},{ID},arrived,{currentSourcePoi.Name},{currentDestinationPoi.Poi.Name}");
 
+                    
+                    //log.LogInfo($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Tourist arrived at {currentDestinationPoi.Poi.Name}");
+                    
+                } else
+                {
+                    if (_departureTimePoi?.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault())
+                        .TotalMinutes < 0)
+                    {
+                        // pause vorbei!
+                        
+                        var sourcePoi = PoiLayer.Nearest(currentDestinationPoi.Poi.Position);
+                        var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+
+                        var availableDestinations = sourcePoi.getDestinationPOIs(4 * 3600, new List<string> {"KNP Gate"});
+
+                        var l = availableDestinations.Count;
+                        var rnd = new Random();
+                        var i = rnd.Next(0, l);
+                        var destinationPoco = availableDestinations[i];
+                        var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Poi.Position, SpatialModalityType.CarDriving);
+
+  
+                        VehicleHandle.Route = _travelLayer.FindRoute(sourceNode, destinationNode, 4 * 3600);
+  
+                        //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Tourist goes back to {destinationPoco.Poi.Name}");
+
+                        
+                        Console.WriteLine($"{_sgmLayer.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{destinationPoco.Poi.Name}");
+                        
+                        var geoJson = VehicleHandle.Route.ToGeoJson();
+                        File.WriteAllText("route_back_" + ID + ".json", geoJson);
+                    }           
+                }
+            }
 
             // Always call Move, since braking is "handled" by the AnimalSighting car ahead
             VehicleHandle.Move();
@@ -159,6 +206,9 @@ namespace KrugerNationalPark.Agents
         /// </summary>
         public TouristState State { get; set; }
 
+
+        private ILogger log;
+        
         /// <summary>
         ///     The start time and end time of the agent's tour
         /// </summary>
@@ -209,6 +259,16 @@ namespace KrugerNationalPark.Agents
         ///     time to start driving after an animal sighting
         /// </summary>
         private DateTime _departureTime;
+        
+        /// <summary>
+        ///     start time of break/pause/etc at some poi
+        /// </summary>
+        private DateTime? _arrivalTimePoi = null;
+
+        /// <summary>
+        ///     time to start driving after a stop at a poi
+        /// </summary>
+        private DateTime? _departureTimePoi;
 
         // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
         // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
@@ -220,6 +280,10 @@ namespace KrugerNationalPark.Agents
 
         public SpatialGraphMediatorLayer _sgmLayer;
 
+
+        private KnpPoi currentSourcePoi;
+        private DestinationPOCO currentDestinationPoi;
+        
         public Car Car { get; set; }
 
         public Position Position
