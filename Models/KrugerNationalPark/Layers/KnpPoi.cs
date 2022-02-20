@@ -43,7 +43,7 @@ namespace KrugerNationalPark.Layers
         // TODO: determine which Pois can be reached within timeLimit and return them in a list
         public List<Position> GetDestinationPoiPosition(int timeLimit)
         {
-            return new();
+            return new List<Position>();
         }
     }
 }
