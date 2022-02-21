@@ -368,3 +368,7 @@ pyvenv.
 .ipynb_checkpoints
 Documentation/docfx/plugins_vo650e38.vky/plugins/DocFx.Plugins.PlantUml.dll
 Documentation/docfx/plugins_vo650e38.vky/plugins/PlantUml.Net.dll
+Explorer/out/
+Explorer/resources/omnisharp/win/
+Explorer/.webpack/
+tools/

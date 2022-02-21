@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
@@ -15,6 +16,8 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents
 {
+    [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
     public class OvernightTourist : IAgent<StreetLayer>, ICarSteeringCapable
     {
         #region Tick

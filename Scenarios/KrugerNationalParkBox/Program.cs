@@ -6,7 +6,6 @@ using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
-using Mars.Common.Core.Logging.Enums;
 using Mars.Components.Starter;
 using Mars.Interfaces.Model;
 

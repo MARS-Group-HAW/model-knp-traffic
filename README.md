@@ -64,6 +64,15 @@ dotnet test
 
 When you want to contribute some features and further refine the system, open the `LIFE.sln` file in with an suiteable IDE. We recommend to use [Jetbrains Rider](https://www.jetbrains.com/de-de/rider/) or [Mircosoft Visual Studio](https://visualstudio.microsoft.com/de/).
 
+For *integration tests* you have to use the pre-defined ``docker-compose.yaml`` configuration by calling:
+
+```bash
+docker compose -f Deployments/docker-compose.yaml up -d
+```
+
+This will start all required containers for testing all data wrappers.
+
+
 ### Local Development
 
 When developing something for **Mars runtime system** according to a given model which not contained in this repository, it is required to pulblish the package first on your local system. 
