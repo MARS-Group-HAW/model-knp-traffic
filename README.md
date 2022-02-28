@@ -3,8 +3,6 @@
 
 ![Nuget](https://img.shields.io/nuget/dt/Mars.Life.Simulations) 
 
-[![coverage report](https://git.haw-hamburg.de/mars/life/badges/master/coverage.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
-
 [![pipeline status](https://git.haw-hamburg.de/mars/life/badges/master/pipeline.svg)](https://git.haw-hamburg.de/mars/life/-/commits/master)
 
 <h1  align="center">MARS Runtime System | <a  href="https://mars-group.org">Website</a></h1>
