@@ -340,12 +340,6 @@ Mars.Documentation/mathematics
 Mars.Documentation/simulation
 Models/SOHInfectionModel/out
 Tests/.\\TestResults
-Documentation/common
-Documentation/components
-Documentation/soh
-Documentation/geometry
-Documentation/mathematics
-Documentation/simulation
 Documentation/site
 Models/SOHModelStarter/out
 Models/SOHFerryTransferBox/SOHFerryTransfer
