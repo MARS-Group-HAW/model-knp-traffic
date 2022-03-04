@@ -33,6 +33,8 @@ namespace KrugerNationalPark.Agents
         [PropertyDescription]
         public UnregisterAgent UnregisterHandle { get; set; }
 
+        private bool finished = false;
+
         public void Init(VisitorTravelerLayer layer)
         {
             
@@ -151,9 +153,11 @@ namespace KrugerNationalPark.Agents
                 } else
                 {
                     if (_departureTimePoi?.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault())
-                        .TotalMinutes < 0)
+                        .TotalMinutes < 0 && !finished)
                     {
                         // pause vorbei!
+
+                        finished = true;
                         
                         var sourcePoi = PoiLayer.Nearest(currentDestinationPoi.Poi.Position);
                         var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
