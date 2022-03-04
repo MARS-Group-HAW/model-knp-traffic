@@ -3,7 +3,7 @@
     "deltaT": 1,
     "deltaTUnit": "seconds",
     "startTime": "2019-01-01T06:00:00.000Z",
-    "endTime": "2019-01-01T10:00:00.000Z",
+    "endTime": "2019-01-01T18:00:00.000Z",
     "output": "csv",
     "console" : false,
     "debug": true,
@@ -58,7 +58,7 @@
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/CommScheduler_debug_1.csv"
     },
     {
       "name": "ProducerSchedulingLayer",

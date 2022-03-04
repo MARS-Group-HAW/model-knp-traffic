@@ -82,7 +82,7 @@ namespace KrugerNationalPark.Agents
             var sourcePoi = PoiLayer.Nearest(Position);
             currentSourcePoi = sourcePoi;
             
-            var availableDestinations = sourcePoi.getDestinationPOIs(4 * 3600, new List<string> {"Rest camp"});
+            var availableDestinations = sourcePoi.getDestinationPOIs(2 * 3600, new List<string> {"Rest camp"});
 
             var l = availableDestinations.Count;
             var rnd = new Random();
@@ -91,7 +91,7 @@ namespace KrugerNationalPark.Agents
             var destinationNode = _sgmLayer.Environment.NearestNode(currentDestinationPoi.Poi.Position, SpatialModalityType.CarDriving);
 
   
-            handle.Route = _travelLayer.FindRoute(_originNode, destinationNode, 4 * 3600);
+            handle.Route = _travelLayer.FindRoute(_originNode, destinationNode, 2 * 3600);
             VehicleHandle = handle;
 
             // save route to geojson
@@ -162,7 +162,7 @@ namespace KrugerNationalPark.Agents
                         var sourcePoi = PoiLayer.Nearest(currentDestinationPoi.Poi.Position);
                         var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
-                        var availableDestinations = sourcePoi.getDestinationPOIs(4 * 3600, new List<string> {"KNP Gate"});
+                        var availableDestinations = sourcePoi.getDestinationPOIs(2 * 3600, new List<string> {"KNP Gate"});
 
                         var l = availableDestinations.Count;
                         var rnd = new Random();
@@ -171,7 +171,7 @@ namespace KrugerNationalPark.Agents
                         var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Poi.Position, SpatialModalityType.CarDriving);
 
   
-                        VehicleHandle.Route = _travelLayer.FindRoute(sourceNode, destinationNode, 4 * 3600);
+                        VehicleHandle.Route = _travelLayer.FindRoute(sourceNode, destinationNode, 3 * 3600);
   
                         //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Tourist goes back to {destinationPoco.Poi.Name}");
 

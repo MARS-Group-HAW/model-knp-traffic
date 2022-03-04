@@ -27,7 +27,7 @@ namespace KrugerNationalPark.Agents
         public void Tick()
         {
             var random = new Random();
-            if (random.NextDouble() >= 0.5)
+            if (random.NextDouble() >= 0.9)
             {
                 var eventStartTime = _travellerLayer.Context.CurrentTimePoint.GetValueOrDefault();
                 var node = _travellerLayer.SpatialGraphMediatorLayer.Environment.GetRandomNode();
