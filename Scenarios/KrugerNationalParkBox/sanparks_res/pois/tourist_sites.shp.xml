@@ -16,7 +16,7 @@
             </citeinfo>
         </citation>
         <descript>
-            <abstract>General Tourist sites for the Kruger National Park.</abstract>
+            <abstract>General Visitor sites for the Kruger National Park.</abstract>
             <purpose>For the KNP Scientific Services GIS database - for research
 and cartographic products. This database is intended to be
 extended or incorporated into a future KNP "Regional GIS"
@@ -499,16 +499,16 @@ requested data are practically too large to send as e-mail attachments.
                 <copy source="S:\Kruger\Infrastructure\tourist_sites" dest="\\SPSKAD818625\D$\Data Requests\Data requests - 2021\Nima Ahmady-Moghaddam\SANParks data - 27102021\tourist_sites" date="20211027" time="11403700"/>
             </copyHistory>
             <lineage>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120722" Name="" export="">CalculateField "Tourist Sites" TYPE [DESCRIPT] VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120807" Name="" export="">CalculateField "Tourist Sites" TYPE "Get out point" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120840" Name="" export="">CalculateField "Tourist Sites" TYPE "Look out point" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120906" Name="" export="">CalculateField "Tourist Sites" TYPE "Picnic spot" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120928" Name="" export="">CalculateField "Tourist Sites" TYPE "Look out point" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="121344">CalculateField "Tourist Sites" DESCRIPT "koppie" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="121352">CalculateField "Tourist Sites" TYPE "koppie" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="122411">CalculateField "Tourist Sites" DESCRIPT "picnic spot?" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="122450">CalculateField "Tourist Sites" TYPE "old picnic spot?" VB #</Process>
-                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="141412">CalculateField "Tourist Sites" TYPE "Dam" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120722" Name="" export="">CalculateField "Visitor Sites" TYPE [DESCRIPT] VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120807" Name="" export="">CalculateField "Visitor Sites" TYPE "Get out point" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120840" Name="" export="">CalculateField "Visitor Sites" TYPE "Look out point" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120906" Name="" export="">CalculateField "Visitor Sites" TYPE "Picnic spot" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20150622" Time="120928" Name="" export="">CalculateField "Visitor Sites" TYPE "Look out point" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="121344">CalculateField "Visitor Sites" DESCRIPT "koppie" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="121352">CalculateField "Visitor Sites" TYPE "koppie" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="122411">CalculateField "Visitor Sites" DESCRIPT "picnic spot?" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="122450">CalculateField "Visitor Sites" TYPE "old picnic spot?" VB #</Process>
+                <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170425" Time="141412">CalculateField "Visitor Sites" TYPE "Dam" VB #</Process>
                 <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170719" Time="123018">CalculateField tourist_sites DESCRIPT "Disused picnic spot" VB #</Process>
                 <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20170719" Time="123022">CalculateField tourist_sites TYPE "Disused picnic spot" VB #</Process>
                 <Process ToolSource="c:\program files (x86)\arcgis\desktop10.3\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20180323" Time="073056">CalculateField tourist_sites TYPE "Look out point" VB #</Process>
@@ -574,10 +574,10 @@ requested data are practically too large to send as e-mail attachments.
 and cartographic products. This database is intended to be
 extended or incorporated into a future KNP "Regional GIS"
 node of SANP.</idPurp>
-        <idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;General Tourist sites for the Kruger National Park.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs>
+        <idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;General Visitor sites for the Kruger National Park.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs>
         <searchKeys>
             <keyword>Kruger National Park</keyword>
-            <keyword>Tourist Sites</keyword>
+            <keyword>Visitor Sites</keyword>
         </searchKeys>
         <resConst>
             <Consts>

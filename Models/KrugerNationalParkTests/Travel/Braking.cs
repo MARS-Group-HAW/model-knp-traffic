@@ -42,9 +42,9 @@ namespace KrugerNationalParkTests.Travel
             description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
             description.AddLayer<VisitorTravelerLayer>();   
             description.AddLayer<POILayer>();
-            description.AddLayer<TouristSchedulingLayer>();
+            description.AddLayer<VisitorSchedulingLayer>();
             
-            description.AddAgent<Tourist, VisitorTravelerLayer>();
+            description.AddAgent<Visitor, VisitorTravelerLayer>();
             
             description.AddEntity<KnpCar>();
             
@@ -91,7 +91,7 @@ namespace KrugerNationalParkTests.Travel
                     },
                     new LayerMapping
                     {
-                        Name = nameof(TouristSchedulingLayer),
+                        Name = nameof(VisitorSchedulingLayer),
                         File = "resources/TouristScheduler_brakeOnEvent.csv"
                     }
                 },
@@ -107,7 +107,7 @@ namespace KrugerNationalParkTests.Travel
                 {
                     new AgentMapping
                     {
-                        Name = nameof(Tourist), InstanceCount = 1,
+                        Name = nameof(Visitor), InstanceCount = 1,
                         Outputs = new List<Output>
                         {
                             new()
@@ -162,7 +162,7 @@ namespace KrugerNationalParkTests.Travel
 
             var context = SimulationContext.Start2020InSeconds;
 
-            var visitor = new Tourist();
+            var visitor = new Visitor();
             
             
             var mediator = new SpatialGraphMediatorLayer();
