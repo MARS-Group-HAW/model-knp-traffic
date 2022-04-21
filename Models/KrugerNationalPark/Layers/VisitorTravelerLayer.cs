@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mars.Common.Core;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
-using ServiceStack;
 using SOHDomain.Graph;
-using SOHMultimodalModel.Multimodal;
 
 namespace KrugerNationalPark.Layers
 {
@@ -17,10 +14,10 @@ namespace KrugerNationalPark.Layers
 
         public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
         {
-            return FindRoute(from, to, timeLimit, edge => ((String) edge.Attributes["access"] == "Public"));
+            return FindRoute(from, to, timeLimit, edge => ((string) edge.Attributes["access"] == "Public"));
         }
         
-        public Route FindOSVRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
+        public Route FindOsvRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
         {
             // Todo: OSVs are allowed to drive on Public and Staff routes, but not "Private" routes.
             // at the moment it's not clear if we want to import Private marked routes or not
@@ -34,11 +31,12 @@ namespace KrugerNationalPark.Layers
         /// <param name="start"></param>
         /// <param name="goal"></param>
         /// <param name="timeLimit"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
         public Route FindRoute(ISpatialNode start, ISpatialNode goal, double timeLimit, Func<ISpatialEdge, bool> filter = null)
         {
             var currentNode = start;
-            var prevEdge = currentNode.OutgoingEdges.Values.ToList()[0]; // 
+            var prevEdge = currentNode.OutgoingEdges.Values.ToList()[0];
             var prevNode = prevEdge.From;
             var rt = new Route();
 
@@ -157,9 +155,7 @@ namespace KrugerNationalPark.Layers
 
             return duration;
         }
-        
-        
-        
+
         [PropertyDescription]
         public SpatialGraphMediatorLayer SpatialGraphMediatorLayer { get; set; }
     }

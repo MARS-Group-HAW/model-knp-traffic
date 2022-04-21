@@ -57,12 +57,12 @@ namespace KrugerNationalParkBox
             
             description.AddLayer<POILayer>(); // Camps and Gates
 
-            description.AddLayer<TouristSchedulingLayer>();
+            description.AddLayer<VisitorSchedulingLayer>();
             description.AddLayer<CommuterSchedulingLayer>();
             description.AddLayer<ProducerSchedulingLayer>();
 
             // Second register the agent types with their respective layer type
-            description.AddAgent<Tourist, VisitorTravelerLayer>();
+            description.AddAgent<Visitor, VisitorTravelerLayer>();
             description.AddAgent<Commuter, VisitorTravelerLayer>();
             
             description.AddAgent<Elephant, ElephantLayer>();
@@ -187,7 +187,7 @@ namespace KrugerNationalParkBox
                     },
                     new LayerMapping
                     {
-                        Name = nameof(TouristSchedulingLayer),
+                        Name = nameof(VisitorSchedulingLayer),
                         File = "resources/TouristScheduler_debug_1.csv"
                     },
                     new LayerMapping
@@ -213,7 +213,7 @@ namespace KrugerNationalParkBox
                 {
                     new AgentMapping
                     {
-                        Name = nameof(Tourist),
+                        Name = nameof(Visitor),
                         Outputs = new List<Output>
                         {
                             new()

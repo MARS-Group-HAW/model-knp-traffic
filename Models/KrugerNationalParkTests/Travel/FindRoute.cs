@@ -84,7 +84,7 @@ namespace KrugerNationalParkTests.Travel
             Assert.Equal(edge34, route2[1].Edge);
             
             
-            // Tourist can't reach node 5
+            // Visitor can't reach node 5
             var noRoute = environment.FindRoute(node1, node5, (_, edge, _) => edge.Length,
                 edge => ((String) edge.Attributes["access"] == "Public"));
 
@@ -145,7 +145,7 @@ namespace KrugerNationalParkTests.Travel
 
             
             // test that visitor takes the longer route, and not the shorter OSV / Staff route
-            var route = layer.FindOSVRoute(node1, node5, 5);
+            var route = layer.FindOsvRoute(node1, node5, 5);
             AssertEdgeAccess(route, new String[] {"Public", "Staff"});
 
             var geoJson = SpatialGraphHelper.ToGeoJson(route);
@@ -155,7 +155,7 @@ namespace KrugerNationalParkTests.Travel
             var route2 = layer.FindVisitorRoute(node1, node4, 2);
             AssertEdgeAccess(route2, new String[] {"Public"});
             
-            Assert.Throws<ArgumentException>(() => layer.FindOSVRoute(node1, node4, 1));
+            Assert.Throws<ArgumentException>(() => layer.FindOsvRoute(node1, node4, 1));
 
             Assert.Throws<ArgumentException>(() => layer.FindVisitorRoute(node1, node4, 1));
         }
@@ -421,9 +421,9 @@ namespace KrugerNationalParkTests.Travel
             var description = new ModelDescription();
             description.AddLayer<KnpStreetLayer>();
             description.AddLayer<POILayer>();
-            description.AddLayer<TouristSchedulingLayer>();
+            description.AddLayer<VisitorSchedulingLayer>();
 
-            description.AddAgent<Tourist, KnpStreetLayer>();
+            description.AddAgent<Visitor, KnpStreetLayer>();
 
             description.AddEntity<KnpCar>();
 
@@ -454,7 +454,7 @@ namespace KrugerNationalParkTests.Travel
                     },
                     new()
                     {
-                        Name = nameof(TouristSchedulingLayer),
+                        Name = nameof(VisitorSchedulingLayer),
                         File = Path.Combine("resources", "TouristScheduler_FindRoute.csv")
                     }
                 },
@@ -470,7 +470,7 @@ namespace KrugerNationalParkTests.Travel
                 {
                     new AgentMapping
                     {
-                        Name = nameof(Tourist), InstanceCount = 1,
+                        Name = nameof(Visitor), InstanceCount = 1,
                         Outputs = new List<Output>
                         {
                             new()
@@ -499,7 +499,7 @@ namespace KrugerNationalParkTests.Travel
             /*var description = new ModelDescription();
 
             description.AddLayer<StreetLayer>();
-            description.AddAgent<Tourist, StreetLayer>();
+            description.AddAgent<Visitor, StreetLayer>();
 
             
             var layer = new StreetLayer();
@@ -511,7 +511,7 @@ namespace KrugerNationalParkTests.Travel
                 }
             }, null, null);
 
-            var t = new Tourist();
+            var t = new Visitor();
             t.Init(layer);*/
         //}
         

@@ -4,11 +4,11 @@ using Mars.Interfaces.Environments;
 
 namespace KrugerNationalPark.Misc.Events
 {
-    public class KnpEventComponent : EventComponent<Tourist>
+    public class KnpEventComponent : EventComponent<Visitor>
     {
         private readonly EventsCollection EventsCollection;
 
-        public KnpEventComponent(Tourist entity) : base(entity)
+        public KnpEventComponent(Visitor entity) : base(entity)
         {
             MarsEventHandler.Instance.RegisterHandler<KnpEvent>(entity, HandleEvent);
 
@@ -32,7 +32,7 @@ namespace KrugerNationalPark.Misc.Events
             // don't look for the animal and keep driving
             // @todo: this removed the hassle of determining the next edge and position the car there,
             //        but maybe this is better for us anyway? discuss!
-            if (remainingDistance > Tourist.InsertAnimalSightingDistanceAhead)
+            if (remainingDistance > Visitor.InsertAnimalSightingDistanceAhead)
             {
                 Entity.EventHandled += 1;
                 Entity.Car.Driver.BrakingActivated = true;

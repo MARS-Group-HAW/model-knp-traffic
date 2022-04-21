@@ -63,13 +63,13 @@ namespace KrugerNationalParkBox
                 }
             }
             
-            var routeInfoList = new List<OriginPOCO>();
+            var routeInfoList = new List<OriginPoco>();
             
             for (var i = 0; i < pois.Count; i++)
             {
                 var originPoi = pois[i];
                 var originNode = spatialGraphEnvironment.NearestNode(originPoi.Position);
-                var timings = new List<DestinationPOCO>();
+                var timings = new List<DestinationPoco>();
 
                 Console.WriteLine("Origin: " + originPoi.Name + " (" + originPoi.Type + ")");
 
@@ -123,7 +123,7 @@ namespace KrugerNationalParkBox
                         tripTime += edge.Length / maxSpeed;
                     }
 
-                    var routeInfoPoco = new DestinationPOCO
+                    var routeInfoPoco = new DestinationPoco
                     {
                         Poi = destinationPoi,
                         Duration = tripTime,
@@ -133,7 +133,7 @@ namespace KrugerNationalParkBox
                     timings.Add(routeInfoPoco);
                 }
 
-                var originPoco = new OriginPOCO
+                var originPoco = new OriginPoco
                 {
                     Poi = originPoi,
                     Destinations = timings

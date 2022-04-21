@@ -10,7 +10,7 @@ namespace KrugerNationalPark.Layers
 {
     public class KnpPoi : IVectorFeature
     {
-        public OriginPOCO infoList;
+        public OriginPoco infoList;
 
         public Position Position { get; private set; }
 
@@ -34,24 +34,24 @@ namespace KrugerNationalPark.Layers
             // load timings form json into structure
             // todo: this could probably be hinted directly in the GeoJSON Properties for JObject?
             var list = VectorStructured.Data["routeList"].ToString();
-            infoList = JsonSerializer.Deserialize<OriginPOCO>(list);
+            infoList = JsonSerializer.Deserialize<OriginPoco>(list);
         }
 
         public void Update(VectorStructuredData data)
         {
             throw new NotImplementedException();
         }
-        
 
         /// <summary>
         /// </summary>
         /// <param name="timeLimit"></param>
+        /// <param name="allowedTypes"></param>
         /// <returns></returns>
 
         // TODO: determine which Pois can be reached within timeLimit and return them in a list
-        public List<DestinationPOCO> getDestinationPOIs(double timeLimit, List<string> allowedTypes = null)
+        public List<DestinationPoco> GetDestinationPois(double timeLimit, List<string> allowedTypes = null)
         {
-            List<DestinationPOCO> results = new();
+            List<DestinationPoco> results = new();
 
             foreach (var d in infoList.Destinations)
             {
