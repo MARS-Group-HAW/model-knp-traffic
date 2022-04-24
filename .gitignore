@@ -340,12 +340,6 @@ Mars.Documentation/mathematics
 Mars.Documentation/simulation
 Models/SOHInfectionModel/out
 Tests/.\\TestResults
-Documentation/common
-Documentation/components
-Documentation/soh
-Documentation/geometry
-Documentation/mathematics
-Documentation/simulation
 Documentation/site
 Models/SOHModelStarter/out
 Models/SOHFerryTransferBox/SOHFerryTransfer
@@ -366,3 +360,9 @@ pyvenv.
 *.sqlite
 **/.cache/
 .ipynb_checkpoints
+Documentation/docfx/plugins_vo650e38.vky/plugins/DocFx.Plugins.PlantUml.dll
+Documentation/docfx/plugins_vo650e38.vky/plugins/PlantUml.Net.dll
+Explorer/out/
+Explorer/resources/omnisharp/win/
+Explorer/.webpack/
+tools/
