@@ -36,12 +36,12 @@ namespace KrugerNationalParkBox
             LoggerFactory.SetLogLevel(LogLevel.Info);
 
             // First register each layer at the runtime system
-            description.AddLayer<RasterTempLayer>();
+            /*description.AddLayer<RasterTempLayer>();
             description.AddLayer<RasterFenceLayer>();
             description.AddLayer<RasterShadeLayer>();
             description.AddLayer<RasterVegetationLayer>();
             description.AddLayer<VectorWaterLayer>();
-            description.AddLayer<ElephantLayer>();
+            description.AddLayer<ElephantLayer>();*/
 
             //             description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetzt im KNP
 
@@ -64,7 +64,7 @@ namespace KrugerNationalParkBox
             description.AddAgent<Visitor, VisitorTravelerLayer>();
             description.AddAgent<Commuter, VisitorTravelerLayer>();
             
-            description.AddAgent<Elephant, ElephantLayer>();
+            //description.AddAgent<Elephant, ElephantLayer>();
             description.AddAgent<EventProducer, VisitorTravelerLayer>();
 
             description.AddEntity<KnpCar>();

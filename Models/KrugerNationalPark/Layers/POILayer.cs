@@ -1,4 +1,5 @@
 using System.Linq;
+using Mars.Common.Core;
 using Mars.Components.Layers;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
@@ -18,7 +19,7 @@ namespace KrugerNationalPark.Layers
 
         public KnpPoi Nearest(Position position)
         {
-            return Explore(position.PositionArray).FirstOrDefault().Value;
+            return Explore(position.PositionArray).FirstOrDefault();
         }
     }
 }
