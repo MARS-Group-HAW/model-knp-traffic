@@ -40,7 +40,7 @@
       "name": "SpatialGraphMediatorLayer",
       "inputs": [
         {
-          "file": "resources/knp_graph.geojson",
+          "file": "resources/roads_all_2019_inferred2.geojson",
           "inputConfiguration": {
             "modalities": ["CarDriving"],
             "isBidirectedGraph": true
@@ -50,7 +50,7 @@
     },
     {
       "name": "POILayer",
-      "file": "resources/pois.geojson"
+      "file": "resources/pois_inferred.geojson"
     },
     {
       "name": "TouristSchedulingLayer",

@@ -7,6 +7,7 @@ using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
+using Mars.Components.Environments;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
 using Mars.Interfaces.Environments;
@@ -27,6 +28,27 @@ namespace KrugerNationalParkBox
                 return;
             }
 
+            // only one binary output per project is possible -> use argument to trigger
+            // prepare san park graph as geojson layer, this takes quite some time 
+            // since we infer graph intersections
+            if (args.Any(s => s.Equals("-infergraph")))
+            {
+                var input = new Input
+                {
+                    File = "resources/roads_all_2019.geojson",
+                    //File = "resources/moreIntersectionsAfterImport2.geojson",
+                    InputConfiguration = new InputConfiguration
+                        { InferNodesOnEdgeIntersections = true, IsBiDirectedImport = true }
+                };
+                var graph = new SpatialGraphEnvironment(input);
+
+                Console.WriteLine("Inferring is finished, saving now...");
+                var json = graph.ToGeoJson(); // <- richtig? 
+                File.WriteAllText("resources/roads_all_2019_inferred.geojson", json);
+                //System.IO.File.WriteAllText("resources/moreIntersectionsAfterImport2_inferred.geojson", json);
+
+                return;
+            }
 
             // Build model...
             var watch = Stopwatch.StartNew();
@@ -166,7 +188,8 @@ namespace KrugerNationalParkBox
                         {
                             new Input
                             {
-                                File = "resources/knp_graph.geojson",
+                                //File = "resources/knp_graph.geojson",
+                                File = "resources/roads_all_2019_inferred.geojson",
                                 //File = "resources/roads_all_2019_public.geojson",
                                 InputConfiguration = new InputConfiguration
                                 {
@@ -182,7 +205,7 @@ namespace KrugerNationalParkBox
                     new LayerMapping
                     {
                         Name = nameof(POILayer),
-                        File = "resources/pois.geojson"
+                        File = "resources/pois_inferred.geojson"
                     },
                     new LayerMapping
                     {

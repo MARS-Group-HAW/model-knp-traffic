@@ -11,7 +11,7 @@ from geojson import Point, Feature, FeatureCollection, dumps
 
 
 try:
-    with open('resources/pois.json') as f:
+    with open('resources/pois_inferred.json') as f:
         data = json.load(f)
 except EnvironmentError: # parent of IOError, OSError *and* WindowsError where available
     print("Make sure resources/pois.json exists and timings have been generated")
@@ -37,5 +37,5 @@ fc = FeatureCollection(features)
 jsonString = dumps(fc)
 
 
-with open("resources/pois.geojson", "w") as text_file:
+with open("resources/pois_inferred.geojson", "w") as text_file:
     text_file.write(jsonString)

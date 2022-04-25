@@ -24,7 +24,7 @@ namespace KrugerNationalParkBox
                 {
                     new()
                     {
-                        File = "resources/knp_graph.geojson",
+                        File = "resources/roads_all_2019_inferred.geojson",
                         InputConfiguration = new InputConfiguration
                         {
                             IsBiDirectedImport = true,
