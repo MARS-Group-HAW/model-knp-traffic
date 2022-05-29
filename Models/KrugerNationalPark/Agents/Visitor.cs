@@ -33,7 +33,7 @@ namespace KrugerNationalPark.Agents
             _travelLayer = layer;
             _sgmLayer = layer.SpatialGraphMediatorLayer;
             ElephantCounter = 0;
-            State = TouristState.Driving;
+            State = VisitorState.Driving;
 
             _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
 
@@ -102,23 +102,23 @@ namespace KrugerNationalPark.Agents
             // we are driving around and waiting for an animal sighting event
             // todo: on the qy home should we prevent looking for animals?
 
-            if (State == TouristState.Braking)
+            if (State == VisitorState.Braking)
             {
                 if (Car.Velocity == 0)
                 {
                     // we are at a stand now, start timer to remove AnimalSighting "car"
                     _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
                     _departureTime = _arrivalTime.AddMinutes(lookDuration);
-                    State = TouristState.Looking;
+                    State = VisitorState.Looking;
                 }
             }
-            else if (State == TouristState.Looking)
+            else if (State == VisitorState.Looking)
             {
                 //@todo : logik validieren, in der simulation sah es so aus lob die dauernd bremsen
                 if (_departureTime.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     Car.Driver.BrakingActivated = false;
-                    State = TouristState.Driving;
+                    State = VisitorState.Driving;
                 }
             }
 
@@ -207,7 +207,7 @@ namespace KrugerNationalPark.Agents
         /// <summary>
         ///     State of the tourist (driving around, looking at wildlife, ...)
         /// </summary>
-        public TouristState State { get; set; }
+        public VisitorState State { get; set; }
 
 
         private ILogger log;

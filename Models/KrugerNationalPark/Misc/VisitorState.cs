@@ -1,6 +1,6 @@
 namespace KrugerNationalPark.Misc
 {
-    public enum TouristState
+    public enum VisitorState
     {
         Driving,
         Braking,

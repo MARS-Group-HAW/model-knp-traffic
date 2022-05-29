@@ -137,7 +137,7 @@ namespace KrugerNationalPark.Agents
 
         /// <summary>
         ///     WKT Multipoint with variable amount of target points. On is chosen by random.
-        ///     Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)
+        ///     Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)"
         /// </summary>
         [PropertyDescription(Name = "destination")]
         public Geometry TargetGeometry { get; set; }
@@ -146,7 +146,7 @@ namespace KrugerNationalPark.Agents
         ///     Duration of work at the camp, in minutes.
         /// </summary>
         [PropertyDescription(Name = "workDuration")]
-        private double WorkDuration { get; set; }
+        public double WorkDuration { get; set; }
 
         /// <summary>
         ///     The agent's arrival time at work, and departure time from work (each in hours)
