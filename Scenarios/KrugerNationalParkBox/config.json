@@ -53,8 +53,8 @@
       "file": "resources/pois_inferred.geojson"
     },
     {
-      "name": "TouristSchedulingLayer",
-      "file": "resources/TouristScheduler_debug_1.csv"
+      "name": "VisitorSchedulingLayer",
+      "file": "resources/_emptyScheduler.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
@@ -82,7 +82,7 @@
       "name": "EventProducer"
     },
     {
-      "name": "Tourist",
+      "name": "Visitor",
       "outputs": [
         {
           "kind": "trips",

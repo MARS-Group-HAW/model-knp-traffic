@@ -58,21 +58,19 @@ namespace KrugerNationalParkBox
             LoggerFactory.SetLogLevel(LogLevel.Info);
 
             // First register each layer at the runtime system
-            /*description.AddLayer<RasterTempLayer>();
+            /*
+            description.AddLayer<RasterTempLayer>();
             description.AddLayer<RasterFenceLayer>();
             description.AddLayer<RasterShadeLayer>();
             description.AddLayer<RasterVegetationLayer>();
             description.AddLayer<VectorWaterLayer>();
-            description.AddLayer<ElephantLayer>();*/
-
-            //             description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetzt im KNP
-
+            description.AddLayer<ElephantLayer>();
+            description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetz im KNP
+            */
             
             description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
             
-            
             description.AddLayer<VisitorTravelerLayer>();
-            
             
             //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
             
@@ -104,6 +102,7 @@ namespace KrugerNationalParkBox
 
                 SimulationConfig simConfig;
                 string file;
+                
                 if (args.Any(s => s.Equals("-sm")))
                 {
                     var index = args.IndexOf(s => s == "-sm");
@@ -118,12 +117,10 @@ namespace KrugerNationalParkBox
                     simConfig = SimConfig();
                 }
 
-
                 var starter = SimulationStarter.Start(description, simConfig);
 
                 result = starter.Run();
             }
-
 
             watch.Stop();
             Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
@@ -210,12 +207,12 @@ namespace KrugerNationalParkBox
                     new LayerMapping
                     {
                         Name = nameof(VisitorSchedulingLayer),
-                        File = "resources/TouristScheduler_debug_1.csv"
+                        File = "resources/_emptyScheduler.csv"
                     },
                     new LayerMapping
                     {
                         Name = nameof(CommuterSchedulingLayer),
-                        File = "resources/_emptyScheduler.csv"
+                        File = "resources/CommScheduler_debug_1.csv"
                     },
                     new LayerMapping
                     {
