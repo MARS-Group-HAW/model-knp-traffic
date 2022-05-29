@@ -24,7 +24,7 @@ namespace KrugerNationalPark.Misc.Events
 
             Entity.EventPossibleRelevant += 1;
             // @todo: what number is good, or layer with probabilities?
-            if (Entity.State != TouristState.Driving) return;
+            if (Entity.State != VisitorState.Driving) return;
             // 1. determine our position
             var remainingDistance = Entity.VehicleHandle.RemainingDistanceOnEdge;
 
@@ -38,7 +38,7 @@ namespace KrugerNationalPark.Misc.Events
                 Entity.Car.Driver.BrakingActivated = true;
 
                 // 4. enter braking state 
-                Entity.State = TouristState.Braking;
+                Entity.State = VisitorState.Braking;
 
                 // log event
                 // todo: call write to file only after sim has finished, not always.

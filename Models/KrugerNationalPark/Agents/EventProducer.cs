@@ -8,16 +8,12 @@ namespace KrugerNationalPark.Agents
 {
     public class EventProducer : IAgent<VisitorTravelerLayer>
     {
-        private VisitorTravelerLayer _travellerLayer;
-
-        private EventsCollection EventsCollection;
-
         #region Initialization
 
         public void Init(VisitorTravelerLayer layer)
         {
             _travellerLayer = layer;
-            EventsCollection = new EventsCollection();
+            _eventsCollection = new EventsCollection();
         }
 
         #endregion Initialization
@@ -42,15 +38,17 @@ namespace KrugerNationalPark.Agents
                         var i = rndEdgePosI.Next(edge.Geometry.Length);
                         var pos = edge.Geometry[i];
 
-                        var e = new KnpEvent(pos, eventStartTime);
+                        var e = new KnpEvent(pos, eventStartTime)
+                        {
+                            // todo: this is just a random radius to show on kepler.gl, refactor so agents actually use it
+                            Radius = (int) (random.NextDouble() * 1000)
+                        };
 
-                        // todo: this is just a random radius to show on kepler.gl, refactor so agents actually use it
-                        e.Radius = (int) (random.NextDouble() * 1000);
                         MarsEventHandler.Instance.Invoke(e);
 
-                        EventsCollection.Add(e);
+                        _eventsCollection.Add(e);
                         // calling the log function for ALL events makes the sim really slow
-                        //EventsCollection.TearDown();
+                        //_eventsCollection.TearDown();
                     }
             }
         }
@@ -60,6 +58,10 @@ namespace KrugerNationalPark.Agents
         #region Properties
 
         public Guid ID { get; set; }
+        
+        private VisitorTravelerLayer _travellerLayer;
+
+        private EventsCollection _eventsCollection;
 
         #endregion Properties
 
