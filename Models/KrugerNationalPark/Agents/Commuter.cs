@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Common;
@@ -17,8 +18,9 @@ using Position = Mars.Interfaces.Environments.Position;
 namespace KrugerNationalPark.Agents
 {
     /// <summary>
-    ///     Commuter who starts at a gate, travels to a specified Camp for a specified duration of work.
-    ///     Configuration from scheduler CSV file (will only by "spawned" by CommuterSchedulingLayer.cs).
+    ///     Commuter starts at a KNP gate and travels to a KNP rest camp for a specified amount of time (work duration).
+    ///     Configurable in CSV file used for CommuterSchedulingLayer.
+    ///     Spawned by CommuterSchedulingLayer.
     /// </summary>
     public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     {
@@ -28,26 +30,40 @@ namespace KrugerNationalPark.Agents
         {
             State = CommuterState.GoingToWork;
             _sgmLayer = layer.SpatialGraphMediatorLayer;
-            
+
             TripsCollection = new TripsCollection(layer.Context);
 
             var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
             car.Environment = _sgmLayer.Environment;
             Car = car;
 
-            // todo: Source is a Point, no Random needed?
             Position = SourceGeometry.RandomPositionFromGeometry();
 
             car.TryEnterDriver(this, out var handle);
 
-            // From given MULTIPOINT Geometry get a random POINT
-            // @todo: RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
-            var target = TargetGeometry.Coordinates;
-            var length = target.Length;
-            var rnd = new Random();
-            var index = rnd.Next(length);
-            var targetCor = target[index];
-            var targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
+            Position targetPos;
+            
+            Console.WriteLine(TargetGeometry);
+            
+            if (TargetGeometry is not null)
+            {
+                // From given MULTIPOINT Geometry, get a random POINT
+                // todo: RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
+                var target = TargetGeometry.Coordinates;
+                var numberOfPotentialDestinations = target.Length;
+                var randomIndex = new Random().Next(numberOfPotentialDestinations);
+                var targetCor = target[randomIndex];
+                targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
+            }
+            else
+            {
+                // Destination is undefined. Therefore, randomly choose a rest camp that is within 1.5 hours from source
+                var sourcePoi = PoiLayer.Nearest(Position);
+                var availableDestinations = sourcePoi.GetDestinationPois(1.5 * 3600, new List<string> { "Rest camp" });
+                var numberOfPotentialDestinations = availableDestinations.Count;
+                var destinationIndex = new Random().Next(numberOfPotentialDestinations);
+                targetPos = availableDestinations[destinationIndex].Poi.Position;
+            }
 
             OriginNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
             _sgmLayer.Environment.Insert(car, OriginNode);
@@ -76,7 +92,7 @@ namespace KrugerNationalPark.Agents
                     _departureTime = _arrivalTime.AddMinutes(WorkDuration);
                 }
                 else if (State == CommuterState.Working && _departureTime
-                    .Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+                             .Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
                 {
                     // finished working -> go back to origin gate
                     State = CommuterState.GoingHome;
@@ -135,12 +151,14 @@ namespace KrugerNationalPark.Agents
         [PropertyDescription(Name = "source")]
         public Geometry SourceGeometry { get; set; }
 
+#nullable enable
         /// <summary>
         ///     WKT Multipoint with variable amount of target points. On is chosen by random.
         ///     Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)"
         /// </summary>
         [PropertyDescription(Name = "destination")]
-        public Geometry TargetGeometry { get; set; }
+        public Geometry? TargetGeometry { get; set; }
+#nullable disable
 
         /// <summary>
         ///     Duration of work at the camp, in minutes.
@@ -159,6 +177,11 @@ namespace KrugerNationalPark.Agents
         ///     The agent's reference to the KNP traffic network
         /// </summary>
         private SpatialGraphMediatorLayer _sgmLayer;
+
+        /// <summary>
+        ///     The agent's reference to the KNP POI layer, which holds gates, rest camps, and other POIs in the KNP
+        /// </summary>
+        public POILayer PoiLayer { get; set; }
 
         /// <summary>
         ///     Position of our car/agent on the map.

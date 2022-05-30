@@ -114,7 +114,7 @@ namespace KrugerNationalParkBox
                 }
                 else
                 {
-                    simConfig = SimConfig();
+                    simConfig = GenerateSimConfig();
                 }
 
                 var starter = SimulationStarter.Start(description, simConfig);
@@ -126,7 +126,7 @@ namespace KrugerNationalParkBox
             Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
         }
 
-        public static SimulationConfig SimConfig()
+        private static SimulationConfig GenerateSimConfig()
         {
             var start = new DateTime(2019, 1, 1, 6, 0, 00);
             var end = start + TimeSpan.FromHours(12);
@@ -143,7 +143,7 @@ namespace KrugerNationalParkBox
                         Delimiter = ",",
                         NumberFormat = "G"
                     },
-                    ShowConsoleProgress = false,
+                    ShowConsoleProgress = true,
                     EnableSimpleVisualization = false
                 },
                 LayerMappings = new List<LayerMapping>
@@ -212,7 +212,7 @@ namespace KrugerNationalParkBox
                     new LayerMapping
                     {
                         Name = nameof(CommuterSchedulingLayer),
-                        File = "resources/CommScheduler_debug_1.csv"
+                        File = "resources/CommScheduler_noDest.csv"
                     },
                     new LayerMapping
                     {
