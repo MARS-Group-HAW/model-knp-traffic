@@ -72,10 +72,9 @@ namespace KrugerNationalPark.Agents
 
             var availableDestinations = sourcePoi.GetDestinationPois(4 * 3600, new List<string> { "Rest camp" });
 
-            var l = availableDestinations.Count;
-            var rnd = new Random();
-            var i = rnd.Next(0, l);
-            currentDestinationPoi = availableDestinations[i];
+            var numberOfPotentialDestinations = availableDestinations.Count;
+            var destinationIndex = new Random().Next(0, numberOfPotentialDestinations);
+            currentDestinationPoi = availableDestinations[destinationIndex];
             var destinationNode =
                 _sgmLayer.Environment.NearestNode(currentDestinationPoi.Poi.Position, SpatialModalityType.CarDriving);
 
@@ -238,8 +237,9 @@ namespace KrugerNationalPark.Agents
         [PropertyDescription(Name = "source")]
         public Geometry SourceGeometry { get; set; }
 
+        // todo: use this if it is set from outside. If not, choose destination dynamically
         [PropertyDescription(Name = "destination")]
-        private Geometry TargetGeometry { get; set; }
+        public Geometry TargetGeometry { get; set; }
 
         /// <summary>
         ///     A queue containing one DateTime object for each node of the agent's node
