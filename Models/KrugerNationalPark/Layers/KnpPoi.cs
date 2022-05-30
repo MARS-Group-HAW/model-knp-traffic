@@ -44,8 +44,8 @@ namespace KrugerNationalPark.Layers
 
         /// <summary>
         /// </summary>
-        /// <param name="timeLimit"></param>
-        /// <param name="allowedTypes"></param>
+        /// <param name="timeLimit"></param> maximum amount of travel time in seconds
+        /// <param name="allowedTypes"></param> types of POIs that are requested as travel destinations
         /// <returns></returns>
 
         // TODO: determine which Pois can be reached within timeLimit and return them in a list
@@ -59,7 +59,7 @@ namespace KrugerNationalPark.Layers
                 if (d.Duration > timeLimit) continue;
 
                 // if only special types are requested, search only for wanted
-                if (allowedTypes != null && !allowedTypes.Contains(d.Poi.Type)) continue;
+                if (allowedTypes is not null && !allowedTypes.Contains(d.Poi.Type)) continue;
 
                 results.Add(d);
             }
