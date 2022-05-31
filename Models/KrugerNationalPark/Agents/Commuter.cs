@@ -28,6 +28,10 @@ namespace KrugerNationalPark.Agents
 
         public void Init(VisitorTravelerLayer layer)
         {
+            Console.WriteLine(SourceName);
+            var testPoi = PoiLayer.GetPositionFromName(SourceName);
+            Console.WriteLine(testPoi.Name);
+            
             State = CommuterState.GoingToWork;
             _sgmLayer = layer.SpatialGraphMediatorLayer;
 
@@ -145,6 +149,9 @@ namespace KrugerNationalPark.Agents
         private ISpatialNode OriginNode;
         private ISpatialNode WorkplaceNode;
 
+        [PropertyDescription(Name = "sourceName")]
+        public string SourceName { get; set; }
+        
         /// <summary>
         ///     Format: WKT Point (`POINT (31.482268 -24.979422)`).
         /// </summary>

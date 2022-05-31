@@ -143,7 +143,7 @@ namespace KrugerNationalParkBox
                         Delimiter = ",",
                         NumberFormat = "G"
                     },
-                    ShowConsoleProgress = true,
+                    ShowConsoleProgress = false,
                     EnableSimpleVisualization = false
                 },
                 LayerMappings = new List<LayerMapping>
