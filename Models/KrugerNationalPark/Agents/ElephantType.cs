@@ -1,10 +1,9 @@
-﻿namespace KrugerNationalPark.Agents
+﻿namespace KrugerNationalPark.Agents;
+
+public enum ElephantType
 {
-    public enum ElephantType
-    {
-        ElephantCow,
-        ElephantBull,
-        ElephantCalf,
-        ElephantNewborn
-    }
+    ElephantCow,
+    ElephantBull,
+    ElephantCalf,
+    ElephantNewborn
 }

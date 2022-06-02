@@ -1,9 +1,8 @@
-﻿namespace KrugerNationalPark.Agents
+﻿namespace KrugerNationalPark.Agents;
+
+public enum ElephantLifePeriod
 {
-    public enum ElephantLifePeriod
-    {
-        Calf,
-        Adolescent,
-        Adult
-    }
+    Calf,
+    Adolescent,
+    Adult
 }

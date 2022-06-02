@@ -1,9 +1,8 @@
 ﻿using KrugerNationalPark.Agents;
 using Mars.Components.Layers;
 
-namespace KrugerNationalPark.Layers
+namespace KrugerNationalPark.Layers;
+
+public class ProducerSchedulingLayer : AgentSchedulerLayer<EventProducer, VisitorTravelerLayer>
 {
-    public class ProducerSchedulingLayer : AgentSchedulerLayer<EventProducer, VisitorTravelerLayer>
-    {
-    }
 }
