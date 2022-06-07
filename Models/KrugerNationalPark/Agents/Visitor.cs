@@ -193,7 +193,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     public IEventComponent KnpEventComponent { get; set; }
 
-    public POILayer PoiLayer { get; set; }
+    public PoiLayer PoiLayer { get; set; }
     public Guid ID { get; set; }
     public int StableId { get; }
 

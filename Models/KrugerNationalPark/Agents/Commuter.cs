@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
-using Mars.Common;
 using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
@@ -28,10 +27,6 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     public void Init(VisitorTravelerLayer layer)
     {
-        Console.WriteLine(SourceName);
-        var testPoi = PoiLayer.GetPositionFromName(SourceName);
-        // Console.WriteLine(testPoi.Name);
-            
         State = CommuterState.GoingToWork;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
 
@@ -41,42 +36,20 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         car.Environment = _sgmLayer.Environment;
         Car = car;
 
-        Position = SourceGeometry.RandomPositionFromGeometry();
+        // TODO: Replace string "KNP Gate" (create a struct for KnpPoi keys?)
+        var sourcePos = GenerateSourcePosition();
+        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType("KNP Gate");
 
         car.TryEnterDriver(this, out var handle);
 
-        Position targetPos;
-            
-        Console.WriteLine(TargetGeometry);
-            
-        if (TargetGeometry is not null)
-        {
-            // From given MULTIPOINT Geometry, get a random POINT
-            // todo: RandomPositionFromGeometry() doesnt seem random for MULTIPOINTs?!
-            var target = TargetGeometry.Coordinates;
-            var numberOfPotentialDestinations = target.Length;
-            var randomIndex = new Random().Next(numberOfPotentialDestinations);
-            var targetCor = target[randomIndex];
-            targetPos = Position.CreatePosition(targetCor.X, targetCor.Y);
-        }
-        else
-        {
-            // Destination is undefined. Therefore, randomly choose a rest camp that is within 1.5 hours from source
-            var sourcePoi = PoiLayer.Nearest(Position);
-            var availableDestinations = sourcePoi.GetDestinationPois(1.5 * 3600, new List<string> { "Rest camp" });
-            var numberOfPotentialDestinations = availableDestinations.Count;
-            var destinationIndex = new Random().Next(numberOfPotentialDestinations);
-            targetPos = availableDestinations[destinationIndex].Poi.Position;
-        }
+        _originNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+        _sgmLayer.Environment.Insert(car, _originNode);
 
-        OriginNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
-        _sgmLayer.Environment.Insert(car, OriginNode);
+        // The StreetEnvironment requires a SpatialNode, not a Position. Get nearest Node to chosen target position.
+        var targetPos = GenerateTargetPosition();
+        _workplaceNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
 
-        // for the StreetEnvironment we need a SpatialNode, not a Position.
-        // -> get nearest Node to chosen target position
-        WorkplaceNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
-
-        handle.Route = _sgmLayer.Environment.FindRoute(OriginNode, WorkplaceNode);
+        handle.Route = _sgmLayer.Environment.FindRoute(_originNode, _workplaceNode);
         VehicleHandle = handle;
     }
 
@@ -100,7 +73,7 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
             {
                 // finished working -> go back to origin gate
                 State = CommuterState.GoingHome;
-                VehicleHandle.Route = _sgmLayer.Environment.FindRoute(WorkplaceNode, OriginNode);
+                VehicleHandle.Route = _sgmLayer.Environment.FindRoute(_workplaceNode, _originNode);
             }
             else if (State == CommuterState.GoingHome)
             {
@@ -127,71 +100,137 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     #region Methods
 
+    /// <summary>
+    ///     Gets a random position from SourceGeometry or, if not provided, obtains the source position based on
+    ///     the provided <value>SourceName</value>
+    /// </summary>
+    /// <returns>Position of source of trip</returns>
+    private Position GenerateSourcePosition()
+    {
+        return SourceGeometry is not null
+            ? GetRandomPositionFromGeometry(SourceGeometry)
+            : PoiLayer.GetPositionFromName(SourceName);
+    }
+
+    /// <summary>
+    ///     Generates a target position from TargetGeometry or, if not provided, obtains a random destination position
+    ///     within a fixed driving distance
+    /// </summary>
+    /// <returns>Position of destination of trip</returns>
+    private Position GenerateTargetPosition()
+    {
+        Position targetPos;
+
+        if (TargetGeometry is not null)
+        {
+            targetPos = GetRandomPositionFromGeometry(TargetGeometry);
+        }
+        else
+        {
+            // Destination is undefined. Therefore, randomly choose a rest camp that is within 1.5 hours from source
+            // TODO: replace magic number (timeLimit)
+            // TODO: add option to provide TargetGeometry but no SourceGeometry?
+            var nearestPoi = PoiLayer.Nearest(Position);
+            var availableDestinations =
+                nearestPoi.GetDestinationPois(1.5 * 3600, new List<string> { "Rest camp" });
+            var numberOfPotentialDestinations = availableDestinations.Count;
+            var destinationIndex = new Random().Next(numberOfPotentialDestinations);
+            targetPos = availableDestinations[destinationIndex].Poi.Position;
+        }
+
+        return targetPos;
+    }
+
+    /// <summary>
+    ///     Returns a random Position from the given geometry
+    /// </summary>
+    /// <param name="geometry">The given geometry</param>
+    /// <returns>A random position from the given geometry</returns>
+    private Position GetRandomPositionFromGeometry(Geometry geometry)
+    {
+        // TODO: RandomPositionFromGeometry() doesn't seem random for MULTIPOINT?!
+        var geometryCoords = geometry.Coordinates;
+        var numberOfPotentialDestinations = geometryCoords.Length;
+        var randomIndex = new Random().Next(numberOfPotentialDestinations);
+        var targetCoords = geometryCoords[randomIndex];
+        return Position.CreatePosition(targetCoords.X, targetCoords.Y);
+    }
+
     public void Notify(PassengerMessage passengerMessage)
     {
     }
 
     #endregion
 
-    #region Properties
+    #region Properties and Fields
 
-    public Guid ID { get; set; }
-    public int StableId { get; }
-
+    /// <summary>
+    ///     Current state of the Commuter
+    /// </summary>
     private CommuterState State { get; set; }
 
     /// <summary>
-    ///     Needed fo "removing" the agent and preventing further tick() call to it.
+    ///     The node of the SGE that represents the Commuter's origin (typically a KNP gate)
     /// </summary>
-    [PropertyDescription]
-    public UnregisterAgent UnregisterHandle { get; set; }
+    private ISpatialNode _originNode;
 
-    private ISpatialNode OriginNode;
-    private ISpatialNode WorkplaceNode;
+    /// <summary>
+    ///     The node of the SGE that represents the Commuter's workplace (typically a KNP rest camp)
+    /// </summary>
+    private ISpatialNode _workplaceNode;
 
+    /// <summary>
+    ///     The name of the POI at which the Commuter's trip begins
+    /// </summary>
     [PropertyDescription(Name = "sourceName")]
     public string SourceName { get; set; }
-        
+
     /// <summary>
-    ///     Format: WKT Point (`POINT (31.482268 -24.979422)`).
+    ///     The geometry that contains positions of POIs at which the Commuter's trip can begin
+    ///     Format: WKT Geometry
+    ///     Example: POINT (31.482268 -24.979422)
     /// </summary>
     [PropertyDescription(Name = "source")]
     public Geometry SourceGeometry { get; set; }
 
 #nullable enable
     /// <summary>
-    ///     WKT Multipoint with variable amount of target points. On is chosen by random.
-    ///     Example: "MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)"
+    ///     The geometry that contains positions of POIs at which the Commuter's trip can end
+    ///     Format: WKT geometry
+    ///     Example: MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)
     /// </summary>
     [PropertyDescription(Name = "destination")]
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
 
     /// <summary>
-    ///     Duration of work at the camp, in minutes.
+    ///     Arrival time at work, in hours
+    /// </summary>
+    private DateTime _arrivalTime;
+
+    /// <summary>
+    ///     Work duration at workplace, in minutes
     /// </summary>
     [PropertyDescription(Name = "workDuration")]
     public double WorkDuration { get; set; }
 
     /// <summary>
-    ///     The agent's arrival time at work, and departure time from work (each in hours)
+    ///     Departure time from work, in hours
     /// </summary>
-    private DateTime _arrivalTime;
-
     private DateTime _departureTime;
 
     /// <summary>
-    ///     The agent's reference to the KNP traffic network
+    ///     Reference to the KNP traffic network
     /// </summary>
     private SpatialGraphMediatorLayer _sgmLayer;
 
     /// <summary>
-    ///     The agent's reference to the KNP POI layer, which holds gates, rest camps, and other POIs in the KNP
+    ///     Reference to the KNP POI layer, which holds gates, rest camps, and other POIs in the KNP
     /// </summary>
-    public POILayer PoiLayer { get; set; }
+    public PoiLayer PoiLayer { get; set; }
 
     /// <summary>
-    ///     Position of our car/agent on the map.
+    ///     Position of car/agent on the map
     /// </summary>
     public Position Position
     {
@@ -199,15 +238,16 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         set => Car.Position = value;
     }
 
-    public CarSteeringHandle VehicleHandle { get; set; }
+    public Guid ID { get; set; }
+    public int StableId { get; }
 
+    [PropertyDescription] public UnregisterAgent UnregisterHandle { get; set; }
+    public CarSteeringHandle VehicleHandle { get; set; }
     public bool OvertakingActivated { get; set; }
     public bool BrakingActivated { get; set; }
     public Car Car { get; set; }
     public bool CurrentlyCarDriving => true;
-
     public double CarVelocity { get; set; }
-
     public TripsCollection TripsCollection { get; set; }
 
     #endregion

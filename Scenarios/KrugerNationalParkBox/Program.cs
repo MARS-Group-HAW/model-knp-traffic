@@ -74,7 +74,7 @@ public static class Program
             
         //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
             
-        description.AddLayer<POILayer>(); // Camps and Gates
+        description.AddLayer<PoiLayer>(); // Camps and Gates
 
         description.AddLayer<VisitorSchedulingLayer>();
         description.AddLayer<CommuterSchedulingLayer>();
@@ -201,7 +201,7 @@ public static class Program
                 },
                 new LayerMapping
                 {
-                    Name = nameof(POILayer),
+                    Name = nameof(PoiLayer),
                     File = "resources/pois_inferred.geojson"
                 },
                 new LayerMapping
