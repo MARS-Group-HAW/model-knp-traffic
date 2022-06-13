@@ -37,6 +37,7 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         Car = car;
 
         // TODO: Replace string "KNP Gate" (create a struct for KnpPoi keys?)
+        // TODO: increase number of decimal points for sourcePos (similar to targetPos)
         var sourcePos = GenerateSourcePosition();
         Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType("KNP Gate");
 
@@ -109,7 +110,7 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     {
         return SourceGeometry is not null
             ? GetRandomPositionFromGeometry(SourceGeometry)
-            : PoiLayer.GetPositionFromName(SourceName);
+            : PoiLayer.GetPositionFromNameAndType(SourceName, SourceType);
     }
 
     /// <summary>
@@ -185,6 +186,13 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     [PropertyDescription(Name = "sourceName")]
     public string SourceName { get; set; }
 
+    /// <summary>
+    ///     The type of the POI at which the Commuter's trip begins
+    /// </summary>
+    [PropertyDescription(Name = "sourceType")]
+    public string SourceType { get; set; }
+
+    
     /// <summary>
     ///     The geometry that contains positions of POIs at which the Commuter's trip can begin
     ///     Format: WKT Geometry

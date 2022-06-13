@@ -1,2 +1,2 @@
-startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,workDuration,source,destination
-06:00,06:15,10,1,Phabeni,120,,
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,workDuration,source,destination
+06:00,06:15,10,1,Phabeni,KNP Gate,120,,

@@ -35,19 +35,20 @@ public class PoiLayer : VectorLayer<KnpPoi>
     }
 
     /// <summary>
-    ///     Returns the position of a POI, given the name of the POI
+    ///     Returns the position of a POI, given the name and type of the POI
     /// </summary>
     /// <param name="poiName">The name of the POI for which the position is requested</param>
-    public Position GetPositionFromName(string poiName)
+    /// <param name="poiType">The type of the POI for which the position is requested</param>
+    public Position GetPositionFromNameAndType(string poiName, string poiType)
     {
         var poiPosition = new Position();
 
         foreach (var feature in Features)
         {
-            if ((string)feature.VectorStructured.Attributes["name"] == poiName)
+            if ((string)feature.VectorStructured.Attributes["name"] == poiName &&
+                (string)feature.VectorStructured.Attributes["type"] == poiType)
             {
-                var poi = (KnpPoi)feature;
-                poiPosition = poi.Position;
+                poiPosition = ((KnpPoi)feature).Position;
                 break;
             }
         }
@@ -63,8 +64,7 @@ public class PoiLayer : VectorLayer<KnpPoi>
         {
             if ((string)feature.VectorStructured.Attributes["type"] == poiType)
             {
-                var poi = (KnpPoi)feature;
-                pois.Add(poi.Position);
+                pois.Add(((KnpPoi)feature).Position);
             }
         }
 

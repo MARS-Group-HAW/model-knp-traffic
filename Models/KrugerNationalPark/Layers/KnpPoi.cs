@@ -47,8 +47,6 @@ public class KnpPoi : IVectorFeature
     /// <param name="timeLimit"></param> maximum amount of travel time in seconds
     /// <param name="allowedTypes"></param> types of POIs that are requested as travel destinations
     /// <returns></returns>
-
-    // TODO: determine which Pois can be reached within timeLimit and return them in a list
     public List<DestinationPoco> GetDestinationPois(double timeLimit, List<string> allowedTypes = null)
     {
         List<DestinationPoco> results = new();
