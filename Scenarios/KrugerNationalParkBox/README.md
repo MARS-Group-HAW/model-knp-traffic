@@ -60,41 +60,40 @@ The following files can be edited to configure the model:
     - `workDuration`: the amount of time (in minutes) that a `Commuter` agent will spend at its place of work
   - `VisitorScheduler.csv`: used to schedule `Visitor` spawns
   - `ProducerScheduler.csv`: used to schedule `Producer` spawns
-  - To spawn agent types at a KNP gate or KNP rest camp, the following locations can be entered into the respective scheduler configuration file. Example: to spawn `Commuter` agents at the Crocodile Bridge Gate
-    1. Open `CommScheduler.csv`
+  - To spawn agent types at a KNP Gate or Rest camp, the following locations can be entered into the respective scheduler configuration file. Example:
+    1. Open the CSV scheduler file of an agent type
     2. Create a new row and specify the temporal attributes and spawning amount as desired
-    3. Add `Crocodile Bridge Gate` in the `gateName` attribute
-    4. Add `"POINT (31.893563,-25.358438)"` in the `source` attribute (in general, input geometries are expected in the [well-known text (WKT)](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) representation format)
-    5. `destination`: add a WKT geometry (e.g., a MULTIPOINT containing a subset of the coordinates listed in the table below). The agent chooses a random destination from the options provided in the MULTIPOINT
+    3. Add the POI name (see table below) in the `gateName` attribute
+    4. `source` (optional): Add the WKT geometry of the chosen POI (in general, input geometries are expected in the [well-known text (WKT)](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) representation format)
+    5. `destination` (optional): Add a WKT geometry (e.g., a MULTIPOINT containing a subset of the coordinates listed in the table below). The agent chooses a random destination from the options provided in the MULTIPOINT
 
 <center>
 
-| POI Type  | POI Name              | Longitude | Latitude   | WKT geometry                   |
-|-----------|-----------------------|-----------|------------|--------------------------------|
-| Gate      | Crocodile Bridge Gate | 31.893563 | -25.358438 | "POINT (31.893563,-25.358438)" |
-| Gate      | Giriyondo Gate        | 31.659575 | -23.584323 | "POINT (31.659575,-23.584323)" |
-| Gate      | Kruger Gate           | 31.484812 | -24.980938 | "POINT (31.484812,-24.980938)" |
-| Gate      | Malelane Gate         | 31.532321 | -25.462187 | "POINT (31.532321,-25.462187)" |
-| Gate      | Numbi Gate            | 31.198188 | -25.155313 | "POINT (31.198188,-25.155313)" |
-| Gate      | Orpen Gate            | 31.390833 | -24.475833 | "POINT (31.390833,-24.475833)" |
-| Gate      | Pafuri Gate           | 31.041389 | -22.400278 | "POINT (31.041389,-22.400278)" |
-| Gate      | Phabeni Gate          | 31.240647 | -25.02469  | "POINT (31.240647,-25.02469)"  |
-| Gate      | Phalaborwa Gate       | 31.165687 | -23.945687 | "POINT (31.165687,-23.945687)" |
-| Gate      | Punda Maria Gate      | 31.010438 | -22.737313 | "POINT (31.010438,-22.737313)" |
-| Rest camp | Berg-en-Dal           | 31.445044 | -25.427937 | "POINT (31.445044,-25.427937)" |
-| Rest camp | Crocodile Bridge      | 31.893852 | -25.358176 | "POINT (31.893852,-25.358176)" |
-| Rest camp | Letaba                | 31.574732 | -23.854036 | "POINT (31.574732,-23.854036)" |
-| Rest camp | Lower Sabie           | 31.916231 | -25.119539 | "POINT (31.916231,-25.119539)" |
-| Rest camp | Malelane              | 31.511609 | -25.476576 | "POINT (31.511609,-25.476576)" |
-| Rest camp | Mopani                | 31.397381 | -23.521428 | "POINT (31.397381,-23.521428)" |
-| Rest camp | Olifants              | 31.740904 | -24.005762 | "POINT (31.740904,-24.005762)" |
-| Rest camp | Orpen                 | 31.390995 | -24.475490 | "POINT (31.390995,-24.475490)" |
-| Rest camp | Skukuza               | 31.592347 | -24.996215 | "POINT (31.592347,-24.996215)" |
-| Rest camp | Shingwedzi            | 31.436037 | -23.108628 | "POINT (31.436037,-23.108628)" |
-| Rest camp | Balule                | 31.733793 | -24.053363 | "POINT (31.733793,-24.053363)" |
-| Rest camp | Pretoriuskop          | 31.017207 | -22.691722 | "POINT (31.017207,-22.691722)" |
-| Rest camp | Punda Maria           | 31.445044 | -25.427937 | "POINT (31.445044,-25.427937)" |
-| Rest camp | Satara                | 31.779862 | -24.393159 | "POINT (31.779862,-24.393159)" |
+| POI Type  | POI Name         | Longitude          | Latitude   | WKT geometry                   |
+|-----------|------------------|--------------------|------------|--------------------------------|
+| KNP Gate  | Crocodile Bridge | 31.89258657143726  | -25.358480632913864 | "POINT (31.89258657143726,-25.358480632913864)" |
+| KNP Gate  | Malelane         | 31.5322480748238   | -25.462242036021298 | "POINT (31.5322480748238,-25.462242036021298)" |
+| KNP Gate  | Numbi            | 31.19779114628988  | -25.155235225028587 | "POINT (31.19779114628988,-25.155235225028587)" |
+| KNP Gate  | Orpen            | 31.390454263127054 | -24.481379204477278 | "POINT (31.390454263127054,-24.481379204477278)" |
+| KNP Gate  | Pafuri           | 31.04128207709203  | -22.399849267439016 | "POINT (31.04128207709203,-22.399849267439016)" |
+| KNP Gate  | Paul Kruger      | 31.484825272079146 | -24.981054292519527  | "POINT (31.484825272079146,-24.981054292519527)"  |
+| KNP Gate  | Phabeni          | 31.24188273415545  | -25.02502054780226  | "POINT (31.24188273415545,-25.02502054780226)"  |
+| KNP Gate  | Phalaborwa       | 31.166061973814458 | -23.94570262899793 | "POINT (31.166061973814458,-23.94570262899793)" |
+| KNP Gate  | Punda Maria      | 31.01048065058071  | -22.737288654024038 | "POINT (31.01048065058071,-22.737288654024038)" |
+| Rest camp | Berg-en-Dal      | 31.444319855824595 | -25.428126851153632 | "POINT (31.444319855824595,-25.428126851153632)" |
+| Rest camp | Crocodile Bridge | 31.89330364010209  | -25.358233850884123 | "POINT (31.89330364010209,-25.358233850884123)" |
+| Rest camp | Letaba           | 31.57451374376673  | -23.85430033699618 | "POINT (31.57451374376673,-23.85430033699618)" |
+| Rest camp | Lower Sabie      | 31.91437694895015  | -25.119944502413436 | "POINT (31.91437694895015,-25.119944502413436)" |
+| Rest camp | Mopani           | 31.399132836948997 | -23.521639819788223 | "POINT (31.399132836948997,-23.521639819788223)" |
+| Rest camp | Olifants         | 31.7386871449655   | -24.00454966132233 | "POINT (31.7386871449655,-24.00454966132233)" |
+| Rest camp | Orpen            | 31.390454263127054 | -24.481379204477278 | "POINT (31.390454263127054,-24.481379204477278)" |
+| Rest camp | Skukuza          | 31.591989637766584 | -24.996507331891323 | "POINT (31.591989637766584,-24.996507331891323)" |
+| Rest camp | Shingwedzi       | 31.434153793525685 | -23.107844185540074 | "POINT (31.434153793525685,-23.107844185540074)" |
+| Rest camp | Pretoriuskop     | 31.268696006058565 | -25.168990139725594 | "POINT (31.268696006058565,-25.168990139725594)" |
+| Rest camp | Punda Maria      | 31.018924936716804 | -22.692239597900695 | "POINT (31.018924936716804,-22.692239597900695)" |
+| Rest camp | Satara           | 31.780473375065686 | -24.39220480951074 | "POINT (31.780473375065686,-24.39220480951074)" |
+| Satellite camp | Balule      | 31.733020373834496 | -24.053980346565005 | "POINT (31.733020373834496,-24.053980346565005)" |
+| Satellite camp | Malelane    | 31.51273269058665  | -25.470369247759475 | "POINT (31.51273269058665,-25.470369247759475)" |
 
 </center>
 
