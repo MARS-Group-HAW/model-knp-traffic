@@ -30,14 +30,13 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         State = CommuterState.GoingToWork;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
 
-        TripsCollection = new TripsCollection(layer.Context);
+        TripsCollection = new TripsCollection(_sgmLayer.Context);
 
-        var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
+        var car = _sgmLayer.EntityManager.Create<KnpCar>("type", "Golf");
         car.Environment = _sgmLayer.Environment;
         Car = car;
 
-        // TODO: Replace string "KNP Gate" (create a struct for KnpPoi keys?)
-        // TODO: increase number of decimal points for sourcePos (similar to targetPos)
+        // TODO: Replace string "KNP Gate" (create a struct for KnpPoi key-value pairs?)
         var sourcePos = GenerateSourcePosition();
         Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType("KNP Gate");
 
@@ -90,8 +89,6 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         {
             // agent calls its movement handle (associated with its car) to perform a movement
             VehicleHandle.Move();
-
-            // TODO: can this be moved into the else block?
             CarVelocity = Car.Velocity;
             TripsCollection.Add(Position);
         }
@@ -114,15 +111,22 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     }
 
     /// <summary>
-    ///     Generates a target position from TargetGeometry or, if not provided, obtains a random destination position
-    ///     within a fixed driving distance
+    ///     Generates a target position from TargetName or TargetGeometry. Alternatively, if neither TargetName nor
+    ///     TargetGeometry is provided, obtains a random destination position within a fixed driving distance
     /// </summary>
     /// <returns>Position of destination of trip</returns>
     private Position GenerateTargetPosition()
     {
         Position targetPos;
 
-        if (TargetGeometry is not null)
+        // If TargetName is provided, use it to determine target position
+        if (TargetName is not null)
+        {
+            targetPos = PoiLayer.GetPositionFromNameAndType(TargetName, TargetType);
+            // TODO: Add a distance check. If targetName in CSV is too far away from sourceName, choose different target
+        }
+        // If TargetGeometry is provided, use it to choose a target position
+        else if (TargetGeometry is not null)
         {
             targetPos = GetRandomPositionFromGeometry(TargetGeometry);
         }
@@ -131,7 +135,8 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
             // Destination is undefined. Therefore, randomly choose a rest camp that is within 1.5 hours from source
             // TODO: replace magic number (timeLimit)
             // TODO: add option to provide TargetGeometry but no SourceGeometry?
-            var nearestPoi = PoiLayer.Nearest(Position);
+            // TODO: replace string "Rest camp" (create a struct with KnpPoi key-value pairs?)
+            var nearestPoi = PoiLayer.GetNearestKnpPoi(Position);
             var availableDestinations =
                 nearestPoi.GetDestinationPois(1.5 * 3600, new List<string> { "Rest camp" });
             var numberOfPotentialDestinations = availableDestinations.Count;
@@ -149,12 +154,11 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     /// <returns>A random position from the given geometry</returns>
     private Position GetRandomPositionFromGeometry(Geometry geometry)
     {
-        // TODO: RandomPositionFromGeometry() doesn't seem random for MULTIPOINT?!
         var geometryCoords = geometry.Coordinates;
-        var numberOfPotentialDestinations = geometryCoords.Length;
-        var randomIndex = new Random().Next(numberOfPotentialDestinations);
-        var targetCoords = geometryCoords[randomIndex];
-        return Position.CreatePosition(targetCoords.X, targetCoords.Y);
+        var numberOfPotentialPositions = geometryCoords.Length;
+        var randomIndex = new Random().Next(numberOfPotentialPositions);
+        var chosenCoords = geometryCoords[randomIndex];
+        return Position.CreatePosition(chosenCoords.X, chosenCoords.Y);
     }
 
     public void Notify(PassengerMessage passengerMessage)
@@ -192,7 +196,6 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     [PropertyDescription(Name = "sourceType")]
     public string SourceType { get; set; }
 
-    
     /// <summary>
     ///     The geometry that contains positions of POIs at which the Commuter's trip can begin
     ///     Format: WKT Geometry
@@ -202,6 +205,18 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     public Geometry SourceGeometry { get; set; }
 
 #nullable enable
+    /// <summary>
+    ///     The name of the POI at which the Commuter's trip ends
+    /// </summary>
+    [PropertyDescription(Name = "targetName")]
+    public string? TargetName { get; set; }
+    
+    /// <summary>
+    ///     The type of the POI at which the Commuter's trip ends
+    /// </summary>
+    [PropertyDescription(Name = "targetType")]
+    public string? TargetType { get; set; }
+    
     /// <summary>
     ///     The geometry that contains positions of POIs at which the Commuter's trip can end
     ///     Format: WKT geometry

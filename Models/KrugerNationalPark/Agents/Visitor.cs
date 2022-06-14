@@ -46,8 +46,8 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         car.Environment = _sgmLayer.Environment;
         Car = car;
 
-        // todo: Source is a Point, no Random needed? 
-        Position = SourceGeometry.RandomPositionFromGeometry();
+        // todo: Make source position determination routine like Commuter's
+        Position = GetRandomPositionFromGeometry(SourceGeometry);
         car.TryEnterDriver(this, out var handle);
 
         _originNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
@@ -66,17 +66,17 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         //handle.Route = FindRoute(_originNode);
         //VehicleHandle = handle;
 
-        // tourist determines destination
-        var sourcePoi = PoiLayer.Nearest(Position);
+        // Visitor determines destination
+        var sourcePoi = PoiLayer.GetNearestKnpPoi(Position);
         currentSourcePoi = sourcePoi;
 
         var availableDestinations = sourcePoi.GetDestinationPois(4 * 3600, new List<string> { "Rest camp" });
 
         var numberOfPotentialDestinations = availableDestinations.Count;
         var destinationIndex = new Random().Next(0, numberOfPotentialDestinations);
-        currentDestinationPoi = availableDestinations[destinationIndex];
+        _currentTripDestinationPoi = availableDestinations[destinationIndex];
         var destinationNode =
-            _sgmLayer.Environment.NearestNode(currentDestinationPoi.Poi.Position, SpatialModalityType.CarDriving);
+            _sgmLayer.Environment.NearestNode(_currentTripDestinationPoi.Poi.Position, SpatialModalityType.CarDriving);
 
         handle.Route = _travelLayer.FindRoute(_originNode, destinationNode, 4 * 3600);
         VehicleHandle = handle;
@@ -130,7 +130,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                 //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
 
                 Console.WriteLine(
-                    $"{_sgmLayer.Context.CurrentTick},{ID},arrived,{currentSourcePoi.Name},{currentDestinationPoi.Poi.Name}");
+                    $"{_sgmLayer.Context.CurrentTick},{ID},arrived,{currentSourcePoi.Name},{_currentTripDestinationPoi.Poi.Name}");
 
 
                 //log.LogInfo($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
@@ -142,7 +142,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                 {
                     // pause vorbei!
 
-                    var sourcePoi = PoiLayer.Nearest(currentDestinationPoi.Poi.Position);
+                    var sourcePoi = PoiLayer.GetNearestKnpPoi(_currentTripDestinationPoi.Poi.Position);
                     var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
                     var availableDestinations =
@@ -204,11 +204,10 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     public int SightingEventCarVelocity { get; set; }
 
     /// <summary>
-    ///     State of the tourist (driving around, looking at wildlife, ...)
+    ///     State of the visitor (driving around, looking at wildlife, ...)
     /// </summary>
     public VisitorState State { get; set; }
-
-
+    
     private ILogger log;
 
     /// <summary>
@@ -217,7 +216,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     private DateTime _startTime;
 
     /// <summary>
-    ///     TimeStamp if the the time alle Camps close and the tourist needs to be home.
+    ///     TimeStamp if the the time alle Camps close and the visitor needs to be home.
     /// </summary>
     private DateTime _endTime;
 
@@ -231,7 +230,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     private ISpatialEdge _edgeFromPreviousTick;
 
     /// <summary>
-    ///     Start point of the tourist (can be Camp, or gate).
+    ///     Start position of the visitor (e.g., KNP Gate, Rest camp, etc.).
     ///     Example: POINT (31.482268 -24.979422)
     /// </summary>
     [PropertyDescription(Name = "source")]
@@ -249,7 +248,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     private readonly Queue<DateTime> _edgeTimings = new();
 
     /// <summary>
-    ///     Keep track if the tourist is on its way home -> no longer stop for animals
+    ///     Keep track if the visitor is on its way home -> no longer stop for animals
     /// </summary>
     private bool _goingHome;
 
@@ -284,7 +283,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     public SpatialGraphMediatorLayer _sgmLayer;
 
     private KnpPoi currentSourcePoi;
-    private DestinationPoco currentDestinationPoi;
+    private TripDestination _currentTripDestinationPoi;
 
     public Car Car { get; set; }
 
@@ -312,6 +311,20 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     #endregion
 
     #region Methods
+    
+    /// <summary>
+    ///     Returns a random Position from the given geometry
+    /// </summary>
+    /// <param name="geometry">The given geometry</param>
+    /// <returns>A random position from the given geometry</returns>
+    private Position GetRandomPositionFromGeometry(Geometry geometry)
+    {
+        var geometryCoords = geometry.Coordinates;
+        var numberOfPotentialPositions = geometryCoords.Length;
+        var randomIndex = new Random().Next(numberOfPotentialPositions);
+        var chosenCoords = geometryCoords[randomIndex];
+        return Position.CreatePosition(chosenCoords.X, chosenCoords.Y);
+    }
 
     public void ElephantAhead(Elephant elephant)
     {

@@ -90,7 +90,7 @@ public static class Program
         description.AddEntity<KnpCar>();
 
         // Starting up
-        SimulationWorkflowState result = null;
+        SimulationWorkflowState result;
 
         if (args != null)
         {
@@ -143,47 +143,47 @@ public static class Program
                     Delimiter = ",",
                     NumberFormat = "G"
                 },
-                ShowConsoleProgress = false,
+                ShowConsoleProgress = true,
                 EnableSimpleVisualization = false
             },
             LayerMappings = new List<LayerMapping>
             {
-                new LayerMapping
+                new()
                 {
                     Name = nameof(RasterTempLayer),
                     File = "resources/RCP8.5_2010_2050_temp.zip"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(RasterFenceLayer),
                     File = "resources/gis_raster_border.zip"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(RasterShadeLayer),
                     File = "resources/gis_raster_shade.zip"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(RasterVegetationLayer),
                     File = "resources/gis_raster_biomass_ts.zip"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(VectorWaterLayer),
                     File = "resources/merged_waters_fixed_with_fence_buffer.geojson"
                 },
                     
-                new LayerMapping
+                new()
                 {
                     Name = nameof(VisitorTravelerLayer),
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(SpatialGraphMediatorLayer),
                     Inputs = new List<Input>
                     {
-                        new Input
+                        new()
                         {
                             //File = "resources/knp_graph.geojson",
                             File = "resources/roads_all_2019_inferred.geojson",
@@ -199,22 +199,22 @@ public static class Program
                         }
                     }
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(PoiLayer),
                     File = "resources/pois_inferred.geojson"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(VisitorSchedulingLayer),
-                    File = "resources/_emptyScheduler.csv"
+                    File = "resources/VisitorScheduler_debug_1.csv"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(CommuterSchedulingLayer),
                     File = "resources/CommScheduler_noDest.csv"
                 },
-                new LayerMapping
+                new()
                 {
                     Name = nameof(ProducerSchedulingLayer),
                     File = "resources/ProducerScheduler.csv"
