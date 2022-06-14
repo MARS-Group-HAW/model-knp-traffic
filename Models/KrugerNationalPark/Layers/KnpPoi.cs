@@ -10,7 +10,7 @@ namespace KrugerNationalPark.Layers;
 
 public class KnpPoi : IVectorFeature
 {
-    public OriginPoco infoList;
+    public TripOrigin infoList;
 
     public Position Position { get; private set; }
 
@@ -30,11 +30,10 @@ public class KnpPoi : IVectorFeature
         Name = VectorStructured.Data["name"].ToString();
         Type = VectorStructured.Data["type"].ToString();
 
-
         // load timings form json into structure
         // todo: this could probably be hinted directly in the GeoJSON Properties for JObject?
         var list = VectorStructured.Data["routeList"].ToString();
-        infoList = JsonSerializer.Deserialize<OriginPoco>(list);
+        infoList = JsonSerializer.Deserialize<TripOrigin>(list);
     }
 
     public void Update(VectorStructuredData data)
@@ -43,23 +42,24 @@ public class KnpPoi : IVectorFeature
     }
 
     /// <summary>
+    ///     Returns a list of POIs that satisfy the given travel time constraint and POI type constraint
     /// </summary>
     /// <param name="timeLimit"></param> maximum amount of travel time in seconds
     /// <param name="allowedTypes"></param> types of POIs that are requested as travel destinations
     /// <returns></returns>
-    public List<DestinationPoco> GetDestinationPois(double timeLimit, List<string> allowedTypes = null)
+    public List<TripDestination> GetDestinationPois(double timeLimit, List<string> allowedTypes = null)
     {
-        List<DestinationPoco> results = new();
+        List<TripDestination> results = new();
 
-        foreach (var d in infoList.Destinations)
+        foreach (var dest in infoList.Destinations)
         {
-            // exclude POIs exceeding time limit
-            if (d.Duration > timeLimit) continue;
+            // Exclude POIs that exceed the travel time limit
+            if (dest.Duration > timeLimit) continue;
 
-            // if only special types are requested, search only for wanted
-            if (allowedTypes is not null && !allowedTypes.Contains(d.Poi.Type)) continue;
+            // If specific types of POIs are requested, exclude POIs of different type
+            if (allowedTypes is not null && !allowedTypes.Contains(dest.Poi.Type)) continue;
 
-            results.Add(d);
+            results.Add(dest);
         }
 
         return results;
