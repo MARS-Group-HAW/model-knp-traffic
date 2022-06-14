@@ -24,7 +24,7 @@ namespace KrugerNationalParkTests.Travel
             }, null, null);
 
             var p = new Position(31.484812, -24.980938); // Start at kruger Gate
-            var knpPoi = layer.Nearest(p);
+            var knpPoi = layer.GetNearestKnpPoi(p);
 
             // no results for 0s time (be aware of Crocodile Bridge, two POIs on same spot. one gate, one camp
             var results1 = knpPoi.GetDestinationPois(0);

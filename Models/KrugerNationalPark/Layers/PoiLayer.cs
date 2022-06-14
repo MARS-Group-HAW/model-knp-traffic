@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Mars.Components.Layers;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
@@ -29,9 +28,9 @@ public class PoiLayer : VectorLayer<KnpPoi>
     /// </summary>
     /// <param name="position">The given position</param>
     /// <returns>The KnpPoi with the nearest geospatial position to the given position</returns>
-    public KnpPoi Nearest(Position position)
+    public KnpPoi GetNearestKnpPoi(Position position)
     {
-        return Explore(position.PositionArray).FirstOrDefault();
+        return Nearest(position.PositionArray);
     }
 
     /// <summary>
