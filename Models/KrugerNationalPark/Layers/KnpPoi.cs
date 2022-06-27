@@ -41,6 +41,7 @@ public class KnpPoi : IVectorFeature
         throw new NotImplementedException();
     }
 
+    // TODO: Move this to PoiLayer (to encapsulate KnpPoi a little more)?
     /// <summary>
     ///     Returns a list of POIs that satisfy the given travel time constraint and POI type constraint
     /// </summary>

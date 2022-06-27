@@ -67,13 +67,13 @@ public static class Program
         description.AddLayer<ElephantLayer>();
         description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetz im KNP
         */
-            
-        description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
-            
+
+        description.AddLayer<SpatialGraphMediatorLayer>(new[] { typeof(ISpatialGraphLayer) });
+
         description.AddLayer<VisitorTravelerLayer>();
-            
+
         //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
-            
+
         description.AddLayer<PoiLayer>(); // Camps and Gates
 
         description.AddLayer<VisitorSchedulingLayer>();
@@ -83,7 +83,7 @@ public static class Program
         // Second register the agent types with their respective layer type
         description.AddAgent<Visitor, VisitorTravelerLayer>();
         description.AddAgent<Commuter, VisitorTravelerLayer>();
-            
+
         //description.AddAgent<Elephant, ElephantLayer>();
         description.AddAgent<EventProducer, VisitorTravelerLayer>();
 
@@ -102,15 +102,14 @@ public static class Program
 
             SimulationConfig simConfig;
             string file;
-                
+
             if (args.Any(s => s.Equals("-sm")))
             {
                 var index = args.IndexOf(s => s == "-sm");
                 file = File.ReadAllText(args[index + 1]);
                 simConfig = SimulationConfig.Deserialize(file);
-                    
+
                 Console.WriteLine(simConfig.Serialize());
-                    
             }
             else
             {
@@ -173,7 +172,6 @@ public static class Program
                     Name = nameof(VectorWaterLayer),
                     File = "resources/merged_waters_fixed_with_fence_buffer.geojson"
                 },
-                    
                 new()
                 {
                     Name = nameof(VisitorTravelerLayer),
@@ -190,7 +188,7 @@ public static class Program
                             //File = "resources/roads_all_2019_public.geojson",
                             InputConfiguration = new InputConfiguration
                             {
-                                Modalities = new HashSet<SpatialModalityType>{ SpatialModalityType.CarDriving },
+                                Modalities = new HashSet<SpatialModalityType> { SpatialModalityType.CarDriving },
                                 IsBiDirectedImport = true,
                                 //NodeToleranceInMeter = 20,
                                 //NodeIntegrationKind = NodeIntegrationKind.LinkNode,

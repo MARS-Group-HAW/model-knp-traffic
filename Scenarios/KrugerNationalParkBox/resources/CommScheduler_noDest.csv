@@ -1,2 +1,4 @@
 startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,targetName,targetType,workDuration,source,destination
 06:00,06:15,10,1,Phabeni,KNP Gate,,,120,,
+07:00,07:15,10,1,Malelane,KNP Gate,,,120,,
+08:00,08:15,10,1,Crocodile Bridge,KNP Gate,,,120,,
