@@ -18,7 +18,7 @@ public class KnpPoi : IVectorFeature
 
     public string Type { get; private set; }
 
-    public VectorStructuredData VectorStructured { get; private set; }
+    public VectorStructuredData VectorStructured { get; set; }
 
     public void Init(ILayer layer, VectorStructuredData data)
     {

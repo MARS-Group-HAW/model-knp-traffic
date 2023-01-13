@@ -143,7 +143,6 @@ public static class Program
                     NumberFormat = "G"
                 },
                 ShowConsoleProgress = true,
-                EnableSimpleVisualization = false
             },
             LayerMappings = new List<LayerMapping>
             {

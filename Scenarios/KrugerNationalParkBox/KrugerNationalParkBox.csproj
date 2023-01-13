@@ -19,4 +19,8 @@
       <ProjectReference Include="..\..\Models\KrugerNationalPark\KrugerNationalPark.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Mars.Life.Simulations" Version="4.4.4" />
+    </ItemGroup>
+
 </Project>
