@@ -82,8 +82,11 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         VehicleHandle = handle;
 
         // save route to geojson
-        var geoJson = handle.Route.ToGeoJson();
-        File.WriteAllText("route_" + ID + ".json", geoJson);
+        if (WriteRouteAsGeoJSON)
+        {
+            var geoJson = handle.Route.ToGeoJson();
+            File.WriteAllText("route_" + ID + ".json", geoJson);
+        }
 
         // search all gates/camps inside time constraint
         // -> bsp: gib mir alle gates die von meinem punkt aus innerhalb von 2h erreichbar sind
@@ -164,8 +167,11 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                     Console.WriteLine(
                         $"{_sgmLayer.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{destinationPoco.Poi.Name}");
 
-                    var geoJson = VehicleHandle.Route.ToGeoJson();
-                    File.WriteAllText("route_back_" + ID + ".json", geoJson);
+                    if (WriteRouteAsGeoJSON)
+                    {
+                        var geoJson = VehicleHandle.Route.ToGeoJson();
+                        File.WriteAllText("route_back_" + ID + ".json", geoJson);
+                    }
                 }
             }
         }

@@ -244,6 +244,14 @@ public static class Program
                         {
                             OutputTarget = OutputTargetType.Csv
                         }
+                    },
+                    IndividualMapping = new List<IndividualMapping>
+                    {
+                        new ()
+                        {
+                            ParameterName = "WriteRouteAsGeoJSON",
+                            Value = false,
+                        }
                     }
                 },
                 new AgentMapping
