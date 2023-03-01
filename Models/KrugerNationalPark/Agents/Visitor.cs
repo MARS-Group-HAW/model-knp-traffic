@@ -179,6 +179,11 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         // Always call Move, since braking is "handled" by the AnimalSighting car ahead
         VehicleHandle.Move();
 
+        if (TrafficLayer.IsInRaster(Position))
+        {
+            TrafficLayer[Position] += 1;       
+        }
+        
         CarVelocity = Car.Velocity;
         TripsCollection.Add(Position);
     }
@@ -298,6 +303,9 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         get => Car.Position;
         set => Car.Position = value;
     }
+    
+    [PropertyDescription(Name = "WriteRouteAsGeoJSON")]
+    public bool WriteRouteAsGeoJSON { get; set; }
 
     public bool OvertakingActivated { get; }
     public bool BrakingActivated { get; set; }
@@ -314,6 +322,10 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     private VisitorTravelerLayer _travelLayer;
 
+    [PropertyDescription]
+    public TrafficLayer TrafficLayer { get; set; }
+
+    
     #endregion
 
     #region Methods

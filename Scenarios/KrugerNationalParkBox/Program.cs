@@ -72,6 +72,8 @@ public static class Program
 
         description.AddLayer<VisitorTravelerLayer>();
 
+        description.AddLayer<TrafficLayer>();
+
         //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
 
         description.AddLayer<PoiLayer>(); // Camps and Gates
@@ -142,10 +144,15 @@ public static class Program
                     Delimiter = ",",
                     NumberFormat = "G"
                 },
-                ShowConsoleProgress = true,
+                ShowConsoleProgress = false,
             },
             LayerMappings = new List<LayerMapping>
             {
+                new()
+                {
+                    Name = nameof(TrafficLayer),
+                    File = "resources/knp_raster_1111m.asc"
+                },
                 new()
                 {
                     Name = nameof(RasterTempLayer),
