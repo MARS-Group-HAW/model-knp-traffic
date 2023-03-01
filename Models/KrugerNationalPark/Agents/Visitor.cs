@@ -6,6 +6,7 @@ using KrugerNationalPark.Misc;
 using KrugerNationalPark.Misc.Events;
 using Mars.Common;
 using Mars.Common.Core.Logging;
+using Mars.Common.Core.Random;
 using Mars.Components.Environments;
 using Mars.Core.Data.Wrapper.Memory;
 using Mars.Interfaces.Agents;
@@ -99,7 +100,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     public void Tick()
     {
         // @todo: random in range
-        const int lookDuration = 15; // in minutes
+        int lookDuration = RandomHelper.Random.NextInteger(5, 15);; // in minutes
 
         // we are driving around and waiting for an animal sighting event
         // todo: on the qy home should we prevent looking for animals?
