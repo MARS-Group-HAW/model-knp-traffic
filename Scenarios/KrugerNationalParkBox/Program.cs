@@ -73,6 +73,8 @@ public static class Program
         description.AddLayer<VisitorTravelerLayer>();
 
         description.AddLayer<TrafficLayer>();
+        description.AddLayer<TrafficJamLayer>();
+        description.AddLayer<TrafficLookingLayer>();
 
         //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
 
@@ -151,6 +153,16 @@ public static class Program
                 new()
                 {
                     Name = nameof(TrafficLayer),
+                    File = "resources/knp_raster_1111m.asc"
+                },
+                new()
+                {
+                    Name = nameof(TrafficJamLayer),
+                    File = "resources/knp_raster_1111m.asc"
+                },
+                new()
+                {
+                    Name = nameof(TrafficLookingLayer),
                     File = "resources/knp_raster_1111m.asc"
                 },
                 new()
