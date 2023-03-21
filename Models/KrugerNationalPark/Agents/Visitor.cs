@@ -68,16 +68,10 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         //VehicleHandle = handle;
 
         // Visitor determines destination
-        var sourcePoi = PoiLayer.GetNearestKnpPoi(Position);
-        currentSourcePoi = sourcePoi;
+        _currentTripOriginPoi = PoiLayer.GetNearestKnpPoi(Position);
 
-        var availableDestinations = sourcePoi.GetDestinationPois(4 * 3600, new List<string> { "Rest camp" });
-
-        var numberOfPotentialDestinations = availableDestinations.Count;
-        var destinationIndex = new Random().Next(0, numberOfPotentialDestinations);
-        _currentTripDestinationPoi = availableDestinations[destinationIndex];
-        var destinationNode =
-            _sgmLayer.Environment.NearestNode(_currentTripDestinationPoi.Poi.Position, SpatialModalityType.CarDriving);
+        var targetPos = GenerateTargetPosition();
+        var destinationNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
 
         handle.Route = _travelLayer.FindRoute(_originNode, destinationNode, 4 * 3600);
         VehicleHandle = handle;
@@ -150,7 +144,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                     var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
                     var availableDestinations =
-                        sourcePoi.GetDestinationPois(4 * 3600, new List<string> { "KNP Gate" });
+                        sourcePoi.GetDestinationPois(4 * 3600, new List<string> { PoiType.KnpGate });
 
                     var l = availableDestinations.Count;
                     var rnd = new Random();
@@ -369,6 +363,53 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         var randomIndex = new Random().Next(numberOfPotentialPositions);
         var chosenCoords = geometryCoords[randomIndex];
         return Position.CreatePosition(chosenCoords.X, chosenCoords.Y);
+    }
+    
+    /// <summary>
+    ///     Gets a random position from SourceGeometry or, if not provided, obtains the source position based on
+    ///     the provided <value>SourceName</value>
+    /// </summary>
+    /// <returns>Position of source of trip</returns>
+    private Position GenerateSourcePosition()
+    {
+        return SourceGeometry is not null
+            ? GetRandomPositionFromGeometry(SourceGeometry)
+            : PoiLayer.GetPoiPositionOfNameAndType(SourceName, SourceType);
+    }
+
+    /// <summary>
+    ///     Generates a target position from TargetName or TargetGeometry. Alternatively, if neither TargetName nor
+    ///     TargetGeometry is provided, obtains a random destination position within a fixed driving distance
+    /// </summary>
+    /// <returns>Position of destination of trip</returns>
+    private Position GenerateTargetPosition()
+    {
+        Position targetPos;
+
+        // If TargetName is provided, use it to determine target position
+        if (TargetName is not null && TargetType is not null)
+        {
+            targetPos = PoiLayer.GetPoiPositionOfNameAndType(TargetName, TargetType);
+            // TODO: Add a distance check. If targetName in CSV is too far away from sourceName, choose different target
+        }
+        // If TargetGeometry is provided, use it to choose a target position
+        else if (TargetGeometry is not null)
+        {
+            targetPos = GetRandomPositionFromGeometry(TargetGeometry);
+        }
+        else
+        {
+            // Destination is undefined. Therefore, randomly choose a rest camp that is within 1.5 hours from source
+            // TODO: replace magic number (timeLimit)
+            // TODO: add option to provide TargetGeometry but no SourceGeometry?
+            var availableDestinations = _currentTripOriginPoi.GetDestinationPois(4 * 3600, new List<string> { PoiType.RestCamp });
+            var numberOfPotentialDestinations = availableDestinations.Count;
+            var destinationIndex = new Random().Next(0, numberOfPotentialDestinations);
+            _currentTripDestinationPoi = availableDestinations[destinationIndex];
+            targetPos = _currentTripDestinationPoi.Poi.Position;
+        }
+
+        return targetPos;
     }
 
     public void ElephantAhead(Elephant elephant)

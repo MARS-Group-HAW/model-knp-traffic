@@ -36,9 +36,8 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         car.Environment = _sgmLayer.Environment;
         Car = car;
 
-        // TODO: Replace string "KNP Gate" (create a struct for KnpPoi key-value pairs?)
         var sourcePos = GenerateSourcePosition();
-        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType("KNP Gate");
+        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType(PoiType.KnpGate);
 
         car.TryEnterDriver(this, out var handle);
 
@@ -135,10 +134,10 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
             // Destination is undefined. Therefore, randomly choose a rest camp that is within 1.5 hours from source
             // TODO: replace magic number (timeLimit)
             // TODO: add option to provide TargetGeometry but no SourceGeometry?
-            // TODO: replace string "Rest camp" (create a struct with KnpPoi key-value pairs?)
+            // TODO: refactor KnpPoi.GetDestinationPois() into PoiLayer so that layer is single point of entry for information related to KnpPois
             var nearestPoi = PoiLayer.GetNearestKnpPoi(Position);
             var availableDestinations =
-                nearestPoi.GetDestinationPois(1.5 * 3600, new List<string> { "Rest camp" });
+                nearestPoi.GetDestinationPois(1.5 * 3600, new List<string> { PoiType.RestCamp });
             var numberOfPotentialDestinations = availableDestinations.Count;
             var destinationIndex = new Random().Next(numberOfPotentialDestinations);
             targetPos = availableDestinations[destinationIndex].Poi.Position;
