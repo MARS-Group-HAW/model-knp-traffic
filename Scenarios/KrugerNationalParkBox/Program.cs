@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -82,11 +82,13 @@ public static class Program
 
         description.AddLayer<VisitorSchedulingLayer>();
         description.AddLayer<CommuterSchedulingLayer>();
+        description.AddLayer<OsvTourGuideSchedulingLayer>();
         description.AddLayer<ProducerSchedulingLayer>();
 
         // Second register the agent types with their respective layer type
         description.AddAgent<Visitor, VisitorTravelerLayer>();
         description.AddAgent<Commuter, VisitorTravelerLayer>();
+        description.AddAgent<OsvTourGuide, VisitorTravelerLayer>();
 
         //description.AddAgent<Elephant, ElephantLayer>();
         description.AddAgent<EventProducer, VisitorTravelerLayer>();
@@ -229,6 +231,10 @@ public static class Program
                 {
                     Name = nameof(CommuterSchedulingLayer),
                     File = "resources/CommScheduler_noDest.csv"
+                new()
+                {
+                    Name = nameof(OsvTourGuideSchedulingLayer),
+                    File = "resources/_emptyScheduler.csv"
                 },
                 new()
                 {
@@ -249,6 +255,33 @@ public static class Program
                 new AgentMapping
                 {
                     Name = nameof(Visitor),
+                    Outputs = new List<Output>
+                    {
+                        new()
+                        {
+                            OutputTarget = OutputTargetType.Trips,
+                            OutputConfiguration = new OutputConfiguration()
+                            {
+                                TripsDiscriminatorFields = new[] { "ActiveCapability" }
+                            }
+                        },
+                        new()
+                        {
+                            OutputTarget = OutputTargetType.Csv
+                        }
+                    },
+                    IndividualMapping = new List<IndividualMapping>
+                    {
+                        new ()
+                        {
+                            ParameterName = "WriteRouteAsGeoJSON",
+                            Value = false,
+                        }
+                    }
+                },
+                new AgentMapping
+                {
+                    Name = nameof(OsvTourGuide),
                     Outputs = new List<Output>
                     {
                         new()
