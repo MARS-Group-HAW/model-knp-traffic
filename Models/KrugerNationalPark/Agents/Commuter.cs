@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using Mars.Core.Data.Wrapper.Memory;
@@ -106,7 +107,7 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     {
         return SourceGeometry is not null
             ? GetRandomPositionFromGeometry(SourceGeometry)
-            : PoiLayer.GetPositionFromNameAndType(SourceName, SourceType);
+            : PoiLayer.GetPoiPositionOfNameAndType(SourceName, SourceType);
     }
 
     /// <summary>
@@ -119,15 +120,16 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         Position targetPos;
 
         // If TargetName is provided, use it to determine target position
-        if (TargetName is not null)
+        if (TargetName is not null && TargetType is not null)
         {
-            targetPos = PoiLayer.GetPositionFromNameAndType(TargetName, TargetType);
+            targetPos = PoiLayer.GetPoiPositionOfNameAndType(TargetName, TargetType);
             // TODO: Add a distance check. If targetName in CSV is too far away from sourceName, choose different target
         }
         // If TargetGeometry is provided, use it to choose a target position
         else if (TargetGeometry is not null)
         {
-            targetPos = GetRandomPositionFromGeometry(TargetGeometry);
+            var poisOfTypesInGeometry = PoiLayer.GetKnpPoisOfTypeInGeometry(new List<string> { PoiType.RestCamp }, TargetGeometry);
+            targetPos = PickRandomKnpPoiFromEnumerable(poisOfTypesInGeometry).Position;
         }
         else
         {
@@ -144,6 +146,14 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         }
 
         return targetPos;
+    }
+
+    private static KnpPoi PickRandomKnpPoiFromEnumerable(IEnumerable<KnpPoi> knpPois)
+    {
+        var knpPoisList = knpPois.ToList();
+        var poiCount = knpPoisList.Count;
+        var poiIndex = new Random().Next(poiCount);
+        return knpPoisList[poiIndex];
     }
 
     /// <summary>
@@ -200,7 +210,7 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     ///     Format: WKT Geometry
     ///     Example: POINT (31.482268 -24.979422)
     /// </summary>
-    [PropertyDescription(Name = "source")]
+    [PropertyDescription(Name = "sourceGeometry")]
     public Geometry SourceGeometry { get; set; }
 
 #nullable enable
@@ -221,7 +231,7 @@ public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     ///     Format: WKT geometry
     ///     Example: MULTIPOINT (31.53493 -25.460457, 31.591958 -24.994678)
     /// </summary>
-    [PropertyDescription(Name = "destination")]
+    [PropertyDescription(Name = "targetGeometry")]
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
 

@@ -4,7 +4,6 @@ using System.IO;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc;
 using KrugerNationalPark.Misc.Events;
-using Mars.Common;
 using Mars.Common.Core.Logging;
 using Mars.Common.Core.Random;
 using Mars.Components.Environments;
@@ -30,7 +29,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     {
         log = LoggerFactory.GetLogger(typeof(Visitor));
 
-        KnpEventComponent = new KnpEventComponent(this);
+        VisitorEventComponent = new KnpEventComponent(this);
         _travelLayer = layer;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
         ElephantCounter = 0;
@@ -47,8 +46,10 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         car.Environment = _sgmLayer.Environment;
         Car = car;
 
-        // todo: Make source position determination routine like Commuter's
-        Position = GetRandomPositionFromGeometry(SourceGeometry);
+        var sourcePos = GenerateSourcePosition();
+        // todo: define distribution to make some visitors spawn from gates and others from rest camps (in else case)?
+        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType(PoiType.KnpGate);
+        
         car.TryEnterDriver(this, out var handle);
 
         _originNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
@@ -128,7 +129,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                 //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
 
                 Console.WriteLine(
-                    $"{_sgmLayer.Context.CurrentTick},{ID},arrived,{currentSourcePoi.Name},{_currentTripDestinationPoi.Poi.Name}");
+                    $"{_sgmLayer.Context.CurrentTick},{ID},arrived,{_currentTripOriginPoi.Name},{_currentTripDestinationPoi.Poi.Name}");
 
 
                 //log.LogInfo($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
@@ -218,7 +219,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     [PropertyDescription]
     public UnregisterAgent UnregisterHandle { get; set; }
 
-    public IEventComponent KnpEventComponent { get; set; }
+    public IEventComponent VisitorEventComponent { get; set; }
 
     public PoiLayer PoiLayer { get; set; }
     public Guid ID { get; set; }
@@ -257,16 +258,45 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     private ISpatialEdge _edgeFromPreviousTick;
 
     /// <summary>
-    ///     Start position of the visitor (e.g., KNP Gate, Rest camp, etc.).
+    ///     The name of the POI at which the Commuter's trip begins
+    /// </summary>
+    [PropertyDescription(Name = "sourceName")]
+    public string SourceName { get; set; }
+
+    /// <summary>
+    ///     The type of the POI at which the Commuter's trip begins
+    /// </summary>
+    [PropertyDescription(Name = "sourceType")]
+    public string SourceType { get; set; }
+    
+    /// <summary>
+    ///     Geometry that is or contains the trip origin of the visitor.
     ///     Example: POINT (31.482268 -24.979422)
     /// </summary>
-    [PropertyDescription(Name = "source")]
+    [PropertyDescription(Name = "sourceGeometry")]
     public Geometry SourceGeometry { get; set; }
 
-    // todo: use this if it is set from outside. If not, choose destination dynamically
-    [PropertyDescription(Name = "destination")]
-    public Geometry TargetGeometry { get; set; }
+#nullable enable
+    /// <summary>
+    ///     The name of the POI at which the Commuter's trip ends
+    /// </summary>
+    [PropertyDescription(Name = "targetName")]
+    public string? TargetName { get; set; }
+    
+    /// <summary>
+    ///     The type of the POI at which the Commuter's trip ends
+    /// </summary>
+    [PropertyDescription(Name = "targetType")]
+    public string? TargetType { get; set; }
 
+    /// <summary>
+    ///     Geometry that is or contains the trip destination of the visitor.
+    ///     Example: MULTIPOINT (31.28163172149577 -25.0153934)
+    /// </summary>
+    [PropertyDescription(Name = "targetGeometry")]
+    public Geometry? TargetGeometry { get; set; }
+#nullable disable
+    
     /// <summary>
     ///     A queue containing one DateTime object for each node of the agent's node
     ///     A node's DateTime object specifies the time as of which the agent needs to start driving home when it reaches this
@@ -307,9 +337,9 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     /// </summary>
     public const double InsertAnimalSightingDistanceAhead = 33.0;
 
-    public SpatialGraphMediatorLayer _sgmLayer;
+    private SpatialGraphMediatorLayer _sgmLayer;
 
-    private KnpPoi currentSourcePoi;
+    private KnpPoi _currentTripOriginPoi;
     private TripDestination _currentTripDestinationPoi;
 
     public Car Car { get; set; }

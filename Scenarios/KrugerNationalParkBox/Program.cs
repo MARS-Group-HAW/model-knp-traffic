@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -134,7 +134,7 @@ public static class Program
     private static SimulationConfig GenerateSimConfig()
     {
         var start = new DateTime(2019, 1, 1, 6, 0, 00);
-        var end = start + TimeSpan.FromHours(12);
+        var end = start + TimeSpan.FromHours(6);
         return new SimulationConfig
         {
             Globals =
@@ -230,7 +230,8 @@ public static class Program
                 new()
                 {
                     Name = nameof(CommuterSchedulingLayer),
-                    File = "resources/CommScheduler_noDest.csv"
+                    File = "resources/_emptyScheduler.csv"
+                },
                 new()
                 {
                     Name = nameof(OsvTourGuideSchedulingLayer),

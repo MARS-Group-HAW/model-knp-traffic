@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KrugerNationalPark.Misc;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Interfaces.Annotations;
@@ -14,15 +15,15 @@ public class VisitorTravelerLayer : AbstractLayer
 
     public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
     {
-        return FindRoute(from, to, timeLimit, edge => ((string) edge.Attributes["access"] == "Public"));
+        var visitorAccessPermissions = new List<string> { PoiAccess.Public };
+        return FindRoute(from, to, timeLimit, edge => visitorAccessPermissions.Contains((string)edge.Attributes["ACCESS"]));
     }
         
     public Route FindOsvRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
     {
-        // Todo: OSVs are allowed to drive on Public and Staff routes, but not "Private" routes.
         // at the moment it's not clear if we want to import Private marked routes or not
-        String[] allowed = {"Public", "Staff"};
-        return FindRoute(from, to, timeLimit, edge => (allowed.Contains((String) edge.Attributes["access"])));
+        var osvAccessPermissions = new List<string> {PoiAccess.Public, PoiAccess.Staff};
+        return FindRoute(from, to, timeLimit, edge => osvAccessPermissions.Contains((string) edge.Attributes["ACCESS"]));
     }
 
     /// <summary>
@@ -86,11 +87,11 @@ public class VisitorTravelerLayer : AbstractLayer
             // randomize all remaining edges to create random behaviour of agents
             // in selecting their route
             var rnd = new Random();
-            outEdges = outEdges.OrderBy(item => rnd.Next()).ToList();
+            outEdges = outEdges.OrderBy(_ => rnd.Next()).ToList();
 
             // append u-turn edges as "fall back" at the end of the list
             // -> will be checked last.
-            // this is necessary since the check from the previous segemnt might identified the current origin
+            // this is necessary since the check from the previous segment might identified the current origin
             // as valid, but only, if we drive back the same segment we came from
             outEdges.AddRange(uTurnEdges);
 
