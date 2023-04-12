@@ -33,10 +33,3 @@ public struct PoiType
     public static readonly string DamEarthen = "Dam, earthen";
     public static readonly string PipelineTrough = "Pipeline trough";
 }
-
-public struct PoiAccess
-{
-    public static readonly string Private = "Private";
-    public static readonly string Public = "Public";
-    public static readonly string Staff = "Staff";
-}
