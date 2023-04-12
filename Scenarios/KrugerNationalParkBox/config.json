@@ -14,26 +14,6 @@
   },
   "layers": [
     {
-      "name": "RasterTempLayer",
-      "file": "resources/RCP8.5_2010_2050_temp.zip"
-    },
-    {
-      "name": "RasterFenceLayer",
-      "file": "resources/gis_raster_border.zip"
-    },
-    {
-      "name": "RasterShadeLayer",
-      "file": "resources/gis_raster_shade.zip"
-    },
-    {
-      "name": "RasterVegetationLayer",
-      "file": "resources/gis_raster_biomass_ts.zip"
-    },
-    {
-      "name": "VectorWaterLayer",
-      "file": "resources/merged_waters_fixed_with_fence_buffer.geojson"
-    },
-    {
       "name": "VisitorTravelerLayer"
     },
     {
@@ -72,12 +52,6 @@
     }
   ],
   "agents": [
-    {
-      "name": "Elephant",
-      "file": "resources/elephant1989_constant_population_15k.csv",
-      "count": 0,
-      "outputtype": "individual"
-    },
     {
       "name": "EventProducer"
     },
