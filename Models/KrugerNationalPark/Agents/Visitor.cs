@@ -32,7 +32,6 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         VisitorEventComponent = new KnpEventComponent(this);
         _travelLayer = layer;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
-        ElephantCounter = 0;
         State = VisitorState.Driving;
 
         _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
@@ -362,10 +361,6 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     public TripsCollection TripsCollection { get; set; }
 
-    public int ElephantCounter { set; get; }
-
-    private readonly HashSet<Guid> _knownElephants;
-
     private VisitorTravelerLayer _travelLayer;
 
     [PropertyDescription]
@@ -440,11 +435,6 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         }
 
         return targetPos;
-    }
-
-    public void ElephantAhead(Elephant elephant)
-    {
-        if (_knownElephants.Add(elephant.ID)) ElephantCounter += 1;
     }
 
     public void Notify(PassengerMessage passengerMessage)

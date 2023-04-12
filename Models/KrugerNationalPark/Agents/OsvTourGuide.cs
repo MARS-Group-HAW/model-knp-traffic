@@ -32,7 +32,6 @@ public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         OsvTourGuideEventComponent = new OsvTourGuideEventComponent(this);
         _travelLayer = layer;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
-        ElephantCounter = 0;
         State = OsvTourGuideState.Driving;
 
         _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
@@ -351,10 +350,6 @@ public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     public TripsCollection TripsCollection { get; set; }
 
-    public int ElephantCounter { set; get; }
-
-    private readonly HashSet<Guid> _knownElephants;
-
     private VisitorTravelerLayer _travelLayer;
 
     [PropertyDescription]
@@ -430,11 +425,6 @@ public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         }
 
         return targetPos;
-    }
-
-    public void ElephantAhead(Elephant elephant)
-    {
-        if (_knownElephants.Add(elephant.ID)) ElephantCounter += 1;
     }
 
     public void Notify(PassengerMessage passengerMessage)

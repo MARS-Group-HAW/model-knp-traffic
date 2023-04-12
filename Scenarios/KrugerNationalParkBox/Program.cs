@@ -57,17 +57,6 @@ public static class Program
         // Turning logger on or off
         LoggerFactory.SetLogLevel(LogLevel.Info);
 
-        // First register each layer at the runtime system
-        /*
-        description.AddLayer<RasterTempLayer>();
-        description.AddLayer<RasterFenceLayer>();
-        description.AddLayer<RasterShadeLayer>();
-        description.AddLayer<RasterVegetationLayer>();
-        description.AddLayer<VectorWaterLayer>();
-        description.AddLayer<ElephantLayer>();
-        description.AddLayer<KnpStreetLayer>(new[] {typeof( ISpatialGraphLayer)} ); // Straßennetz im KNP
-        */
-
         description.AddLayer<SpatialGraphMediatorLayer>(new[] { typeof(ISpatialGraphLayer) });
 
         description.AddLayer<VisitorTravelerLayer>();
@@ -76,9 +65,7 @@ public static class Program
         description.AddLayer<TrafficJamLayer>();
         description.AddLayer<TrafficLookingLayer>();
 
-        //description.AddLayer<KnpStreetLayer>(); // Straßennetzt im KNP
-
-        description.AddLayer<PoiLayer>(); // Camps and Gates
+        description.AddLayer<PoiLayer>(); // KNP POIs, including gates, rest camps, etc. (see PoiTypes.cs)
 
         description.AddLayer<VisitorSchedulingLayer>();
         description.AddLayer<CommuterSchedulingLayer>();
@@ -90,7 +77,6 @@ public static class Program
         description.AddAgent<Commuter, VisitorTravelerLayer>();
         description.AddAgent<OsvTourGuide, VisitorTravelerLayer>();
 
-        //description.AddAgent<Elephant, ElephantLayer>();
         description.AddAgent<EventProducer, VisitorTravelerLayer>();
 
         description.AddEntity<KnpCar>();
@@ -169,31 +155,6 @@ public static class Program
                 },
                 new()
                 {
-                    Name = nameof(RasterTempLayer),
-                    File = "resources/RCP8.5_2010_2050_temp.zip"
-                },
-                new()
-                {
-                    Name = nameof(RasterFenceLayer),
-                    File = "resources/gis_raster_border.zip"
-                },
-                new()
-                {
-                    Name = nameof(RasterShadeLayer),
-                    File = "resources/gis_raster_shade.zip"
-                },
-                new()
-                {
-                    Name = nameof(RasterVegetationLayer),
-                    File = "resources/gis_raster_biomass_ts.zip"
-                },
-                new()
-                {
-                    Name = nameof(VectorWaterLayer),
-                    File = "resources/merged_waters_fixed_with_fence_buffer.geojson"
-                },
-                new()
-                {
                     Name = nameof(VisitorTravelerLayer),
                 },
                 new()
@@ -261,7 +222,7 @@ public static class Program
                         new()
                         {
                             OutputTarget = OutputTargetType.Trips,
-                            OutputConfiguration = new OutputConfiguration()
+                            OutputConfiguration = new OutputConfiguration
                             {
                                 TripsDiscriminatorFields = new[] { "ActiveCapability" }
                             }
@@ -273,10 +234,10 @@ public static class Program
                     },
                     IndividualMapping = new List<IndividualMapping>
                     {
-                        new ()
+                        new()
                         {
                             ParameterName = "WriteRouteAsGeoJSON",
-                            Value = false,
+                            Value = false
                         }
                     }
                 },
@@ -288,7 +249,7 @@ public static class Program
                         new()
                         {
                             OutputTarget = OutputTargetType.Trips,
-                            OutputConfiguration = new OutputConfiguration()
+                            OutputConfiguration = new OutputConfiguration
                             {
                                 TripsDiscriminatorFields = new[] { "ActiveCapability" }
                             }
@@ -300,10 +261,10 @@ public static class Program
                     },
                     IndividualMapping = new List<IndividualMapping>
                     {
-                        new ()
+                        new()
                         {
                             ParameterName = "WriteRouteAsGeoJSON",
-                            Value = false,
+                            Value = false
                         }
                     }
                 },
@@ -315,7 +276,7 @@ public static class Program
                         new()
                         {
                             OutputTarget = OutputTargetType.Trips,
-                            OutputConfiguration = new OutputConfiguration()
+                            OutputConfiguration = new OutputConfiguration
                             {
                                 TripsDiscriminatorFields = new[] { "ActiveCapability" }
                             }
