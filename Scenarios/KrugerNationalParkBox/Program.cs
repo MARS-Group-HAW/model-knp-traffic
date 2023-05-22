@@ -7,6 +7,7 @@ using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
+using Mars.Common.IO;
 using Mars.Components.Environments;
 using Mars.Components.Starter;
 using Mars.Core.Simulation.Entities;
@@ -81,224 +82,27 @@ public static class Program
 
         description.AddEntity<KnpCar>();
 
+        
         // Starting up
-        SimulationWorkflowState result;
-
-        if (args != null)
+        if (args.Any(s => s.Equals("-l")))
         {
-            if (args.Any(s => s.Equals("-l")))
-            {
-                LoggerFactory.SetLogLevel(LogLevel.Info);
-                LoggerFactory.ActivateConsoleLogging();
-            }
-
-            SimulationConfig simConfig;
-            string file;
-
-            if (args.Any(s => s.Equals("-sm")))
-            {
-                var index = args.IndexOf(s => s == "-sm");
-                file = File.ReadAllText(args[index + 1]);
-                simConfig = SimulationConfig.Deserialize(file);
-
-                Console.WriteLine(simConfig.Serialize());
-            }
-            else
-            {
-                simConfig = GenerateSimConfig();
-            }
-
-            var starter = SimulationStarter.Start(description, simConfig);
-
-            result = starter.Run();
+            LoggerFactory.SetLogLevel(LogLevel.Info);
+            LoggerFactory.ActivateConsoleLogging();
         }
-
+        
+        // load sim config, fall back to config.json if none is given
+        var file = "config.json";
+        if (args.Any(s => s.Equals("-sm")))
+        {
+            var index = args.IndexOf(s => s == "-sm");
+            file = File.ReadAllText(args[index + 1]);
+        }
+        
+        var simConfig = SimulationConfig.Deserialize(file);
+        var starter = SimulationStarter.Start(description, simConfig);
+        var result = starter.Run();
+        
         watch.Stop();
         Console.WriteLine($"Simulation finished and last {watch.Elapsed}");
-    }
-
-    private static SimulationConfig GenerateSimConfig()
-    {
-        var start = new DateTime(2019, 1, 1, 6, 0, 00);
-        var end = start + TimeSpan.FromHours(6);
-        return new SimulationConfig
-        {
-            Globals =
-            {
-                StartPoint = start,
-                EndPoint = end,
-                DeltaTUnit = TimeSpanUnit.Seconds,
-                OutputTarget = OutputTargetType.Csv,
-                CsvOptions =
-                {
-                    Delimiter = ",",
-                    NumberFormat = "G"
-                },
-                ShowConsoleProgress = false,
-            },
-            LayerMappings = new List<LayerMapping>
-            {
-                new()
-                {
-                    Name = nameof(TrafficLayer),
-                    File = "resources/knp_raster_1111m.asc"
-                },
-                new()
-                {
-                    Name = nameof(TrafficJamLayer),
-                    File = "resources/knp_raster_1111m.asc"
-                },
-                new()
-                {
-                    Name = nameof(TrafficLookingLayer),
-                    File = "resources/knp_raster_1111m.asc"
-                },
-                new()
-                {
-                    Name = nameof(VisitorTravelerLayer),
-                },
-                new()
-                {
-                    Name = nameof(SpatialGraphMediatorLayer),
-                    Inputs = new List<Input>
-                    {
-                        new()
-                        {
-                            //File = "resources/knp_graph.geojson",
-                            File = "resources/roads_all_2019_inferred.geojson",
-                            //File = "resources/roads_all_2019_public.geojson",
-                            InputConfiguration = new InputConfiguration
-                            {
-                                Modalities = new HashSet<SpatialModalityType> { SpatialModalityType.CarDriving },
-                                IsBiDirectedImport = true,
-                                //NodeToleranceInMeter = 20,
-                                //NodeIntegrationKind = NodeIntegrationKind.LinkNode,
-                                //GeometryAsNodesEnabled = false // alle punkte als node -> langsam
-                            }
-                        }
-                    }
-                },
-                new()
-                {
-                    Name = nameof(PoiLayer),
-                    File = "resources/pois_inferred.geojson"
-                },
-                new()
-                {
-                    Name = nameof(VisitorSchedulingLayer),
-                    File = "resources/VisitorScheduler_debug_1.csv"
-                },
-                new()
-                {
-                    Name = nameof(CommuterSchedulingLayer),
-                    File = "resources/_emptyScheduler.csv"
-                },
-                new()
-                {
-                    Name = nameof(OsvTourGuideSchedulingLayer),
-                    File = "resources/_emptyScheduler.csv"
-                },
-                new()
-                {
-                    Name = nameof(ProducerSchedulingLayer),
-                    File = "resources/ProducerScheduler.csv"
-                }
-            },
-            EntityMappings = new List<EntityMapping>
-            {
-                new()
-                {
-                    Name = "KnpCar",
-                    File = Path.Combine("resources", "car.csv")
-                }
-            },
-            AgentMappings =
-            {
-                new AgentMapping
-                {
-                    Name = nameof(Visitor),
-                    Outputs = new List<Output>
-                    {
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Trips,
-                            OutputConfiguration = new OutputConfiguration
-                            {
-                                TripsDiscriminatorFields = new[] { "ActiveCapability" }
-                            }
-                        },
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Csv
-                        }
-                    },
-                    IndividualMapping = new List<IndividualMapping>
-                    {
-                        new()
-                        {
-                            ParameterName = "WriteRouteAsGeoJSON",
-                            Value = false
-                        }
-                    }
-                },
-                new AgentMapping
-                {
-                    Name = nameof(OsvTourGuide),
-                    Outputs = new List<Output>
-                    {
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Trips,
-                            OutputConfiguration = new OutputConfiguration
-                            {
-                                TripsDiscriminatorFields = new[] { "ActiveCapability" }
-                            }
-                        },
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Csv
-                        }
-                    },
-                    IndividualMapping = new List<IndividualMapping>
-                    {
-                        new()
-                        {
-                            ParameterName = "WriteRouteAsGeoJSON",
-                            Value = false
-                        }
-                    }
-                },
-                new AgentMapping
-                {
-                    Name = nameof(Commuter),
-                    Outputs = new List<Output>
-                    {
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Trips,
-                            OutputConfiguration = new OutputConfiguration
-                            {
-                                TripsDiscriminatorFields = new[] { "ActiveCapability" }
-                            }
-                        },
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Csv
-                        }
-                    }
-                },
-                new AgentMapping
-                {
-                    Name = nameof(EventProducer),
-                    Outputs = new List<Output>
-                    {
-                        new()
-                        {
-                            OutputTarget = OutputTargetType.Csv
-                        }
-                    }
-                }
-            }
-        };
     }
 }

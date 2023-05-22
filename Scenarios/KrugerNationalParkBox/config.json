@@ -2,17 +2,24 @@
   "globals": {
     "deltaT": 1,
     "deltaTUnit": "seconds",
-    "startTime": "2019-01-01T06:00:00.000Z",
-    "endTime": "2019-01-01T18:00:00.000Z",
+    "startTime": "2019-01-01T06:00:00",
+    "endTime": "2019-01-01T12:00:00",
     "output": "csv",
-    "console" : false,
-    "debug": true,
-    "options": {
-      "numberFormat": "G"
-    },
-    "knpCloseTimeHour": 18
+    "console": false
   },
   "layers": [
+    {
+      "file": "resources/knp_raster_1111m.asc",
+      "name": "TrafficLayer"
+    },
+    {
+      "file": "resources/knp_raster_1111m.asc",
+      "name": "TrafficJamLayer"
+    },
+    {
+      "file": "resources/knp_raster_1111m.asc",
+      "name": "TrafficLookingLayer"
+    },
     {
       "name": "VisitorTravelerLayer"
     },
@@ -20,25 +27,30 @@
       "name": "SpatialGraphMediatorLayer",
       "inputs": [
         {
-          "file": "resources/roads_all_2019_inferred2.geojson",
+          "file": "resources/roads_all_2019_inferred.geojson",
           "inputConfiguration": {
             "modalities": ["CarDriving"],
             "isBidirectedGraph": true
+           
           }
         }
       ]
     },
     {
-      "name": "POILayer",
+      "name": "PoiLayer",
       "file": "resources/pois_inferred.geojson"
     },
     {
       "name": "VisitorSchedulingLayer",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/VisitorScheduler_debug_1.csv"
     },
     {
       "name": "CommuterSchedulingLayer",
-      "file": "resources/CommScheduler_debug_1.csv"
+      "file": "resources/_emptyScheduler.csv"
+    },
+    {
+      "name": "OsvTourGuideSchedulingLayer",
+      "file": "resources/_emptyScheduler.csv"
     },
     {
       "name": "ProducerSchedulingLayer",
@@ -65,9 +77,13 @@
               "ActiveCapability"
             ]
           }
-        },
+        }
+      ],
+      "individual": [
         {
-          "kind": "csv"
+          "value": false,
+          "name": "WriteRouteAsGeoJSON",
+          "parameter": "WriteRouteAsGeoJSON"
         }
       ]
     },
@@ -81,11 +97,28 @@
               "ActiveCapability"
             ]
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "OsvTourGuide",
+      "outputs": [
         {
-          "kind": "csv"
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
+        }
+      ],
+      "individual": [
+        {
+          "value": false,
+          "name": "WriteRouteAsGeoJSON",
+          "parameter": "WriteRouteAsGeoJSON"
         }
       ]
     }
-  ] 
+  ]
 }
