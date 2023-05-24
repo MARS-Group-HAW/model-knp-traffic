@@ -15,14 +15,14 @@ public class VisitorTravelerLayer : AbstractLayer
 
     public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
     {
-        var visitorAccessPermissions = new List<string> { PoiAccess.Public };
+        var visitorAccessPermissions = new List<string> { RoadAccess.Public };
         return FindRoute(from, to, timeLimit, edge => visitorAccessPermissions.Contains((string)edge.Attributes["ACCESS"]));
     }
         
     public Route FindOsvRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
     {
         // at the moment it's not clear if we want to import Private marked routes or not
-        var osvAccessPermissions = new List<string> {PoiAccess.Public, PoiAccess.Staff};
+        var osvAccessPermissions = new List<string> {RoadAccess.Public, RoadAccess.Staff};
         return FindRoute(from, to, timeLimit, edge => osvAccessPermissions.Contains((string) edge.Attributes["ACCESS"]));
     }
 

@@ -1,6 +1,6 @@
 namespace KrugerNationalPark.Misc;
 
-public struct PoiAccess
+public struct RoadAccess
 {
     public const string Private = "Private";
     public const string Public = "Public";
