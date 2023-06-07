@@ -31,7 +31,6 @@
           "inputConfiguration": {
             "modalities": ["CarDriving"],
             "isBidirectedGraph": true
-           
           }
         }
       ]
@@ -81,9 +80,30 @@
       ],
       "individual": [
         {
-          "value": false,
           "name": "WriteRouteAsGeoJSON",
-          "parameter": "WriteRouteAsGeoJSON"
+          "parameter": "WriteRouteAsGeoJSON",
+          "value": false
+        },
+        {
+          "name": "RoadSurfacePreferences",
+          "parameter": "RoadSurfacePreferences",
+          "value": {
+            "Graded": 0.1,
+            "Gravel": 0.2,
+            "Disused": 0.3,
+            "Rehab": 0.4,
+            "Tar": 0.5,
+            "TwoTrack": 0.6
+          }
+        },
+        {
+          "name": "RoadAccessPermissions",
+          "parameter": "RoadAccessPermissions",
+          "value": {
+            "Private": false,
+            "Public": true,
+            "Staff": false
+          }
         }
       ]
     },
@@ -114,9 +134,9 @@
       ],
       "individual": [
         {
-          "value": false,
           "name": "WriteRouteAsGeoJSON",
-          "parameter": "WriteRouteAsGeoJSON"
+          "parameter": "WriteRouteAsGeoJSON",
+          "value": false
         }
       ]
     }

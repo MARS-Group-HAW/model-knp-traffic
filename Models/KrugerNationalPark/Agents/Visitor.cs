@@ -212,6 +212,12 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
     public int EventPossibleRelevant { get; set; }
     public int EventHandled { get; set; }
 
+    [PropertyDescription(Name = "RoadSurfacePreferences")]
+    public Dictionary<object, double> RoadSurfacePreferences { get; set; }
+    
+    [PropertyDescription(Name = "RoadAccessPermissions")]
+    public Dictionary<object, bool> RoadAccessPermissions { get; set; }
+    
     /// <summary>
     ///     Needed fo "removing" the agent and preventing further tick() call to it.
     /// </summary>
