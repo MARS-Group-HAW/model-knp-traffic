@@ -16,6 +16,6 @@ public class KnpCar : Car
     }
 
     [PropertyDescription] 
-    public VisitorTravelerLayer VisitorTravelerLayer { get; set; }
+    public KnpRoadNetwork KnpRoadNetwork { get; set; }
 
 }

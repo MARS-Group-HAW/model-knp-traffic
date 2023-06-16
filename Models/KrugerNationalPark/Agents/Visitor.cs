@@ -21,16 +21,16 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents;
 
-public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
+public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 {
     #region Initialization
         
-    public void Init(VisitorTravelerLayer layer)
+    public void Init(KnpRoadNetwork layer)
     {
         log = LoggerFactory.GetLogger(typeof(Visitor));
 
         VisitorEventComponent = new KnpEventComponent(this);
-        _travelLayer = layer;
+        _knpRoadNetwork = layer;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
         State = VisitorState.Driving;
 
@@ -73,7 +73,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         var targetPos = GenerateTargetPosition();
         var destinationNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
 
-        handle.Route = _travelLayer.FindRoute(_originNode, destinationNode, 4 * 3600);
+        handle.Route = _knpRoadNetwork.FindRoute(_originNode, destinationNode, 4 * 3600);
         VehicleHandle = handle;
 
         // save route to geojson
@@ -154,7 +154,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                         SpatialModalityType.CarDriving);
 
 
-                    VehicleHandle.Route = _travelLayer.FindRoute(sourceNode, destinationNode, 4 * 3600);
+                    VehicleHandle.Route = _knpRoadNetwork.FindRoute(sourceNode, destinationNode, 4 * 3600);
 
                     //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor goes back to {destinationPoco.Poi.Name}");
 
@@ -367,7 +367,7 @@ public class Visitor : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     public TripsCollection TripsCollection { get; set; }
 
-    private VisitorTravelerLayer _travelLayer;
+    private KnpRoadNetwork _knpRoadNetwork;
 
     [PropertyDescription]
     public TrafficLayer TrafficLayer { get; set; }

@@ -21,7 +21,7 @@
       "name": "TrafficLookingLayer"
     },
     {
-      "name": "VisitorTravelerLayer"
+      "name": "KnpRoadNetwork"
     },
     {
       "name": "SpatialGraphMediatorLayer",

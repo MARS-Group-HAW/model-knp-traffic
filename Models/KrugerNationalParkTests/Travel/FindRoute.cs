@@ -140,7 +140,7 @@ namespace KrugerNationalParkTests.Travel
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
 
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
 
             
@@ -193,7 +193,7 @@ namespace KrugerNationalParkTests.Travel
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
 
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
             
             // n1 -> n2 in time
@@ -247,7 +247,7 @@ namespace KrugerNationalParkTests.Travel
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
 
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
 
 
@@ -286,7 +286,7 @@ namespace KrugerNationalParkTests.Travel
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
 
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
 
             // n1 -> n2 in time
@@ -349,7 +349,7 @@ namespace KrugerNationalParkTests.Travel
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
 
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
 
 
@@ -396,7 +396,7 @@ namespace KrugerNationalParkTests.Travel
             // are not reachable in 1h
             //var rt1 = layer.FindRoute(n1, n2, 3600);
             
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
             
             

@@ -10,7 +10,7 @@ using SOHDomain.Graph;
 
 namespace KrugerNationalPark.Layers;
 
-public class VisitorTravelerLayer : AbstractLayer
+public class KnpRoadNetwork : AbstractLayer
 {
 
     public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)

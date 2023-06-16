@@ -19,7 +19,7 @@ public class TrafficLayer : RasterLayer, ISteppedActiveLayer
     ///     The perimeter of the simulation environment.
     /// </summary>
     [PropertyDescription(Name = "VisitorTravelerLayer")]
-    public VisitorTravelerLayer Graph { get; set; }
+    public KnpRoadNetwork Graph { get; set; }
     
     /// <summary>
     ///     Initialization of the layer type.

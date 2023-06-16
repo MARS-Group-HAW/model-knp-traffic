@@ -21,16 +21,16 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents;
 
-public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
+public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 {
     #region Initialization
     
-    public void Init(VisitorTravelerLayer layer)
+    public void Init(KnpRoadNetwork layer)
     {
         log = LoggerFactory.GetLogger(typeof(OsvTourGuide));
 
         OsvTourGuideEventComponent = new OsvTourGuideEventComponent(this);
-        _travelLayer = layer;
+        _knpRoadNetwork = layer;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
         State = OsvTourGuideState.Driving;
 
@@ -73,7 +73,7 @@ public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
         
         var destinationNode = _sgmLayer.Environment.NearestNode(_currentTripOriginPoi.Position, SpatialModalityType.CarDriving);
 
-        handle.Route = _travelLayer.FindOsvRoute(_originNode, destinationNode, 2 * 3600);  // TODO make time variable/configurable
+        handle.Route = _knpRoadNetwork.FindOsvRoute(_originNode, destinationNode, 2 * 3600);  // TODO make time variable/configurable
         VehicleHandle = handle;
 
         // save route to geojson
@@ -143,7 +143,7 @@ public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
                     var sourcePoi = PoiLayer.GetNearestKnpPoi(_currentTripDestinationPoi.Position);
                     var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
-                    VehicleHandle.Route = _travelLayer.FindOsvRoute(sourceNode, sourceNode, 2 * 3600);  // TODO make time variable/configurable
+                    VehicleHandle.Route = _knpRoadNetwork.FindOsvRoute(sourceNode, sourceNode, 2 * 3600);  // TODO make time variable/configurable
 
                     //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} OSVTourGuide goes back to {destinationPoco.Poi.Name}");
 
@@ -350,7 +350,7 @@ public class OsvTourGuide : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
 
     public TripsCollection TripsCollection { get; set; }
 
-    private VisitorTravelerLayer _travelLayer;
+    private KnpRoadNetwork _knpRoadNetwork;
 
     [PropertyDescription]
     public TrafficLayer TrafficLayer { get; set; }

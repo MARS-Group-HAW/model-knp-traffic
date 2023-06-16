@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KrugerNationalPark.Layers;
 using KrugerNationalPark.Misc.Events;
 using Mars.Components.Services.Events;
@@ -6,11 +6,11 @@ using Mars.Interfaces.Agents;
 
 namespace KrugerNationalPark.Agents;
 
-public class EventProducer : IAgent<VisitorTravelerLayer>
+public class EventProducer : IAgent<KnpRoadNetwork>
 {
     #region Initialization
 
-    public void Init(VisitorTravelerLayer layer)
+    public void Init(KnpRoadNetwork layer)
     {
         _travellerLayer = layer;
         _eventsCollection = new EventsCollection();
@@ -59,7 +59,7 @@ public class EventProducer : IAgent<VisitorTravelerLayer>
 
     public Guid ID { get; set; }
         
-    private VisitorTravelerLayer _travellerLayer;
+    private KnpRoadNetwork _travellerLayer;
 
     private EventsCollection _eventsCollection;
 

@@ -60,7 +60,7 @@ public static class Program
 
         description.AddLayer<SpatialGraphMediatorLayer>(new[] { typeof(ISpatialGraphLayer) });
 
-        description.AddLayer<VisitorTravelerLayer>();
+        description.AddLayer<KnpRoadNetwork>();
 
         description.AddLayer<TrafficLayer>();
         description.AddLayer<TrafficJamLayer>();
@@ -74,11 +74,11 @@ public static class Program
         description.AddLayer<EventProducerScheduler>();
 
         // Second register the agent types with their respective layer type
-        description.AddAgent<Visitor, VisitorTravelerLayer>();
-        description.AddAgent<Commuter, VisitorTravelerLayer>();
-        description.AddAgent<OsvTourGuide, VisitorTravelerLayer>();
+        description.AddAgent<Visitor, KnpRoadNetwork>();
+        description.AddAgent<Commuter, KnpRoadNetwork>();
+        description.AddAgent<OsvTourGuide, KnpRoadNetwork>();
 
-        description.AddAgent<EventProducer, VisitorTravelerLayer>();
+        description.AddAgent<EventProducer, KnpRoadNetwork>();
 
         description.AddEntity<KnpCar>();
 

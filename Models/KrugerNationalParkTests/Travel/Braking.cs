@@ -40,11 +40,11 @@ namespace KrugerNationalParkTests.Travel
             var description = new ModelDescription();
             
             description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
-            description.AddLayer<VisitorTravelerLayer>();   
+            description.AddLayer<KnpRoadNetwork>();   
             description.AddLayer<PoiLayer>();
             description.AddLayer<VisitorScheduler>();
             
-            description.AddAgent<Visitor, VisitorTravelerLayer>();
+            description.AddAgent<Visitor, KnpRoadNetwork>();
             
             description.AddEntity<KnpCar>();
             
@@ -64,7 +64,7 @@ namespace KrugerNationalParkTests.Travel
                 {
                     new LayerMapping
                     {
-                        Name = nameof(VisitorTravelerLayer)
+                        Name = nameof(KnpRoadNetwork)
                     },
                     new LayerMapping
                     {
@@ -168,7 +168,7 @@ namespace KrugerNationalParkTests.Travel
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = graph;
 
-            var layer = new VisitorTravelerLayer();
+            var layer = new KnpRoadNetwork();
             layer.SpatialGraphMediatorLayer = mediator;
             
             

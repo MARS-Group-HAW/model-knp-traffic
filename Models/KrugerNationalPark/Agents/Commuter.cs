@@ -22,11 +22,11 @@ namespace KrugerNationalPark.Agents;
 ///     Configurable in CSV file used for CommuterSchedulingLayer.
 ///     Spawned by CommuterSchedulingLayer.
 /// </summary>
-public class Commuter : IAgent<VisitorTravelerLayer>, ICarSteeringCapable
+public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 {
     #region Initialization
 
-    public void Init(VisitorTravelerLayer layer)
+    public void Init(KnpRoadNetwork layer)
     {
         State = CommuterState.GoingToWork;
         _sgmLayer = layer.SpatialGraphMediatorLayer;
