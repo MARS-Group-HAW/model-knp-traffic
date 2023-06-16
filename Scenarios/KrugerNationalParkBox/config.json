@@ -52,7 +52,7 @@
       "file": "resources/OsvTourGuideScheduler.csv"
     },
     {
-      "name": "ProducerSchedulingLayer",
+      "name": "EventProducerScheduler",
       "file": "resources/ProducerScheduler.csv"
     }
   ],

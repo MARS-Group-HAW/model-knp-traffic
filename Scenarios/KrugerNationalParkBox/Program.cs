@@ -71,7 +71,7 @@ public static class Program
         description.AddLayer<VisitorScheduler>();
         description.AddLayer<CommuterScheduler>();
         description.AddLayer<OsvTourGuideScheduler>();
-        description.AddLayer<ProducerSchedulingLayer>();
+        description.AddLayer<EventProducerScheduler>();
 
         // Second register the agent types with their respective layer type
         description.AddAgent<Visitor, VisitorTravelerLayer>();
