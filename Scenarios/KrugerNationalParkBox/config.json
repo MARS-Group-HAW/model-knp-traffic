@@ -40,16 +40,16 @@
       "file": "resources/pois_inferred.geojson"
     },
     {
-      "name": "VisitorSchedulingLayer",
-      "file": "resources/VisitorScheduler_debug_1.csv"
-    },
-    {
-      "name": "CommuterSchedulingLayer",
+      "name": "VisitorScheduler",
       "file": "resources/_emptyScheduler.csv"
     },
     {
-      "name": "OsvTourGuideSchedulingLayer",
+      "name": "CommuterScheduler",
       "file": "resources/_emptyScheduler.csv"
+    },
+    {
+      "name": "OsvTourGuideScheduler",
+      "file": "resources/OsvTourGuideScheduler.csv"
     },
     {
       "name": "ProducerSchedulingLayer",

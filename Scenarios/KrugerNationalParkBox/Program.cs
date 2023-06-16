@@ -68,9 +68,9 @@ public static class Program
 
         description.AddLayer<PoiLayer>(); // KNP POIs, including gates, rest camps, etc. (see PoiTypes.cs)
 
-        description.AddLayer<VisitorSchedulingLayer>();
-        description.AddLayer<CommuterSchedulingLayer>();
-        description.AddLayer<OsvTourGuideSchedulingLayer>();
+        description.AddLayer<VisitorScheduler>();
+        description.AddLayer<CommuterScheduler>();
+        description.AddLayer<OsvTourGuideScheduler>();
         description.AddLayer<ProducerSchedulingLayer>();
 
         // Second register the agent types with their respective layer type
