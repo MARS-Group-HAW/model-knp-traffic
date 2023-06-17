@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -62,9 +62,9 @@ public static class Program
 
         description.AddLayer<KnpRoadNetwork>();
 
-        description.AddLayer<TrafficLayer>();
-        description.AddLayer<TrafficJamLayer>();
-        description.AddLayer<TrafficLookingLayer>();
+        description.AddLayer<TrafficGrid>();
+        description.AddLayer<TrafficJamGrid>();
+        description.AddLayer<SightingsGrid>();
 
         description.AddLayer<PointsOfInterest>(); // KNP POIs, including gates, rest camps, etc. (see PoiTypes.cs)
 

@@ -10,15 +10,15 @@
   "layers": [
     {
       "file": "resources/knp_raster_1111m.asc",
-      "name": "TrafficLayer"
+      "name": "TrafficGrid"
     },
     {
       "file": "resources/knp_raster_1111m.asc",
-      "name": "TrafficJamLayer"
+      "name": "TrafficJamGrid"
     },
     {
       "file": "resources/knp_raster_1111m.asc",
-      "name": "TrafficLookingLayer"
+      "name": "SightingsGrid"
     },
     {
       "name": "KnpRoadNetwork"

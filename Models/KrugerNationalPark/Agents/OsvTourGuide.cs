@@ -167,27 +167,27 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         CarVelocity = Car.Velocity;
         TripsCollection.Add(Position);
         
-        if (TrafficLayer.IsInRaster(Position))
+        if (TrafficGrid.IsInRaster(Position))
         {
-            TrafficLayer[Position] += 1;
+            TrafficGrid[Position] += 1;
         }
 
         // todo: 3 dynamisch machen
-        if (TrafficJamLayer.IsInRaster(Position) && CarVelocity == 0 && State != OsvTourGuideState.Looking)
+        if (TrafficJamGrid.IsInRaster(Position) && CarVelocity == 0 && State != OsvTourGuideState.Looking)
         {
 
             _reallyJam += 1;
 
             if (_reallyJam > 60)
             {
-                TrafficJamLayer[Position] += 1;
+                TrafficJamGrid[Position] += 1;
                 _reallyJam = 0;
             }
         }
         
-        if (TrafficLookingLayer.IsInRaster(Position) && State == OsvTourGuideState.Looking)
+        if (SightingsGrid.IsInRaster(Position) && State == OsvTourGuideState.Looking)
         {
-            TrafficLookingLayer[Position] += 1;
+            SightingsGrid[Position] += 1;
         }
     }
 
@@ -353,13 +353,13 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     private KnpRoadNetwork _knpRoadNetwork;
 
     [PropertyDescription]
-    public TrafficLayer TrafficLayer { get; set; }
+    public TrafficGrid TrafficGrid { get; set; }
 
     [PropertyDescription]
-    public TrafficJamLayer TrafficJamLayer { get; set; }
+    public TrafficJamGrid TrafficJamGrid { get; set; }
     
     [PropertyDescription]
-    public TrafficLookingLayer TrafficLookingLayer { get; set; }
+    public SightingsGrid SightingsGrid { get; set; }
     
     #endregion
 
