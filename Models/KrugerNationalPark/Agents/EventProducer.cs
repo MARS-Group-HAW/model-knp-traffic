@@ -26,7 +26,7 @@ public class EventProducer : IAgent<KnpRoadNetwork>
         if (random.NextDouble() >= 0.9)
         {
             var eventStartTime = _travellerLayer.Context.CurrentTimePoint.GetValueOrDefault();
-            var node = _travellerLayer.SpatialGraphMediatorLayer.Environment.GetRandomNode();
+            var node = _travellerLayer.Environment.GetRandomNode();
             var edges = node.OutgoingEdges;
 
             foreach (var edge in edges.Values)

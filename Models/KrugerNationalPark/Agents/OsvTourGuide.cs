@@ -31,7 +31,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         OsvTourGuideEventComponent = new OsvTourGuideEventComponent(this);
         _knpRoadNetwork = layer;
-        _sgmLayer = layer.SpatialGraphMediatorLayer;
+        _sgmLayer = layer;
         State = OsvTourGuideState.Driving;
 
         _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();

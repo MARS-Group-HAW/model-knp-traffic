@@ -21,10 +21,7 @@
       "name": "SightingsGrid"
     },
     {
-      "name": "KnpRoadNetwork"
-    },
-    {
-      "name": "SpatialGraphMediatorLayer",
+      "name": "KnpRoadNetwork",
       "inputs": [
         {
           "file": "resources/roads_all_2019_inferred.geojson",

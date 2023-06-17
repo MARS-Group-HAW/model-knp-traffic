@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using KrugerNationalPark.Misc;
 using Mars.Components.Environments;
-using Mars.Components.Layers;
-using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using SOHDomain.Graph;
 
 namespace KrugerNationalPark.Layers;
 
-public class KnpRoadNetwork : AbstractLayer
+public class KnpRoadNetwork : SpatialGraphMediatorLayer
 {
 
     public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
@@ -110,7 +108,7 @@ public class KnpRoadNetwork : AbstractLayer
                 var targetNode = prevEdge.To;
                     
                 // @todo: FindRoute hat nur Filter für Attribute? Keinen Filter für Modalität?
-                var tmpRoute = SpatialGraphMediatorLayer.Environment.FindRoute(targetNode, goal, PathHeuristics.Shortest, filter);
+                var tmpRoute = Environment.FindRoute(targetNode, goal, PathHeuristics.Shortest, filter);
                     
                 var routeDuration = GetRouteDuration(tmpRoute);
 
@@ -156,7 +154,4 @@ public class KnpRoadNetwork : AbstractLayer
 
         return duration;
     }
-
-    [PropertyDescription]
-    public SpatialGraphMediatorLayer SpatialGraphMediatorLayer { get; set; }
 }
