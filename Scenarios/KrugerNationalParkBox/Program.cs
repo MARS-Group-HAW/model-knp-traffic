@@ -58,9 +58,9 @@ public static class Program
         // Turning logger on or off
         LoggerFactory.SetLogLevel(LogLevel.Info);
 
-        description.AddLayer<SpatialGraphMediatorLayer>(new[] { typeof(ISpatialGraphLayer) });
+        // description.AddLayer<SpatialGraphMediatorLayer>();
 
-        description.AddLayer<KnpRoadNetwork>();
+        description.AddLayer<KnpRoadNetwork>(new[] { typeof(ISpatialGraphLayer) });
 
         description.AddLayer<TrafficGrid>();
         description.AddLayer<TrafficJamGrid>();

@@ -137,11 +137,13 @@ namespace KrugerNationalParkTests.Travel
             var edge14 = environment.AddEdge(node1, node4, 10, privateAttritbutes, SpatialModalityType.CarDriving);
             edge14.MaxSpeed = 10;
             
+            /* TODO review this (commented out during refactoring of KnpRoadNetwork : AbstractLayer to KnpRoadNetwork : SpatialGraphMediatorLayer
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
+            */
 
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
 
             
             // test that visitor takes the longer route, and not the shorter OSV / Staff route
@@ -190,11 +192,13 @@ namespace KrugerNationalParkTests.Travel
             var edge23 = environment.AddEdge(node2, node3, 50);
             edge23.MaxSpeed = 10;
 
+            /* TODO review this (commented out during refactoring of KnpRoadNetwork : AbstractLayer to KnpRoadNetwork : SpatialGraphMediatorLayer
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
+            */
 
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
             
             // n1 -> n2 in time
             var rt1 = layer.FindRoute(node1, node3, 10);
@@ -244,11 +248,13 @@ namespace KrugerNationalParkTests.Travel
             var edge41 = environment.AddEdge(node4, node1, 25);
             edge41.MaxSpeed = 5;
 
+            /* TODO review this (commented out during refactoring of KnpRoadNetwork : AbstractLayer to KnpRoadNetwork : SpatialGraphMediatorLayer
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
+            */
 
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
 
 
             // n1 -> n1 
@@ -283,11 +289,13 @@ namespace KrugerNationalParkTests.Travel
             var edge32 = environment.AddEdge(node3, node2, 50);
             edge32.MaxSpeed = 10;
 
+            /* TODO review this (commented out during refactoring of KnpRoadNetwork : AbstractLayer to KnpRoadNetwork : SpatialGraphMediatorLayer
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
+            */
 
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
 
             // n1 -> n2 in time
             var rt1 = layer.FindRoute(node1, node3, 10);
@@ -346,11 +354,13 @@ namespace KrugerNationalParkTests.Travel
             var edge34 = environment.AddEdge(node3, node4, 1);
             edge34.MaxSpeed = 30;
 
+            /* TODO review this (commented out during refactoring of KnpRoadNetwork : AbstractLayer to KnpRoadNetwork : SpatialGraphMediatorLayer
             var mediator = new SpatialGraphMediatorLayer();
             mediator.Environment = environment;
+            */
 
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
 
 
             var geoJson = SpatialGraphHelper.ToGeoJson(environment);
@@ -397,7 +407,7 @@ namespace KrugerNationalParkTests.Travel
             //var rt1 = layer.FindRoute(n1, n2, 3600);
             
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
             
             
             for (var i = 0; i < 10; i++)

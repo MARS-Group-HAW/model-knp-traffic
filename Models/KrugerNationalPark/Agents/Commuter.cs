@@ -29,7 +29,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     public void Init(KnpRoadNetwork layer)
     {
         State = CommuterState.GoingToWork;
-        _sgmLayer = layer.SpatialGraphMediatorLayer;
+        _sgmLayer = layer;
 
         TripsCollection = new TripsCollection(_sgmLayer.Context);
 

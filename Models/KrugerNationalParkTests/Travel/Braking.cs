@@ -165,11 +165,13 @@ namespace KrugerNationalParkTests.Travel
             var visitor = new Visitor();
             
             
+            /* TODO review this (commented out during refactoring of KnpRoadNetwork : AbstractLayer to KnpRoadNetwork : SpatialGraphMediatorLayer
             var mediator = new SpatialGraphMediatorLayer();
-            mediator.Environment = graph;
+            mediator.Environment = environment;
+            */
 
             var layer = new KnpRoadNetwork();
-            layer.SpatialGraphMediatorLayer = mediator;
+            // layer.SpatialGraphMediatorLayer = mediator;
             
             
             var driver = new InfiniteSteeringDriver(context, 0, graph, 0, speed)

@@ -31,7 +31,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         VisitorEventComponent = new KnpEventComponent(this);
         _knpRoadNetwork = layer;
-        _sgmLayer = layer.SpatialGraphMediatorLayer;
+        _sgmLayer = layer;
         State = VisitorState.Driving;
 
         _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
