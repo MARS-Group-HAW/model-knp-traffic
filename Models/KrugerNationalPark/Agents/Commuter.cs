@@ -38,7 +38,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         Car = car;
 
         var sourcePos = GenerateSourcePosition();
-        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType(PoiType.KnpGate);
+        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.KnpGate);
 
         car.TryEnterDriver(this, out var handle);
 
@@ -107,7 +107,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     {
         return SourceGeometry is not null
             ? GetRandomPositionFromGeometry(SourceGeometry)
-            : PoiLayer.GetPoiPositionOfNameAndType(SourceName, SourceType);
+            : PointsOfInterest.GetPoiPositionOfNameAndType(SourceName, SourceType);
     }
 
     /// <summary>
@@ -122,13 +122,13 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         // If TargetName is provided, use it to determine target position
         if (TargetName is not null && TargetType is not null)
         {
-            targetPos = PoiLayer.GetPoiPositionOfNameAndType(TargetName, TargetType);
+            targetPos = PointsOfInterest.GetPoiPositionOfNameAndType(TargetName, TargetType);
             // TODO: Add a distance check. If targetName in CSV is too far away from sourceName, choose different target
         }
         // If TargetGeometry is provided, use it to choose a target position
         else if (TargetGeometry is not null)
         {
-            var poisOfTypesInGeometry = PoiLayer.GetKnpPoisOfTypeInGeometry(new List<string> { PoiType.RestCamp }, TargetGeometry);
+            var poisOfTypesInGeometry = PointsOfInterest.GetKnpPoisOfTypeInGeometry(new List<string> { PoiType.RestCamp }, TargetGeometry);
             targetPos = PickRandomKnpPoiFromEnumerable(poisOfTypesInGeometry).Position;
         }
         else
@@ -137,7 +137,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             // TODO: replace magic number (timeLimit)
             // TODO: add option to provide TargetGeometry but no SourceGeometry?
             // TODO: refactor KnpPoi.GetDestinationPois() into PoiLayer so that layer is single point of entry for information related to KnpPois
-            var nearestPoi = PoiLayer.GetNearestKnpPoi(Position);
+            var nearestPoi = PointsOfInterest.GetNearestKnpPoi(Position);
             var availableDestinations =
                 nearestPoi.GetDestinationPois(1.5 * 3600, new List<string> { PoiType.RestCamp });
             var numberOfPotentialDestinations = availableDestinations.Count;
@@ -259,7 +259,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>
     ///     Reference to the KNP POI layer, which holds gates, rest camps, and other POIs in the KNP
     /// </summary>
-    public PoiLayer PoiLayer { get; set; }
+    public PointsOfInterest PointsOfInterest { get; set; }
 
     /// <summary>
     ///     Position of car/agent on the map

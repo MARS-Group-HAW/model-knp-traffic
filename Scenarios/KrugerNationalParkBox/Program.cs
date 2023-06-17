@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -66,7 +66,7 @@ public static class Program
         description.AddLayer<TrafficJamLayer>();
         description.AddLayer<TrafficLookingLayer>();
 
-        description.AddLayer<PoiLayer>(); // KNP POIs, including gates, rest camps, etc. (see PoiTypes.cs)
+        description.AddLayer<PointsOfInterest>(); // KNP POIs, including gates, rest camps, etc. (see PoiTypes.cs)
 
         description.AddLayer<VisitorScheduler>();
         description.AddLayer<CommuterScheduler>();

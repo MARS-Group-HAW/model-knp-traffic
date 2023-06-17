@@ -36,7 +36,7 @@
       ]
     },
     {
-      "name": "PoiLayer",
+      "name": "PointsOfInterest",
       "file": "resources/pois_inferred.geojson"
     },
     {

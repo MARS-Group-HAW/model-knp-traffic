@@ -14,7 +14,7 @@ namespace KrugerNationalParkTests.Travel
         [Fact]
         public void getDestinationPOIsTest()
         {
-            var layer = new PoiLayer();
+            var layer = new PointsOfInterest();
             layer.InitLayer(new LayerInitData
             {
                 LayerInitConfig =

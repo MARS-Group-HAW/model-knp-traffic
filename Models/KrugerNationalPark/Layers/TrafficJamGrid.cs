@@ -10,7 +10,7 @@ using NetTopologySuite.IO;
 
 namespace KrugerNationalPark.Layers;
 
-public class TrafficJamLayer : RasterLayer, ISteppedActiveLayer
+public class TrafficJamGrid : RasterLayer, ISteppedActiveLayer
 {
     public void Tick()
     {

@@ -41,7 +41,7 @@ namespace KrugerNationalParkTests.Travel
             
             description.AddLayer<SpatialGraphMediatorLayer>(new[] {typeof(ISpatialGraphLayer)});
             description.AddLayer<KnpRoadNetwork>();   
-            description.AddLayer<PoiLayer>();
+            description.AddLayer<PointsOfInterest>();
             description.AddLayer<VisitorScheduler>();
             
             description.AddAgent<Visitor, KnpRoadNetwork>();
@@ -86,7 +86,7 @@ namespace KrugerNationalParkTests.Travel
                     },
                     new LayerMapping
                     {
-                        Name = nameof(PoiLayer),
+                        Name = nameof(PointsOfInterest),
                         File = "resources/pois.geojson"
                     },
                     new LayerMapping

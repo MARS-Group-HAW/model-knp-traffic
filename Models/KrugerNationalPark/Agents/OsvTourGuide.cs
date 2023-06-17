@@ -47,7 +47,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         var sourcePos = GenerateSourcePosition();
         // todo: define distribution to make some OSVTourGuides spawn from gates and others from rest camps (in else case)?
-        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType(PoiType.RestCamp);
+        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.RestCamp);
         
         car.TryEnterDriver(this, out var handle);
 
@@ -68,7 +68,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         //VehicleHandle = handle;
 
         // OSVTourGuide determines destination
-        _currentTripOriginPoi = PoiLayer.GetNearestKnpPoi(Position);
+        _currentTripOriginPoi = PointsOfInterest.GetNearestKnpPoi(Position);
         _currentTripDestinationPoi = _currentTripOriginPoi;
         
         var destinationNode = _sgmLayer.Environment.NearestNode(_currentTripOriginPoi.Position, SpatialModalityType.CarDriving);
@@ -140,7 +140,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
                 {
                     // pause vorbei!
 
-                    var sourcePoi = PoiLayer.GetNearestKnpPoi(_currentTripDestinationPoi.Position);
+                    var sourcePoi = PointsOfInterest.GetNearestKnpPoi(_currentTripDestinationPoi.Position);
                     var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
                     VehicleHandle.Route = _knpRoadNetwork.FindOsvRoute(sourceNode, sourceNode, 2 * 3600);  // TODO make time variable/configurable
@@ -209,7 +209,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     public IEventComponent OsvTourGuideEventComponent { get; set; }
 
-    public PoiLayer PoiLayer { get; set; }
+    public PointsOfInterest PointsOfInterest { get; set; }
     public Guid ID { get; set; }
     public int StableId { get; }
 
@@ -389,7 +389,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         // TODO replace GetRandomPositionFromGeometry() with call to POILayer where POI of type in geometry is selected
         return SourceGeometry is not null
             ? GetRandomPositionFromGeometry(SourceGeometry)
-            : PoiLayer.GetPoiPositionOfNameAndType(SourceName, SourceType);
+            : PointsOfInterest.GetPoiPositionOfNameAndType(SourceName, SourceType);
     }
 
     /// <summary>
@@ -404,7 +404,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         // If TargetName is provided, use it to determine target position
         if (TargetName is not null && TargetType is not null)
         {
-            targetPos = PoiLayer.GetPoiPositionOfNameAndType(TargetName, TargetType);
+            targetPos = PointsOfInterest.GetPoiPositionOfNameAndType(TargetName, TargetType);
             // TODO: Add a distance check. If targetName in CSV is too far away from sourceName, choose different target
         }
         // If TargetGeometry is provided, use it to choose a target position

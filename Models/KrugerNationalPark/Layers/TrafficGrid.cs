@@ -12,7 +12,7 @@ using NetTopologySuite.IO;
 
 namespace KrugerNationalPark.Layers;
 
-public class TrafficLayer : RasterLayer, ISteppedActiveLayer
+public class TrafficGrid : RasterLayer, ISteppedActiveLayer
 {
     
     /// <summary>

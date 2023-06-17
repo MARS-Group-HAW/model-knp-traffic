@@ -9,7 +9,7 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Layers;
 
-public class PoiLayer : VectorLayer<KnpPoi>
+public class PointsOfInterest : VectorLayer<KnpPoi>
 {
     #region Initialization
 

@@ -47,7 +47,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         var sourcePos = GenerateSourcePosition();
         // todo: define distribution to make some visitors spawn from gates and others from rest camps (in else case)?
-        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PoiLayer.GetRandomPoiPositionOfType(PoiType.KnpGate);
+        Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.KnpGate);
         
         car.TryEnterDriver(this, out var handle);
 
@@ -68,7 +68,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         //VehicleHandle = handle;
 
         // Visitor determines destination
-        _currentTripOriginPoi = PoiLayer.GetNearestKnpPoi(Position);
+        _currentTripOriginPoi = PointsOfInterest.GetNearestKnpPoi(Position);
 
         var targetPos = GenerateTargetPosition();
         var destinationNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
@@ -140,7 +140,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
                 {
                     // pause vorbei!
 
-                    var sourcePoi = PoiLayer.GetNearestKnpPoi(_currentTripDestinationPoi.Poi.Position);
+                    var sourcePoi = PointsOfInterest.GetNearestKnpPoi(_currentTripDestinationPoi.Poi.Position);
                     var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
                     var availableDestinations =
@@ -226,7 +226,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     public IEventComponent VisitorEventComponent { get; set; }
 
-    public PoiLayer PoiLayer { get; set; }
+    public PointsOfInterest PointsOfInterest { get; set; }
     public Guid ID { get; set; }
     public int StableId { get; }
 
@@ -405,7 +405,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     {
         return SourceGeometry is not null
             ? GetRandomPositionFromGeometry(SourceGeometry)
-            : PoiLayer.GetPoiPositionOfNameAndType(SourceName, SourceType);
+            : PointsOfInterest.GetPoiPositionOfNameAndType(SourceName, SourceType);
     }
 
     /// <summary>
@@ -420,12 +420,14 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         // If TargetName is provided, use it to determine target position
         if (TargetName is not null && TargetType is not null)
         {
-            targetPos = PoiLayer.GetPoiPositionOfNameAndType(TargetName, TargetType);
+            // TODO _currentTripDestinationPoi is not set here; might lead to NullPointerException layer
+            targetPos = PointsOfInterest.GetPoiPositionOfNameAndType(TargetName, TargetType);
             // TODO: Add a distance check. If targetName in CSV is too far away from sourceName, choose different target
         }
         // If TargetGeometry is provided, use it to choose a target position
         else if (TargetGeometry is not null)
         {
+            // TODO _currentTripDestinationPoi is not set here; might lead to NullPointerException layer
             targetPos = GetRandomPositionFromGeometry(TargetGeometry);
         }
         else

@@ -8,7 +8,7 @@ using NetTopologySuite.IO;
 
 namespace KrugerNationalPark.Layers;
 
-public class TrafficLookingLayer : RasterLayer, ISteppedActiveLayer
+public class SightingsGrid : RasterLayer, ISteppedActiveLayer
 {
 
     public void Tick()
