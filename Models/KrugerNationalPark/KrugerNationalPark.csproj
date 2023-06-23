@@ -6,14 +6,11 @@
 
     </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\SOHCarModel\SOHCarModel.csproj" />
-        <ProjectReference Include="..\SOHDomain\SOHDomain.csproj" />
-        <ProjectReference Include="..\SOHMultimodalModel\SOHMultimodalModel.csproj" />
-    </ItemGroup>
+
 
     <ItemGroup>
       <PackageReference Include="Mars.Life.Simulations" Version="4.5.4" />
+      <PackageReference Include="Mars.Life.SOH" Version="4.6.0" />
     </ItemGroup>
 
 </Project>
