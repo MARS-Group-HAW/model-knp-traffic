@@ -7,21 +7,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B7027C3F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{50AF57B9-F3BE-48CC-91D8-4E919C8D045F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SOHCarModel", "Models\SOHCarModel\SOHCarModel.csproj", "{2FD35965-5699-4313-A64C-43D4453DB0F5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SOHMultimodalModel", "Models\SOHMultimodalModel\SOHMultimodalModel.csproj", "{DBFCD2EE-E5AA-4C6A-B85F-10AFE0B0B580}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SOHBicycleModel", "Models\SOHBicycleModel\SOHBicycleModel.csproj", "{BACB36C9-5F00-47A4-934F-7319CEF4D2F2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SOHDomain", "Models\SOHDomain\SOHDomain.csproj", "{0A87A9A5-9D9E-44A7-95EC-02C9FD594BF6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SOHTests", "Models\SOHTests\SOHTests.csproj", "{2E94544B-C35C-4988-B7CF-E1A1FF2EADF4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrugerNationalPark", "Models\KrugerNationalPark\KrugerNationalPark.csproj", "{C20AEDEC-A256-4AD0-A513-8ACD3139C9C2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrugerNationalParkBox", "Scenarios\KrugerNationalParkBox\KrugerNationalParkBox.csproj", "{A4389E80-8A52-4BA6-A688-A91C523300C6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SOHFerryModel", "Models\SOHFerryModel\SOHFerryModel.csproj", "{5EFD60B0-74FA-4C90-9888-691FFA29940C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scenarios", "Scenarios", "{EEF1A345-88E8-4E13-AD17-E760BA7DEB6A}"
 EndProject
