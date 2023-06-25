@@ -43,11 +43,15 @@ See Section 3.1.1 of the [final report](./Documentation/KNP_Traffic_Model_Final_
 
 ### Wildlife
 
-Wildlife occurrences are modelled as temporary events of the type `KnpEvent` along the `KnpRoadNetwork`. These events are created and managed by the `EventProducer`. See Section 3.1.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+Wildlife occurrences are modelled as temporary events of the type `KnpEvent` along the `KnpRoadNetwork`. These events are created and managed by the `EventProducer`.
+
+See Section 3.1.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ### Entities
 
-The model features an entity type `KnpCar` that can be used by agents move on the `KnpRoadNetwork`. See Section 3.1.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+The model features an entity type `KnpCar` that can be used by agents move on the `KnpRoadNetwork`.
+
+See Section 3.1.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ### Agents
 
@@ -77,7 +81,7 @@ The model features a set of schedulers that can be configured to spawn agents at
 - `VisitorScheduler`: spawns `Visitor` agents.
 - `OsvTourGuideScheduler`: spawns `OsvTourGuide` agents.
 
-See the section [Configuration](#configuration) of this README and Section 3.1.6 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+See [Configuration](#configuration) in this README and Section 3.1.6 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ## Data integration
 
@@ -93,7 +97,7 @@ See Section 3.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Re
 
 ### Preconfigured Scenarios
 
-The directory [`scenario_configs`](./Scenarios/KrugerNationalParkBox/resources/scenario_configs/) contains configuration files for two scenarios: [scenario1](./Scenarios/KrugerNationalParkBox/resources/scenarios_configs/scenario1/) and [scenario2](./Scenarios/KrugerNationalParkBox/resources/scenarios_configs/scenario2/). Each scenario is ready to be run in two configurations: `configuration1` and `configuration2`.
+The directory [`scenario_configs`](./Scenarios/KrugerNationalParkBox/resources/scenario_configs/) contains configuration files for two scenarios: [scenario1](./Scenarios/KrugerNationalParkBox/resources/scenario_configs/scenario1/) and [scenario2](./Scenarios/KrugerNationalParkBox/resources/scenario_configs/scenario2/). Each scenario is ready to be run in two configurations: `configuration1` and `configuration2`.
 
 > **Note**  
 > See Section 4 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for an overview of the two scenarios and details on their configuration.
@@ -106,7 +110,7 @@ To run a configuration of one of these scenarios, follow these steps:
 
 ### Layer Configuration
 
-The layer configuration section of the `config.json` file contains configuration options for the environment (see [Environment](#environment)), the raster data model output (see [Model Output](#model-output)), and the schedulers (see [Schedulers](#schedulers)).
+The layer configuration section of the `config.json` file contains configuration options for the environment (see [Environment](#environment) in this README), the raster data model output (see [Model Output](#model-output) in this README), and the schedulers (see [Schedulers](#schedulers) in this README).
 
 See Section 3.3.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
@@ -116,11 +120,11 @@ The environment configuration enables the specification of georeferenced dataset
 
 #### Model Output Configuration
 
-The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Model Output](#model-output)) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
+The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Model Output](#model-output) in this README) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
 
 #### Scheduler Configuration
 
-The scheduler configuration (see [Schedulers](#schedulers)) enables the specification of spawn periods for each agent type (see [Agents](#agents)). The `CommuterScheduler`, `VisitorScheduler`, and `OsvTourGuideScheduler` can be used to specify spawn periods for `Commuter`, `Visitor`, and `OsvTourGuide` agents, respectively.
+The scheduler configuration (see [Schedulers](#schedulers) in this README) enables the specification of spawn periods for each agent type (see [Agents](#agents) in this README). The `CommuterScheduler`, `VisitorScheduler`, and `OsvTourGuideScheduler` can be used to specify spawn periods for `Commuter`, `Visitor`, and `OsvTourGuide` agents, respectively.
 
 > **Note**  
 > See Section 3.1.6 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for an overview of spawn periods and spawn events.
@@ -149,13 +153,13 @@ See Appendix A and Appendix B of the [final report](./Documentation/KNP_Traffic_
 
 ### Entity Configuration
 
-The `KnpCar` (see [Entities](#entities)) requires a CSV file. The default CSV file is [`car.csv`](./Scenarios/KrugerNationalParkBox/resources/car.csv).
+The `KnpCar` (see [Entities](#entities) in this README) requires a CSV file. The default CSV file is [`car.csv`](./Scenarios/KrugerNationalParkBox/resources/car.csv).
 
 See Section 3.3.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ### Agent Configuration
 
-The parameters of a spawn period that apply to all agent types are listed in the above table (see [Scheduler Configuration](#scheduler-configuration)). In addition, parameters specific to each agent type can also be set via the respective scheduler.
+The parameters of a spawn period that apply to all agent types are listed in the above table (see [Scheduler Configuration](#scheduler-configuration) in this README). In addition, parameters specific to each agent type can also be set via the respective scheduler.
 
 #### `Commuter`
 
@@ -167,7 +171,7 @@ The parameters listed in the following table are specific to `Commuter` agents.
 
 #### `Visitor`
 
-TBD (additional properties of the `OsvTourGuide` will soon become configurable)
+TBD (additional properties of the `Visitor` will soon become configurable)
 
 #### `OsvTourGuide`
 
@@ -184,6 +188,6 @@ Alternatively, run the model via the `dotnet` CLI:
 
 ## Output Analysis
 
-The model produces one CSV file and one GeoJSON file per agent type. The CSV file contains each agent's state per simulation step and the GeoJSON file contains each agent's travel trajectory. In addition, a set of raster data are created that can be used to generate heatmaps over the KNP road network (see [Model Output](#model-output)). The travel trajectories can be visualised with [kepler.gl](https://kepler.gl).
+The model produces one CSV file and one GeoJSON file per agent type. The CSV file contains each agent's state per simulation step and the GeoJSON file contains each agent's travel trajectory. In addition, a set of raster data are created that can be used to generate heatmaps over the KNP road network (see [Model Output](#model-output) in this README). The travel trajectories can be visualised with [kepler.gl](https://kepler.gl).
 
 See Section 5 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for exemplary result visualisations.
