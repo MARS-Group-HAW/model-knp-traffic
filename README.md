@@ -6,23 +6,41 @@ The Kruger National Park (KNP) visitor and traffic management model is an agent-
 
 At the conclusion of the joint project with SANParks, a [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) was prepared that describes the functionality and configurability of the current prototype in great detail. Throughout this README, sections of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) are referred to as a source of further information.
 
-## Model Setup
+## Model Usage
 
-### Requirements
+The model can be used in two ways, which are described below.
 
-The following technologies are required to set up the model locally:
+### Simulation Box
+
+To run simulation scenarios without having to access the source code of the model, use one of the provided simulation boxes.
+
+1. Navigate to the [latest release](https://github.com/MARS-Group-HAW/model-knp-traffic/releases/tag/v0.1.0) of the model (in the right side bar of the GitHub repository homepage under the **Release** section).
+2. Download the ZIP archive that applies to your operating system (Linux, macOS, or Windows).
+3. After the download has finished, unzip the ZIP archive.
+4. In the unzipped directory, double-click the executable `KrugerNationalParkBox` to run a simulation scenario of the model with the default configuration.
+
+> **Note**  
+> See [Configuration](#configuration) in this README and Section 3.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for an overview of the configuration options of the model.
+
+> **Note**  
+> See [Output Analysis](#output-analysis) in this README for an overview of the output formats of the model and how to use and view them.
+
+> **Note**  
+> To build a simulation box locally, use the provided Shell script [`build.sh`](./Scenarios/build.sh). This will produce the ZIP archives that are available for download via the GitHub repository directly on your local machine.
+
+### Development
+
+To develop the model, you can set it up locally and access its source code. For this, the following technologies are required:
 
 - [.Net SDK](https://dotnet.microsoft.com/en-us/download)
 - Recommended: a .NET IDE ([JetBrains Rider](https://www.jetbrains.com/rider/) or [Visual Studio](https://visualstudio.microsoft.com/))
-
-### Project Setup
 
 To set up the project locally, follow these steps:
 
 1. Clone or download the GitHub repository
    - Clone: `git clone https://github.com/MARS-Group-HAW/model-knp-traffic.git`
    - Download: Click the "Code" button on the GitHub page of the repository and select "Download ZIP"
-2. Open the solution file of the project [Solution file](./KNPTrafficModel.sln) of the project in your preferred IDE
+2. Open the [Solution file](./KNPTrafficModel.sln) of the project in your preferred IDE
 
 ## Model Components
 
@@ -188,6 +206,6 @@ Alternatively, run the model via the `dotnet` CLI:
 
 ## Output Analysis
 
-The model produces one CSV file and one GeoJSON file per agent type. The CSV file contains each agent's state per simulation step and the GeoJSON file contains each agent's travel trajectory. In addition, a set of raster data are created that can be used to generate heatmaps over the KNP road network (see [Model Output](#model-output) in this README). The travel trajectories can be visualised with [kepler.gl](https://kepler.gl).
+The model produces one CSV file and one GeoJSON file per agent type. The CSV file of an agent type is named `<AgentType>.csv` and contains each agent's state per simulation step. The GeoJSON file of an agent type is named `<AgentType>_trips.geojson` contains each agent's travel trajectory. In addition, a set of raster data are created that can be used to generate heatmaps over the KNP road network (see [Model Output](#model-output) in this README). The travel trajectories and the raster data can be visualised with [kepler.gl](https://kepler.gl).
 
 See Section 5 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for exemplary result visualisations.
