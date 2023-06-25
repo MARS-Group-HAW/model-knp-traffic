@@ -20,12 +20,21 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents;
 
+/// <summary>The <see cref="Visitor"/> agent travels between POIs in search for wildlife.</summary>
+/// <remarks>Configurable via and spawned by <see cref="VisitorScheduler"/> (see scheduler CSV file).</remarks>
 public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 {
     #region Initialization
         
+    /// <summary>Initialization routine of the <see cref="Visitor"/> agent.</summary>
+    /// <remarks>
+    /// Includes state initialization, vehicle acquisition, positioning in the environment, and route finding.
+    /// </remarks>
+    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="Commuter"/> agent
+    /// lives.</param>
     public void Init(KnpRoadNetwork layer)
     {
+        // 1. State initialization
         log = LoggerFactory.GetLogger(typeof(Visitor));
 
         VisitorEventComponent = new KnpEventComponent(this);
@@ -37,7 +46,8 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         // 2. Vehicle acquisition
         Car = layer.EntityManager.Create<KnpCar>("type", "Golf");
         Car.Environment = _knpRoadNetwork.Environment;
-
+        
+        // 3. Positioning in the environment
         var sourcePos = GenerateSourcePosition();
         // todo: define distribution to make some visitors spawn from gates and others from rest camps (in else case)?
         Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.KnpGate);
@@ -59,7 +69,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         //handle.Route = FindRoute(_originNode);
         //VehicleHandle = handle;
 
-        // Visitor determines destination
+        // 4. Route finding
         _currentTripOriginPoi = PointsOfInterest.GetNearestKnpPoi(Position);
 
         var targetPos = GenerateTargetPosition();
@@ -83,6 +93,11 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Tick
 
+    /// <summary>Behaviour routine of the <see cref="Commuter"/> agent.</summary>
+    /// <remarks>
+    /// Includes movement behaviour that alternates between random travel on the <see cref="KnpRoadNetwork"/> and
+    /// shortest-path travel to a nearby POI.
+    /// </remarks>
     public void Tick()
     {
         // @todo: random in range
@@ -144,12 +159,10 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
                     var destinationPoco = availableDestinations[i];
                     var destinationNode = _knpRoadNetwork.Environment.NearestNode(destinationPoco.Poi.Position,
                         SpatialModalityType.CarDriving);
-
-
+                    
                     VehicleHandle.Route = _knpRoadNetwork.FindRoute(sourceNode, destinationNode, 4 * 3600);
 
                     //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor goes back to {destinationPoco.Poi.Name}");
-
 
                     Console.WriteLine(
                         $"{_knpRoadNetwork.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{destinationPoco.Poi.Name}");
@@ -165,8 +178,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         // Always call Move, since braking is "handled" by the AnimalSighting car ahead
         VehicleHandle.Move();
-        
-        
+
         CarVelocity = Car.Velocity;
         TripsCollection.Add(Position);
         
@@ -196,96 +208,102 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     #endregion
 
     #region Properties
-
+    
     /// <summary>Number of seconds that the <see cref="Visitor"/> agent has spent in current traffic jam.</summary>
     private int _trafficJamDurationCounter;
+
+    /// <summary>Number of wildlife sightings events received by the <see cref="Visitor"/> agent.</summary>
+    public int EventsReceived { get; set; }
+    
+    /// <summary>
+    /// Number of wildlife sightings events that are potentially relevant for the <see cref="Visitor"/> agent.
+    /// </summary>
     public int EventPossibleRelevant { get; set; }
+    
+    /// <summary>
+    /// Number of wildlife sightings events that are actually perceived by the <see cref="Visitor"/> agent.
+    /// </summary>
     public int EventHandled { get; set; }
 
+    /// <summary>
+    /// Probability distribution over the <see cref="RoadSurface"/> types, indicating the preference of the
+    /// <see cref="Visitor"/> to drive on each road surface type.
+    /// </summary>
+    /// <remarks>NOTE: This is not yet integrated into the behaviour routine of the agent.</remarks>
     [PropertyDescription(Name = "RoadSurfacePreferences")]
     public Dictionary<object, double> RoadSurfacePreferences { get; set; }
     
+    /// <summary>
+    /// Map from <see cref="RoadAccess"/> types to booleans, indicating the permission of the <see cref="Visitor"/>
+    /// agent to travel on road segments with respective access restrictions.
+    /// </summary>
+    /// <remarks>NOTE: This is not yet integrated into the behaviour routine of the agent.</remarks>
     [PropertyDescription(Name = "RoadAccessPermissions")]
     public Dictionary<object, bool> RoadAccessPermissions { get; set; }
     
-    /// <summary>
-    ///     Needed fo "removing" the agent and preventing further tick() call to it.
-    /// </summary>
+    /// <summary>Reference to the <see cref="UnregisterHandle"/> of the <see cref="KnpRoadNetwork"/>.</summary>
+    /// <remarks>Can be used to unregister agents from the simulation context.</remarks>
     [PropertyDescription]
     public UnregisterAgent UnregisterHandle { get; set; }
 
+    /// <summary>Component for handling wildlife sighting events on behalf of the <see cref="Visitor"/> agent.</summary>
     public IEventComponent VisitorEventComponent { get; set; }
 
+    /// <summary>Reference to the <see cref="PointsOfInterest"/> layer of the environment.</summary>
     public PointsOfInterest PointsOfInterest { get; set; }
+    
+    /// <summary>Unique identifier of the <see cref="Commuter"/> agent.</summary>
     public Guid ID { get; set; }
 
     /// <summary>Current state of the Commuter (<see cref="VisitorState"/>).</summary>
     public VisitorState State { get; set; }
     
-
-
     /// <summary>
-    ///     State of the visitor (driving around, looking at wildlife, ...)
+    /// Logger provided by the MARS Framework to track activity of the <see cref="Visitor"/>. 
     /// </summary>
-    public VisitorState State { get; set; }
-    
     private ILogger log;
 
     /// <summary>
-    ///     The start time and end time of the agent's tour
+    /// Node of the <see cref="KnpRoadNetwork"/> that is the initial position of the <see cref="Visitor"/>.
     /// </summary>
-    private DateTime _startTime;
-
-    /// <summary>
-    ///     TimeStamp if the the time alle Camps close and the visitor needs to be home.
-    /// </summary>
-    private DateTime _endTime;
-
     private ISpatialNode _originNode;
 
-    /// <summary>
-    ///     During tick() we need to check before entering a new edge, if we have enough time to get home (before _endTime).
-    ///     To notice if entered a new edge / passed a node we keep track of the edge and compare it each tick to detect
-    ///     a new edge.
-    /// </summary>
-    private ISpatialEdge _edgeFromPreviousTick;
-
-    /// <summary>
-    ///     The name of the POI at which the Commuter's trip begins
-    /// </summary>
+    /// <summary>Name of the POI at which the first trip of the <see cref="Visitor"/> begins.</summary>
     [PropertyDescription(Name = "sourceName")]
     public string SourceName { get; set; }
 
-    /// <summary>
-    ///     The type of the POI at which the Commuter's trip begins
-    /// </summary>
+    /// <summary>Type of the POI specified in <see cref="SourceName"/>.</summary>
     [PropertyDescription(Name = "sourceType")]
     public string SourceType { get; set; }
     
-    /// <summary>
-    ///     Geometry that is or contains the trip origin of the visitor.
-    ///     Example: POINT (31.482268 -24.979422)
-    /// </summary>
-    [PropertyDescription(Name = "sourceGeometry")]
-    public Geometry SourceGeometry { get; set; }
-
 #nullable enable
     /// <summary>
-    ///     The name of the POI at which the Commuter's trip ends
+    /// Geometry that contains positions of POIs at which the first trip of the <see cref="Visitor"/> can begin.
     /// </summary>
+    /// <remarks>The format should be a WKT geometry
+    /// <see href="https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry">Wikipedia</see> that
+    /// encodes geospatial locations that are within the KNP. An example of a point geometry:
+    /// POINT (31.482268 -24.979422).
+    /// </remarks>
+    [PropertyDescription(Name = "sourceGeometry")]
+    public Geometry? SourceGeometry { get; set; }
+    
+    /// <summary>Name of the POI at which the first trip of the <see cref="Visitor"/> ends.</summary>
     [PropertyDescription(Name = "targetName")]
     public string? TargetName { get; set; }
     
-    /// <summary>
-    ///     The type of the POI at which the Commuter's trip ends
-    /// </summary>
+    /// <summary>Type of the POI specified in <see cref="TargetName"/>.</summary>
     [PropertyDescription(Name = "targetType")]
     public string? TargetType { get; set; }
 
     /// <summary>
-    ///     Geometry that is or contains the trip destination of the visitor.
-    ///     Example: MULTIPOINT (31.28163172149577 -25.0153934)
+    /// Geometry that contains positions of POIs at which the trip of the <see cref="Visitor"/> can end.
     /// </summary>
+    /// <remarks>The format should be a WKT geometry
+    /// <see href="https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry">Wikipedia</see> that
+    /// encodes geospatial locations that are within the KNP. An example of a point geometry:
+    /// POINT (31.482268 -24.979422).
+    /// </remarks>
     [PropertyDescription(Name = "targetGeometry")]
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
@@ -296,12 +314,12 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     private DateTime _wildlifeSightingStartTime;
 
     /// <summary>
-    ///     Keep track if the visitor is on its way home -> no longer stop for animals
+    /// Time point at which the <see cref="Visitor"/> stops observing a wildlife sighting.
     /// </summary>
     private DateTime _wildlifeSightingEndTime;
 
     /// <summary>
-    ///     start time of animal sighting
+    /// Time point at which the <see cref="Visitor"/> arrives at a POI.
     /// </summary>
     private DateTime? _arrivalTimePoi;
 
@@ -311,44 +329,88 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     private DateTime? _departureTimePoi;
 
     // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
-    // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
+    // max speed in most of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
     /// <summary>
-    ///     The distance from the agent's current position at which the agent should stop upon an animal sighting (achieved by
-    ///     placing a virtual car on the road)
+    /// Distance from the current position of the <see cref="Visitor"/> at which the agent should stop due to a wildlife
+    /// sighting.
     /// </summary>
+    /// <remarks>This is achieved by temporarily placing a virtual car on the road.</remarks>
     public const double InsertAnimalSightingDistanceAhead = 33.0;
 
+    /// <summary><see cref="KnpPoi"/> that is the initial position of the <see cref="Visitor"/>.</summary>
+    /// <remarks>This is based on the value of <see cref="SourceName"/>.</remarks>
     private KnpPoi _currentTripOriginPoi;
+    
+    /// <summary><see cref="KnpPoi"/> that is the initial destination of the <see cref="Visitor"/>.</summary>
+    /// <remarks>This is based on the value of <see cref="TargetName"/>.</remarks>
     private TripDestination _currentTripDestinationPoi;
 
+    /// <summary>Reference to the <see cref="Car"/> entity of the <see cref="Visitor"/>.</summary>
     public Car Car { get; set; }
 
+    /// <summary>Position of the <see cref="Visitor"/> on the <see cref="KnpRoadNetwork"/>.</summary>
+    /// <remarks>Defined in terms of the position of the <see cref="Car"/> entity of the <see cref="Visitor"/>.
+    /// </remarks>
     public Position Position
     {
         get => Car.Position;
         set => Car.Position = value;
     }
     
+    /// <summary>
+    /// Flag that indicates if the travel trajectory of the <see cref="Visitor"/> should be written to a GeoJSON file.
+    /// </summary>
     [PropertyDescription(Name = "WriteRouteAsGeoJSON")]
     public bool WriteRouteAsGeoJSON { get; set; }
 
+    /// <summary>Flag that indicates if the <see cref="Visitor"/> is capable of overtaking in traffic.</summary>
     public bool OvertakingActivated { get; }
+    
+    /// <summary>
+    /// Flag that indicates if the <see cref="Visitor"/> is currently braking its <see cref="Car"/> entity.
+    /// </summary>
     public bool BrakingActivated { get; set; }
+    
+    /// <summary>
+    /// Flag that indicates of the <see cref="Visitor"/> is currently driving its <see cref="Car"/> entity.
+    /// </summary>
     public bool CurrentlyCarDriving => true;
+    
+    /// <summary>Velocity, in meters per second, of the <see cref="Car"/> entity of the <see cref="Visitor"/>.</summary>
     public double CarVelocity { get; set; }
 
+    /// <summary>
+    /// Reference to the <see cref="CarSteeringHandle"/> to interact with the <see cref="Car"/> of the
+    /// <see cref="Visitor"/>.
+    /// </summary>
     public CarSteeringHandle VehicleHandle { get; set; }
 
+    /// <summary>
+    /// Collection of temporally ordered TripPositions that encode the travel trajectory of the <see cref="Visitor"/>.
+    /// </summary>
     public TripsCollection TripsCollection { get; set; }
 
+    /// <summary>Reference to the <see cref="KnpRoadNetwork"/>, which holds the road network of the KNP.</summary>
     private KnpRoadNetwork _knpRoadNetwork;
 
+    /// <summary>
+    /// Reference to the <see cref="TrafficGrid"/>, which tracks the cumulative movement density on the
+    /// <see cref="KnpRoadNetwork"/>. 
+    /// </summary>
     [PropertyDescription]
     public TrafficGrid TrafficGrid { get; set; }
 
+    /// <summary>
+    /// Reference to the <see cref="TrafficJamGrid"/>, which tracks the location and cumulative duration of traffic jams
+    /// on the <see cref="KnpRoadNetwork"/>.
+    /// </summary>
     [PropertyDescription]
     public TrafficJamGrid TrafficJamGrid { get; set; }
     
+    /// <summary>
+    /// Reference to the <see cref="SightingsGrid"/>, which tracks the location and cumulative duration of wildlife
+    /// sightings on the <see cref="KnpRoadNetwork"/>.
+    /// </summary>
     [PropertyDescription]
     public SightingsGrid SightingsGrid { get; set; }
     
@@ -356,12 +418,11 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Methods
     
-    /// <summary>
-    ///     Returns a random Position from the given geometry
-    /// </summary>
+    /// <summary>Gets a random Position from the given geometry.</summary>
     /// <param name="geometry">The given geometry</param>
     /// <returns>A random position from the given geometry</returns>
-    private Position GetRandomPositionFromGeometry(Geometry geometry)
+    // TODO move this method to KNPRoadNetwork?
+    private static Position GetRandomPositionFromGeometry(Geometry geometry)
     {
         var geometryCoords = geometry.Coordinates;
         var numberOfPotentialPositions = geometryCoords.Length;
@@ -371,8 +432,8 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     }
     
     /// <summary>
-    ///     Gets a random position from SourceGeometry or, if not provided, obtains the source position based on
-    ///     the provided <value>SourceName</value>
+    /// Gets a random position from <see cref="SourceGeometry"/> or, if not provided, obtains the source position based
+    /// on the provided <see cref="SourceName"/>.
     /// </summary>
     /// <returns>Position of source of trip</returns>
     private Position GenerateSourcePosition()
@@ -383,9 +444,11 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     }
 
     /// <summary>
-    ///     Generates a target position from TargetName or TargetGeometry. Alternatively, if neither TargetName nor
-    ///     TargetGeometry is provided, obtains a random destination position within a fixed driving distance
+    /// Generates a target position using <see cref="TargetName"/> and <see cref="TargetType"/> or
+    /// <see cref="TargetGeometry"/>.
     /// </summary>
+    /// <remarks>Alternatively, if neither <see cref="TargetName"/> nor <see cref="TargetGeometry"/> is
+    /// provided, obtains a random destination position within a fixed driving distance.</remarks>
     /// <returns>Position of destination of trip</returns>
     private Position GenerateTargetPosition()
     {

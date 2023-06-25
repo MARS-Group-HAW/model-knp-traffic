@@ -18,7 +18,7 @@ namespace KrugerNationalPark.Misc.Events
 
         private void HandleEvent(KnpEvent e)
         {
-            Entity.EventReceived += 1;
+            Entity.EventsReceived += 1;
             var distance = e.Position.DistanceInMTo(Entity.Position);
             if (distance >= 500) return;
 
