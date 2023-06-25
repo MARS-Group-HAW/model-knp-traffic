@@ -1,5 +1,7 @@
 namespace KrugerNationalPark.Misc;
 
+/// <summary>The <see cref="PoiType"/> struct contains the types of POIs that are available in the KNP.</summary>
+/// <remarks>Based on the POI dataset provided by SANParks.</remarks>
 public struct PoiType
 {
     public const string KnpGate = "KNP Gate";
