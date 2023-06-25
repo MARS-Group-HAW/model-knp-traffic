@@ -34,13 +34,13 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     {
         // 1. State initialization
         State = CommuterState.GoingToWork;
-        _sgmLayer = layer;
+        _knpRoadNetwork = layer;
 
-        TripsCollection = new TripsCollection(_sgmLayer.Context);
+        TripsCollection = new TripsCollection(_knpRoadNetwork.Context);
 
         // 2. Vehicle acquisition
-        car.Environment = _sgmLayer.Environment;
-        Car = car;
+        Car = _knpRoadNetwork.EntityManager.Create<KnpCar>("type", "Golf");
+        Car.Environment = _knpRoadNetwork.Environment;
 
         // 3. Positioning in the environment
         var sourcePos = GenerateSourcePosition();
@@ -48,15 +48,16 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             ? sourcePos
             : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.KnpGate);
 
-        car.TryEnterDriver(this, out var handle);
+        Car.TryEnterDriver(this, out var handle);
 
         // 4. Route finding
-        _sgmLayer.Environment.Insert(car, _originNode);
+        _originNode = _knpRoadNetwork.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+        _knpRoadNetwork.Environment.Insert(Car, _originNode);
 
         var targetPos = GenerateTargetPosition();
-        _workplaceNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
+        _workplaceNode = _knpRoadNetwork.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
 
-        handle.Route = _sgmLayer.Environment.FindRoute(_originNode, _workplaceNode);
+        handle.Route = _knpRoadNetwork.Environment.FindRoute(_originNode, _workplaceNode);
         VehicleHandle = handle;
     }
 
@@ -77,15 +78,15 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             {
                 // we reached our working destination
                 State = CommuterState.Working;
-                _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                _arrivalTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
                 _departureTime = _arrivalTime.AddMinutes(WorkDuration);
             }
             else if (State == CommuterState.Working && _departureTime
-                         .Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+                         .Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
             {
                 // finished working -> go back to origin gate
                 State = CommuterState.GoingHome;
-                VehicleHandle.Route = _sgmLayer.Environment.FindRoute(_workplaceNode, _originNode);
+                VehicleHandle.Route = _knpRoadNetwork.Environment.FindRoute(_workplaceNode, _originNode);
             }
             else if (State == CommuterState.GoingHome)
             {
@@ -210,15 +211,11 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <remarks>This is typically a Rest camp.</remarks>
     private ISpatialNode _workplaceNode;
 
-    /// <summary>
-    /// Name of the POI at which the trip of the <see cref="Commuter"/> begins.
-    /// </summary>
+    /// <summary>Name of the POI at which the trip of the <see cref="Commuter"/> begins.</summary>
     [PropertyDescription(Name = "sourceName")]
     public string SourceName { get; set; }
 
-    /// <summary>
-    /// Type of the POI at which the trip of the <see cref="Commuter"/> begins.
-    /// </summary>
+    /// <summary>Type of the POI specified in <see cref="SourceName"/>.</summary>
     [PropertyDescription(Name = "sourceType")]
     public string SourceType { get; set; }
 
@@ -234,15 +231,11 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     [PropertyDescription(Name = "sourceGeometry")]
     public Geometry? SourceGeometry { get; set; }
 
-    /// <summary>
-    /// Name of the POI at which the trip of the <see cref="Commuter"/> ends.
-    /// </summary>
+    /// <summary>Name of the POI at which the trip of the <see cref="Commuter"/> ends.</summary>
     [PropertyDescription(Name = "targetName")]
     public string? TargetName { get; set; }
 
-    /// <summary>
-    /// Type of the POI at which the trip of the <see cref="Commuter"/> ends.
-    /// </summary>
+    /// <summary>Type of the POI specified in <see cref="TargetName"/>.</summary>
     [PropertyDescription(Name = "targetType")]
     public string? TargetType { get; set; }
 
@@ -272,10 +265,8 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// </summary>
     private DateTime _departureTime;
 
-    /// <summary>
-    ///     Reference to the KNP traffic network
-    /// </summary>
-    private SpatialGraphMediatorLayer _sgmLayer;
+    /// <summary>Reference to the <see cref="KnpRoadNetwork"/>, which holds the road network of the KNP.</summary>
+    private KnpRoadNetwork _knpRoadNetwork;
 
     /// <summary>Reference to the <see cref="PointsOfInterest"/> layer, which holds the POIs of the KNP.</summary>
     public PointsOfInterest PointsOfInterest { get; set; }
