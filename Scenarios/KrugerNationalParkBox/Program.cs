@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,11 +6,8 @@ using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
-using Mars.Common.IO;
 using Mars.Components.Environments;
 using Mars.Components.Starter;
-using Mars.Core.Simulation.Entities;
-using Mars.Interfaces.Environments;
 using Mars.Interfaces.Model;
 using SOHDomain.Graph;
 
