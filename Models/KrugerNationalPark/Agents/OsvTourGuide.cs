@@ -15,7 +15,6 @@ using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
-using SOHDomain.Graph;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
@@ -31,29 +30,22 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         OsvTourGuideEventComponent = new OsvTourGuideEventComponent(this);
         _knpRoadNetwork = layer;
-        _sgmLayer = layer;
         State = OsvTourGuideState.Driving;
-
-        _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
-
-        // TODO: Parameterisierung aus CSV oder Dynamik mit +/- Random Wert, um Varianz im OSVTourGuide-Verhalten abzubilden
-        _endTime = new DateTime(_startTime.Year, _startTime.Month, _startTime.Day, 10, 0, 0);
 
         TripsCollection = new TripsCollection(layer.Context);
 
-        var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
-        car.Environment = _sgmLayer.Environment;
-        Car = car;
+        // 2. Vehicle acquisition
+        Car = layer.EntityManager.Create<KnpCar>("type", "Golf");
+        Car.Environment = _knpRoadNetwork.Environment;
 
         var sourcePos = GenerateSourcePosition();
         // todo: define distribution to make some OSVTourGuides spawn from gates and others from rest camps (in else case)?
         Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.RestCamp);
         
-        car.TryEnterDriver(this, out var handle);
+        Car.TryEnterDriver(this, out var handle);
 
-        _originNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
-        _sgmLayer.Environment.Insert(car, _originNode);
-
+        _originNode = _knpRoadNetwork.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+        _knpRoadNetwork.Environment.Insert(Car, _originNode);
 
         /*var p1 = new Position(31.4447138, -24.9883233);
         var p2 = new Position(31.4277741, -25.0153934);
@@ -71,13 +63,13 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         _currentTripOriginPoi = PointsOfInterest.GetNearestKnpPoi(Position);
         _currentTripDestinationPoi = _currentTripOriginPoi;
         
-        var destinationNode = _sgmLayer.Environment.NearestNode(_currentTripOriginPoi.Position, SpatialModalityType.CarDriving);
+        var destinationNode = _knpRoadNetwork.Environment.NearestNode(_currentTripOriginPoi.Position, SpatialModalityType.CarDriving);
 
         handle.Route = _knpRoadNetwork.FindOsvRoute(_originNode, destinationNode, 2 * 3600);  // TODO make time variable/configurable
         VehicleHandle = handle;
 
         // save route to geojson
-        if (WriteRouteAsGeoJSON)
+        if (WriteRouteAsGeoJson)
         {
             var geoJson = handle.Route.ToGeoJson();
             File.WriteAllText("route_" + ID + ".json", geoJson);
@@ -104,15 +96,15 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             if (Car.Velocity == 0)
             {
                 // we are at a stand now, start timer to remove AnimalSighting "car"
-                _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
-                _departureTime = _arrivalTime.AddMinutes(lookDuration);
+                _wildlifeSightingStartTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
+                _wildlifeSightingEndTime = _wildlifeSightingStartTime.AddMinutes(lookDuration);
                 State = OsvTourGuideState.Looking;
             }
         }
         else if (State == OsvTourGuideState.Looking)
         {
             //@todo : logik validieren, in der simulation sah es so aus lob die dauernd bremsen
-            if (_departureTime.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+            if (_wildlifeSightingEndTime.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
             {
                 Car.Driver.BrakingActivated = false;
                 State = OsvTourGuideState.Driving;
@@ -123,35 +115,33 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         {
             if (_departureTimePoi is null)
             {
-                _arrivalTimePoi = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                _arrivalTimePoi = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
                 _departureTimePoi = _arrivalTimePoi?.AddMinutes(120);  // TODO make 120 variable/configurable
                 //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} OSVTourGuide arrived at {currentDestinationPoi.Poi.Name}");
 
                 Console.WriteLine(
-                    $"{_sgmLayer.Context.CurrentTick},{ID},arrived,{_currentTripOriginPoi.Name},{_currentTripDestinationPoi.Name}");
-
+                    $"{_knpRoadNetwork.Context.CurrentTick},{ID},arrived,{_currentTripOriginPoi.Name},{_currentTripDestinationPoi.Name}");
 
                 //log.LogInfo($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} OSVTourGuide arrived at {currentDestinationPoi.Poi.Name}");
             }
             else
             {
-                if (_departureTimePoi?.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault())
+                if (_departureTimePoi?.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault())
                         .TotalMinutes < 0)
                 {
                     // pause vorbei!
 
                     var sourcePoi = PointsOfInterest.GetNearestKnpPoi(_currentTripDestinationPoi.Position);
-                    var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+                    var sourceNode = _knpRoadNetwork.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
                     VehicleHandle.Route = _knpRoadNetwork.FindOsvRoute(sourceNode, sourceNode, 2 * 3600);  // TODO make time variable/configurable
 
                     //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} OSVTourGuide goes back to {destinationPoco.Poi.Name}");
 
-
                     Console.WriteLine(
-                        $"{_sgmLayer.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{sourcePoi.Name}");
+                        $"{_knpRoadNetwork.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{sourcePoi.Name}");
 
-                    if (WriteRouteAsGeoJSON)
+                    if (WriteRouteAsGeoJson)
                     {
                         var geoJson = VehicleHandle.Route.ToGeoJson();
                         File.WriteAllText("route_back_" + ID + ".json", geoJson);
@@ -162,8 +152,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         // Always call Move, since braking is "handled" by the AnimalSighting car ahead
         VehicleHandle.Move();
-        
-        
+
         CarVelocity = Car.Velocity;
         TripsCollection.Add(Position);
         
@@ -176,12 +165,12 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         if (TrafficJamGrid.IsInRaster(Position) && CarVelocity == 0 && State != OsvTourGuideState.Looking)
         {
 
-            _reallyJam += 1;
+            _trafficJamDurationCounter += 1;
 
-            if (_reallyJam > 60)
+            if (_trafficJamDurationCounter > 60)
             {
                 TrafficJamGrid[Position] += 1;
-                _reallyJam = 0;
+                _trafficJamDurationCounter = 0;
             }
         }
         
@@ -190,20 +179,20 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             SightingsGrid[Position] += 1;
         }
     }
-
-    private int _reallyJam = 0;
-
+    
     #endregion
 
     #region Properties
 
+    /// <summary>Number of seconds that the <see cref="OsvTourGuide"/> agent has spent in current traffic jam.</summary>
+    private int _trafficJamDurationCounter;
     public int EventReceived { get; set; }
     public int EventPossibleRelevant { get; set; }
-    public int EventHandled { get; set; }
 
     /// <summary>
     ///     Needed fo "removing" the agent and preventing further tick() call to it.
     /// </summary>
+    public int EventsHandled { get; set; }
     [PropertyDescription]
     public UnregisterAgent UnregisterHandle { get; set; }
 
@@ -211,14 +200,8 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     public PointsOfInterest PointsOfInterest { get; set; }
     public Guid ID { get; set; }
-    public int StableId { get; }
 
-    private static Random rng = new();
-
-    public int HasAnimalSighting { get; set; }
-
-    public int SightingEventCarVelocity { get; set; }
-
+    /// <summary>Current state of the <see cref="OsvTourGuide"/> (<see cref="OsvTourGuideState"/>).</summary>
     /// <summary>
     ///     State of the OSV tour guide (driving around, looking at wildlife, ...)
     /// </summary>
@@ -229,21 +212,9 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>
     ///     The start time and end time of the agent's tour
     /// </summary>
-    private DateTime _startTime;
-
-    /// <summary>
-    ///     TimeStamp if the the time alle Camps close and the OSV Tour Guide needs to be home.
-    /// </summary>
-    private DateTime _endTime;
-
     private ISpatialNode _originNode;
 
-    /// <summary>
-    ///     During tick() we need to check before entering a new edge, if we have enough time to get home (before _endTime).
-    ///     To notice if entered a new edge / passed a node we keep track of the edge and compare it each tick to detect
-    ///     a new edge.
-    /// </summary>
-    private ISpatialEdge _edgeFromPreviousTick;
+    /// <summary>Name of the POI at which the first trip of the <see cref="OsvTourGuide"/> begins.</summary>
 
     /// <summary>
     ///     The name of the POI at which the Commuter's trip begins
@@ -257,14 +228,15 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     [PropertyDescription(Name = "sourceType")]
     public string SourceType { get; set; }
     
+#nullable enable
     /// <summary>
     ///     Geometry that is or contains the trip origin of the OSV Tour Guide.
     ///     Example: POINT (31.482268 -24.979422)
     /// </summary>
     [PropertyDescription(Name = "sourceGeometry")]
-    public Geometry SourceGeometry { get; set; }
-
-#nullable enable
+    public Geometry? SourceGeometry { get; set; }
+    
+    /// <summary>Name of the POI at which the first trip of the <see cref="OsvTourGuide"/> ends.</summary>
     /// <summary>
     ///     The name of the POI at which the Commuter's trip ends
     /// </summary>
@@ -284,23 +256,17 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     [PropertyDescription(Name = "targetGeometry")]
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
-    
-    /// <summary>
-    ///     A queue containing one DateTime object for each node of the agent's node
-    ///     A node's DateTime object specifies the time as of which the agent needs to start driving home when it reaches this
-    ///     node
-    /// </summary>
-    private readonly Queue<DateTime> _edgeTimings = new();
+
+    /// <summary>Time point at which the <see cref="OsvTourGuide"/> starts observing a wildlife sighting.</summary>
+    private DateTime _wildlifeSightingStartTime;
 
     /// <summary>
-    ///     Keep track if the OSV Tour Guide is on its way home -> no longer stop for animals
+    private DateTime _wildlifeSightingEndTime;
     /// </summary>
     private bool _goingHome;
 
     /// <summary>
-    ///     start time of animal sighting
-    /// </summary>
-    private DateTime _arrivalTime;
+    private DateTime? _arrivalTimePoi;
 
     /// <summary>
     ///     time to start driving after an animal sighting
@@ -325,7 +291,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// </summary>
     public const double InsertAnimalSightingDistanceAhead = 33.0;
 
-    private SpatialGraphMediatorLayer _sgmLayer;
+    /// <summary><see cref="KnpPoi"/> that is the initial position of the <see cref="OsvTourGuide"/>.</summary>
 
     private KnpPoi _currentTripOriginPoi;
     private KnpPoi _currentTripDestinationPoi;
@@ -339,7 +305,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     }
     
     [PropertyDescription(Name = "WriteRouteAsGeoJSON")]
-    public bool WriteRouteAsGeoJSON { get; set; }
+    public bool WriteRouteAsGeoJson { get; set; }
 
     public bool OvertakingActivated { get; }
     public bool BrakingActivated { get; set; }
@@ -370,7 +336,8 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// </summary>
     /// <param name="geometry">The given geometry</param>
     /// <returns>A random position from the given geometry</returns>
-    private Position GetRandomPositionFromGeometry(Geometry geometry)
+    // TODO move this method to KNPRoadNetwork?
+    private static Position GetRandomPositionFromGeometry(Geometry geometry)
     {
         var geometryCoords = geometry.Coordinates;
         var numberOfPotentialPositions = geometryCoords.Length;
