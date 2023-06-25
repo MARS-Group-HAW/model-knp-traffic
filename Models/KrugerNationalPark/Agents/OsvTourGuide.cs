@@ -20,12 +20,21 @@ using Position = Mars.Interfaces.Environments.Position;
 
 namespace KrugerNationalPark.Agents;
 
+/// <summary>The <see cref="OsvTourGuide"/> agent travels between POIs in search for wildlife.</summary>
+/// <remarks>Configurable via and spawned by <see cref="OsvTourGuideScheduler"/> (see scheduler CSV file).</remarks>
 public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 {
     #region Initialization
     
+    /// <summary>Initialization routine of the <see cref="OsvTourGuide"/> agent.</summary>
+    /// <remarks>
+    /// Includes state initialization, vehicle acquisition, positioning in the environment, and route finding.
+    /// </remarks>
+    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="OsvTourGuide"/> lives.
+    /// </param>
     public void Init(KnpRoadNetwork layer)
     {
+        // 1. State initialization
         log = LoggerFactory.GetLogger(typeof(OsvTourGuide));
 
         OsvTourGuideEventComponent = new OsvTourGuideEventComponent(this);
@@ -38,6 +47,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         Car = layer.EntityManager.Create<KnpCar>("type", "Golf");
         Car.Environment = _knpRoadNetwork.Environment;
 
+        // 3. Positioning in the environment
         var sourcePos = GenerateSourcePosition();
         // todo: define distribution to make some OSVTourGuides spawn from gates and others from rest camps (in else case)?
         Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.RestCamp);
@@ -59,7 +69,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         //handle.Route = FindRoute(_originNode);
         //VehicleHandle = handle;
 
-        // OSVTourGuide determines destination
+        // 4. Route finding
         _currentTripOriginPoi = PointsOfInterest.GetNearestKnpPoi(Position);
         _currentTripDestinationPoi = _currentTripOriginPoi;
         
@@ -83,6 +93,11 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Tick
 
+    /// <summary>Behaviour routine of the <see cref="OsvTourGuide"/>.</summary>
+    /// <remarks>
+    /// Includes movement behaviour that alternates between random travel on the <see cref="KnpRoadNetwork"/> and
+    /// shortest-path travel to a nearby POI.
+    /// </remarks>
     public void Tick()
     {
         // @todo: random in range
@@ -186,73 +201,83 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     /// <summary>Number of seconds that the <see cref="OsvTourGuide"/> agent has spent in current traffic jam.</summary>
     private int _trafficJamDurationCounter;
-    public int EventReceived { get; set; }
-    public int EventPossibleRelevant { get; set; }
 
+    /// <summary>Number of wildlife sightings events received by the <see cref="OsvTourGuide"/> agent.</summary>
+    public int EventReceived { get; set; }
+    
     /// <summary>
-    ///     Needed fo "removing" the agent and preventing further tick() call to it.
+    /// Number of wildlife sightings events that are potentially relevant for the <see cref="OsvTourGuide"/> agent.
+    /// </summary>
+    public int EventPossibleRelevant { get; set; }
+    
+    /// <summary>
+    /// Number of wildlife sightings events that are actually perceived by the <see cref="OsvTourGuide"/> agent.
     /// </summary>
     public int EventsHandled { get; set; }
+
+    /// <summary>Reference to the <see cref="UnregisterHandle"/> of the <see cref="KnpRoadNetwork"/>.</summary>
+    /// <remarks>Can be used to unregister agents from the simulation context.</remarks>
     [PropertyDescription]
     public UnregisterAgent UnregisterHandle { get; set; }
 
+    /// <summary>
+    /// Component for handling wildlife sighting events on behalf of the <see cref="OsvTourGuide"/> agent.
+    /// </summary>
     public IEventComponent OsvTourGuideEventComponent { get; set; }
 
+    /// <summary>Reference to the <see cref="PointsOfInterest"/> layer of the environment.</summary>
     public PointsOfInterest PointsOfInterest { get; set; }
+    
+    /// <summary>Unique identifier of the <see cref="OsvTourGuide"/> agent.</summary>
     public Guid ID { get; set; }
 
     /// <summary>Current state of the <see cref="OsvTourGuide"/> (<see cref="OsvTourGuideState"/>).</summary>
-    /// <summary>
-    ///     State of the OSV tour guide (driving around, looking at wildlife, ...)
-    /// </summary>
     public OsvTourGuideState State { get; set; }
     
+    /// <summary> Logger provided by the MARS Framework to track activity of the <see cref="OsvTourGuide"/>.</summary>
     private ILogger log;
-
+    
     /// <summary>
-    ///     The start time and end time of the agent's tour
+    /// Node of the <see cref="KnpRoadNetwork"/> that is the initial position of the <see cref="OsvTourGuide"/>.
     /// </summary>
     private ISpatialNode _originNode;
 
     /// <summary>Name of the POI at which the first trip of the <see cref="OsvTourGuide"/> begins.</summary>
-
-    /// <summary>
-    ///     The name of the POI at which the Commuter's trip begins
-    /// </summary>
     [PropertyDescription(Name = "sourceName")]
     public string SourceName { get; set; }
 
-    /// <summary>
-    ///     The type of the POI at which the Commuter's trip begins
-    /// </summary>
+    /// <summary>Type of the POI specified in <see cref="SourceName"/>.</summary>
     [PropertyDescription(Name = "sourceType")]
     public string SourceType { get; set; }
     
 #nullable enable
     /// <summary>
-    ///     Geometry that is or contains the trip origin of the OSV Tour Guide.
-    ///     Example: POINT (31.482268 -24.979422)
+    /// Geometry that contains positions of POIs at which the first trip of the <see cref="OsvTourGuide"/> can begin.
     /// </summary>
+    /// <remarks>The format should be a WKT geometry
+    /// <see href="https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry">Wikipedia</see> that
+    /// encodes geospatial locations that are within the KNP. An example of a point geometry:
+    /// POINT (31.482268 -24.979422).
+    /// </remarks>
     [PropertyDescription(Name = "sourceGeometry")]
     public Geometry? SourceGeometry { get; set; }
     
     /// <summary>Name of the POI at which the first trip of the <see cref="OsvTourGuide"/> ends.</summary>
-    /// <summary>
-    ///     The name of the POI at which the Commuter's trip ends
-    /// </summary>
     [PropertyDescription(Name = "targetName")]
     public string? TargetName { get; set; }
     
-    /// <summary>
-    ///     The type of the POI at which the Commuter's trip ends
-    /// </summary>
+    /// <summary>Type of the POI specified in <see cref="TargetName"/>.</summary>
     [PropertyDescription(Name = "targetType")]
     public string? TargetType { get; set; }
 
     /// <summary>
-    ///     Geometry that is or contains the trip destination of the OSV Tour Guide.
-    ///     Example: MULTIPOINT (31.28163172149577 -25.0153934)
+    /// Geometry that contains positions of POIs at which the trip of the <see cref="OsvTourGuide"/> can end.
     /// </summary>
+    /// <remarks>The format should be a WKT geometry
+    /// <see href="https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry">Wikipedia</see> that
+    /// encodes geospatial locations that are within the KNP. An example of a point geometry:
+    /// POINT (31.482268 -24.979422).
+    /// </remarks>
     [PropertyDescription(Name = "targetGeometry")]
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
@@ -260,70 +285,102 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>Time point at which the <see cref="OsvTourGuide"/> starts observing a wildlife sighting.</summary>
     private DateTime _wildlifeSightingStartTime;
 
-    /// <summary>
+    /// <summary>Time point at which the <see cref="OsvTourGuide"/> stops observing a wildlife sighting.</summary>
     private DateTime _wildlifeSightingEndTime;
-    /// </summary>
-    private bool _goingHome;
 
-    /// <summary>
+    /// <summary>Time point at which the <see cref="OsvTourGuide"/> arrives at a POI.</summary>
     private DateTime? _arrivalTimePoi;
 
-    /// <summary>
-    ///     time to start driving after an animal sighting
-    /// </summary>
-    private DateTime _departureTime;
-
-    /// <summary>
-    ///     start time of break/pause/etc at some poi
-    /// </summary>
-    private DateTime? _arrivalTimePoi = null;
-
-    /// <summary>
-    ///     time to start driving after a stop at a poi
-    /// </summary>
+    /// <summary>Time point at which the <see cref="OsvTourGuide"/> departs from a POI.</summary>
     private DateTime? _departureTimePoi;
 
     // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
     // max speed in all of KNP ist 50km/h -> we should safely brake for an object 33m ahead of us?
     /// <summary>
-    ///     The distance from the agent's current position at which the agent should stop upon an animal sighting (achieved by
-    ///     placing a virtual car on the road)
+    /// Distance from the current position of the <see cref="OsvTourGuide"/> at which the agent should stop due to a wildlife
+    /// sighting.
     /// </summary>
+    /// <remarks>This is achieved by temporarily placing a virtual car on the road.</remarks>
     public const double InsertAnimalSightingDistanceAhead = 33.0;
 
     /// <summary><see cref="KnpPoi"/> that is the initial position of the <see cref="OsvTourGuide"/>.</summary>
-
+    /// <remarks>This is based on the value of <see cref="SourceName"/>.</remarks>
     private KnpPoi _currentTripOriginPoi;
+    
+    /// <summary><see cref="KnpPoi"/> that is the initial destination of the <see cref="OsvTourGuide"/>.</summary>
+    /// <remarks>This is based on the value of <see cref="TargetName"/>.</remarks>
     private KnpPoi _currentTripDestinationPoi;
 
+    /// <summary>Reference to the <see cref="Car"/> entity of the <see cref="OsvTourGuide"/>.</summary>
     public Car Car { get; set; }
 
+    /// <summary>Position of the <see cref="OsvTourGuide"/> on the <see cref="KnpRoadNetwork"/>.</summary>
+    /// <remarks>Defined in terms of the position of the <see cref="Car"/> entity of the <see cref="OsvTourGuide"/>.
+    /// </remarks>
     public Position Position
     {
         get => Car.Position;
         set => Car.Position = value;
     }
     
+    /// <summary>
+    /// Flag that indicates if the travel trajectory of the <see cref="OsvTourGuide"/> should be written to a GeoJSON
+    /// file.
+    /// </summary>
     [PropertyDescription(Name = "WriteRouteAsGeoJSON")]
     public bool WriteRouteAsGeoJson { get; set; }
 
+    /// <summary>Flag that indicates if the <see cref="OsvTourGuide"/> is capable of overtaking in traffic.</summary>
     public bool OvertakingActivated { get; }
+    
+    /// <summary>
+    /// Flag that indicates if the <see cref="OsvTourGuide"/> is currently braking its <see cref="Car"/> entity.
+    /// </summary>
     public bool BrakingActivated { get; set; }
+    
+    /// <summary>
+    /// Flag that indicates of the <see cref="OsvTourGuide"/> is currently driving its <see cref="Car"/> entity.
+    /// </summary>
     public bool CurrentlyCarDriving => true;
+    
+    /// <summary>
+    /// Velocity, in meters per second, of the <see cref="Car"/> entity of the <see cref="OsvTourGuide"/>.
+    /// </summary>
     public double CarVelocity { get; set; }
 
+    /// <summary>
+    /// Reference to the <see cref="CarSteeringHandle"/> to interact with the <see cref="Car"/> of the
+    /// <see cref="OsvTourGuide"/>.
+    /// </summary>
     public CarSteeringHandle VehicleHandle { get; set; }
 
+    /// <summary>
+    /// Collection of temporally ordered TripPositions that encode the travel trajectory of the
+    /// <see cref="OsvTourGuide"/>.
+    /// </summary>
     public TripsCollection TripsCollection { get; set; }
 
+    /// <summary>Reference to the <see cref="KnpRoadNetwork"/>, which holds the road network of the KNP.</summary>
     private KnpRoadNetwork _knpRoadNetwork;
 
+    /// <summary>
+    /// Reference to the <see cref="TrafficGrid"/>, which tracks the cumulative movement density on the
+    /// <see cref="KnpRoadNetwork"/>. 
+    /// </summary>
     [PropertyDescription]
     public TrafficGrid TrafficGrid { get; set; }
 
+    /// <summary>
+    /// Reference to the <see cref="TrafficJamGrid"/>, which tracks the location and cumulative duration of traffic jams
+    /// on the <see cref="KnpRoadNetwork"/>.
+    /// </summary>
     [PropertyDescription]
     public TrafficJamGrid TrafficJamGrid { get; set; }
     
+    /// <summary>
+    /// Reference to the <see cref="SightingsGrid"/>, which tracks the location and cumulative duration of wildlife
+    /// sightings on the <see cref="KnpRoadNetwork"/>.
+    /// </summary>
     [PropertyDescription]
     public SightingsGrid SightingsGrid { get; set; }
     
@@ -331,9 +388,7 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Methods
     
-    /// <summary>
-    ///     Returns a random Position from the given geometry
-    /// </summary>
+    /// <summary>Gets a random Position from the given geometry.</summary>
     /// <param name="geometry">The given geometry</param>
     /// <returns>A random position from the given geometry</returns>
     // TODO move this method to KNPRoadNetwork?
@@ -347,8 +402,8 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     }
     
     /// <summary>
-    ///     Gets a random position from SourceGeometry or, if not provided, obtains the source position based on
-    ///     the provided <value>SourceName</value>
+    /// Gets a random position from <see cref="SourceGeometry"/> or, if not provided, obtains the source position based
+    /// on the provided <see cref="SourceName"/>.
     /// </summary>
     /// <returns>Position of source of trip</returns>
     private Position GenerateSourcePosition()
@@ -360,9 +415,11 @@ public class OsvTourGuide : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     }
 
     /// <summary>
-    ///     Generates a target position from TargetName or TargetGeometry. Alternatively, if neither TargetName nor
-    ///     TargetGeometry is provided, obtains a random destination position within a fixed driving distance
+    /// Generates a target position using <see cref="TargetName"/> and <see cref="TargetType"/> or
+    /// <see cref="TargetGeometry"/>.
     /// </summary>
+    /// <remarks>Alternatively, if neither <see cref="TargetName"/> nor <see cref="TargetGeometry"/> is
+    /// provided, obtains a random destination position within a fixed driving distance.</remarks>
     /// <returns>Position of destination of trip</returns>
     private Position GenerateTargetPosition()
     {
