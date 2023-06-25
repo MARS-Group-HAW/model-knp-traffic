@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
 using Mars.Common.Core.Collections;
@@ -17,6 +18,12 @@ public static class Program
 {
     public static void Main(string[] args)
     {
+        var currentWorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        if (currentWorkingDirectory != null)
+        {
+            Directory.SetCurrentDirectory(currentWorkingDirectory);
+        }
+
         // only one binary output per project is possible -> use argument to trigger
         // execution of POI timings script. Use `$ dotnet run -poi` to run.
         if (args.Any(s => s.Equals("-poi")))
@@ -87,12 +94,15 @@ public static class Program
         }
         
         // load sim config, fall back to config.json if none is given
-        var file = "config.json";
+        /*var file = "config.json";
         if (args.Any(s => s.Equals("-sm")))
         {
             var index = args.IndexOf(s => s == "-sm");
             file = File.ReadAllText(args[index + 1]);
         }
+        */
+        // $"{Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName)}/config.json"
+        var file = File.ReadAllText("config.json");
         
         var simConfig = SimulationConfig.Deserialize(file);
         var starter = SimulationStarter.Start(description, simConfig);
