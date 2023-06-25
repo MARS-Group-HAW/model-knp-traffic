@@ -15,7 +15,6 @@ using Mars.Interfaces.Layers;
 using NetTopologySuite.Geometries;
 using SOHCarModel.Model;
 using SOHCarModel.Steering;
-using SOHDomain.Graph;
 using SOHDomain.Steering.Common;
 using Position = Mars.Interfaces.Environments.Position;
 
@@ -31,10 +30,9 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         VisitorEventComponent = new KnpEventComponent(this);
         _knpRoadNetwork = layer;
-        _sgmLayer = layer;
         State = VisitorState.Driving;
 
-        _startTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
+        _startTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
 
         // TODO: Parameterisierung aus CSV oder Dynamik mit +/- Random Wert, um Varianz im Visitor-Verhalten abzubilden
         _endTime = new DateTime(_startTime.Year, _startTime.Month, _startTime.Day, 10, 0, 0);
@@ -42,7 +40,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         TripsCollection = new TripsCollection(layer.Context);
 
         var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
-        car.Environment = _sgmLayer.Environment;
+        car.Environment = _knpRoadNetwork.Environment;
         Car = car;
 
         var sourcePos = GenerateSourcePosition();
@@ -51,8 +49,8 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         
         car.TryEnterDriver(this, out var handle);
 
-        _originNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
-        _sgmLayer.Environment.Insert(car, _originNode);
+        _originNode = _knpRoadNetwork.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+        _knpRoadNetwork.Environment.Insert(car, _originNode);
 
 
         /*var p1 = new Position(31.4447138, -24.9883233);
@@ -71,7 +69,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         _currentTripOriginPoi = PointsOfInterest.GetNearestKnpPoi(Position);
 
         var targetPos = GenerateTargetPosition();
-        var destinationNode = _sgmLayer.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
+        var destinationNode = _knpRoadNetwork.Environment.NearestNode(targetPos, SpatialModalityType.CarDriving);
 
         handle.Route = _knpRoadNetwork.FindRoute(_originNode, destinationNode, 4 * 3600);
         VehicleHandle = handle;
@@ -104,7 +102,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             if (Car.Velocity == 0)
             {
                 // we are at a stand now, start timer to remove AnimalSighting "car"
-                _arrivalTime = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                _arrivalTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
                 _departureTime = _arrivalTime.AddMinutes(lookDuration);
                 State = VisitorState.Looking;
             }
@@ -112,7 +110,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         else if (State == VisitorState.Looking)
         {
             //@todo : logik validieren, in der simulation sah es so aus lob die dauernd bremsen
-            if (_departureTime.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+            if (_departureTime.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
             {
                 Car.Driver.BrakingActivated = false;
                 State = VisitorState.Driving;
@@ -123,25 +121,25 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         {
             if (_departureTimePoi == null)
             {
-                _arrivalTimePoi = _sgmLayer.Context.CurrentTimePoint.GetValueOrDefault();
+                _arrivalTimePoi = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
                 _departureTimePoi = _arrivalTimePoi?.AddMinutes(30);
                 //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
 
                 Console.WriteLine(
-                    $"{_sgmLayer.Context.CurrentTick},{ID},arrived,{_currentTripOriginPoi.Name},{_currentTripDestinationPoi.Poi.Name}");
+                    $"{_knpRoadNetwork.Context.CurrentTick},{ID},arrived,{_currentTripOriginPoi.Name},{_currentTripDestinationPoi.Poi.Name}");
 
 
                 //log.LogInfo($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
             }
             else
             {
-                if (_departureTimePoi?.Subtract(_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault())
+                if (_departureTimePoi?.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault())
                         .TotalMinutes < 0)
                 {
                     // pause vorbei!
 
                     var sourcePoi = PointsOfInterest.GetNearestKnpPoi(_currentTripDestinationPoi.Poi.Position);
-                    var sourceNode = _sgmLayer.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
+                    var sourceNode = _knpRoadNetwork.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
 
                     var availableDestinations =
                         sourcePoi.GetDestinationPois(4 * 3600, new List<string> { PoiType.KnpGate });
@@ -150,7 +148,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
                     var rnd = new Random();
                     var i = rnd.Next(0, l);
                     var destinationPoco = availableDestinations[i];
-                    var destinationNode = _sgmLayer.Environment.NearestNode(destinationPoco.Poi.Position,
+                    var destinationNode = _knpRoadNetwork.Environment.NearestNode(destinationPoco.Poi.Position,
                         SpatialModalityType.CarDriving);
 
 
@@ -160,7 +158,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
 
                     Console.WriteLine(
-                        $"{_sgmLayer.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{destinationPoco.Poi.Name}");
+                        $"{_knpRoadNetwork.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{destinationPoco.Poi.Name}");
 
                     if (WriteRouteAsGeoJSON)
                     {
@@ -341,8 +339,6 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     ///     placing a virtual car on the road)
     /// </summary>
     public const double InsertAnimalSightingDistanceAhead = 33.0;
-
-    private SpatialGraphMediatorLayer _sgmLayer;
 
     private KnpPoi _currentTripOriginPoi;
     private TripDestination _currentTripDestinationPoi;
