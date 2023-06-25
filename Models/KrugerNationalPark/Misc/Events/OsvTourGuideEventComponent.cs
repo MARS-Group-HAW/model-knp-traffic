@@ -34,7 +34,7 @@ namespace KrugerNationalPark.Misc.Events
             //        but maybe this is better for us anyway? discuss!
             if (remainingDistance > OsvTourGuide.InsertAnimalSightingDistanceAhead)
             {
-                Entity.EventHandled += 1;
+                Entity.EventsHandled += 1;
                 Entity.Car.Driver.BrakingActivated = true;
 
                 // 4. enter braking state 

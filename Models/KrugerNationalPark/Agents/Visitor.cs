@@ -79,7 +79,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         VehicleHandle = handle;
 
         // save route to geojson
-        if (WriteRouteAsGeoJSON)
+        if (WriteRouteAsGeoJson)
         {
             var geoJson = handle.Route.ToGeoJson();
             File.WriteAllText("route_" + ID + ".json", geoJson);
@@ -167,7 +167,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
                     Console.WriteLine(
                         $"{_knpRoadNetwork.Context.CurrentTick},{ID},leave,{sourcePoi.Name},{destinationPoco.Poi.Name}");
 
-                    if (WriteRouteAsGeoJSON)
+                    if (WriteRouteAsGeoJson)
                     {
                         var geoJson = VehicleHandle.Route.ToGeoJson();
                         File.WriteAllText("route_back_" + ID + ".json", geoJson);
@@ -223,7 +223,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>
     /// Number of wildlife sightings events that are actually perceived by the <see cref="Visitor"/> agent.
     /// </summary>
-    public int EventHandled { get; set; }
+    public int EventsHandled { get; set; }
 
     /// <summary>
     /// Probability distribution over the <see cref="RoadSurface"/> types, indicating the preference of the
@@ -258,9 +258,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>Current state of the <see cref="Visitor"/> (<see cref="VisitorState"/>).</summary>
     public VisitorState State { get; set; }
     
-    /// <summary>
-    /// Logger provided by the MARS Framework to track activity of the <see cref="Visitor"/>. 
-    /// </summary>
+    /// <summary> Logger provided by the MARS Framework to track activity of the <see cref="Visitor"/>.</summary>
     private ILogger log;
 
     /// <summary>
@@ -308,24 +306,16 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
     
-    /// <summary>
-    /// Time point at which the <see cref="Visitor"/> starts observing a wildlife sighting.
-    /// </summary>
+    /// <summary>Time point at which the <see cref="Visitor"/> starts observing a wildlife sighting.</summary>
     private DateTime _wildlifeSightingStartTime;
 
-    /// <summary>
-    /// Time point at which the <see cref="Visitor"/> stops observing a wildlife sighting.
-    /// </summary>
+    /// <summary>Time point at which the <see cref="Visitor"/> stops observing a wildlife sighting.</summary>
     private DateTime _wildlifeSightingEndTime;
 
-    /// <summary>
-    /// Time point at which the <see cref="Visitor"/> arrives at a POI.
-    /// </summary>
+    /// <summary>Time point at which the <see cref="Visitor"/> arrives at a POI.</summary>
     private DateTime? _arrivalTimePoi;
 
-    /// <summary>
-    ///  Time point at which the <see cref="Visitor"/> departs from a POI.
-    /// </summary>
+    /// <summary>Time point at which the <see cref="Visitor"/> departs from a POI.</summary>
     private DateTime? _departureTimePoi;
 
     // reaction time + halting distance: kmh/10*3 + (kmh/10)^2
@@ -361,7 +351,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// Flag that indicates if the travel trajectory of the <see cref="Visitor"/> should be written to a GeoJSON file.
     /// </summary>
     [PropertyDescription(Name = "WriteRouteAsGeoJSON")]
-    public bool WriteRouteAsGeoJSON { get; set; }
+    public bool WriteRouteAsGeoJson { get; set; }
 
     /// <summary>Flag that indicates if the <see cref="Visitor"/> is capable of overtaking in traffic.</summary>
     public bool OvertakingActivated { get; }
