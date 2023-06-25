@@ -1,2 +1,2 @@
-startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,sourceGeometry
-7:00,7:05,1,1,Malelane,KNP Gate,
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType
+7:00,7:05,1,1,Malelane,KNP Gate

@@ -1,2 +1,2 @@
-startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,targetName,targetType,workDuration,sourceGeometry,targetGeometry
-07:30,07:45,10,1,Phabeni,KNP Gate,Skukuza,Rest camp,120,,
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,targetName,targetType,workDuration
+07:30,07:45,10,1,Phabeni,KNP Gate,Skukuza,Rest camp,120
