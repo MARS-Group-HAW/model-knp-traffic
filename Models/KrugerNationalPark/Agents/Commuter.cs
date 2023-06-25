@@ -194,6 +194,8 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     #endregion
 
     #region Properties and Fields
+    
+    // TODO give Commuters access to TrafficGrid and TrafficJamGrid
 
     /// <summary>Current state of the <see cref="Commuter"/> (<see cref="CommuterState"/>).</summary>
     private CommuterState State { get; set; }

@@ -1,10 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
-using Mars.Common;
 using Mars.Components.Layers;
-using Mars.Interfaces.Annotations;
-using Mars.Interfaces.Data;
 using Mars.Interfaces.Layers;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
@@ -12,39 +8,9 @@ using NetTopologySuite.IO;
 
 namespace KrugerNationalPark.Layers;
 
+/// <summary>The <see cref="TrafficGrid"/> tracks the movement of agents on the <see cref="KnpRoadNetwork"/>.</summary>
 public class TrafficGrid : RasterLayer, ISteppedActiveLayer
 {
-    
-    /// <summary>
-    ///     The perimeter of the simulation environment.
-    /// </summary>
-    [PropertyDescription(Name = "VisitorTravelerLayer")]
-    public KnpRoadNetwork Graph { get; set; }
-    
-    /// <summary>
-    ///     Initialization of the layer type.
-    /// </summary>
-    /// <param name="layerInitData">The initialization data provided by the simulation configuration</param>
-    /// <param name="registerAgentHandle">The agent registration handle of the layer type</param>
-    /// <param name="unregisterAgent">The agent un-registration handle of the layer type</param>
-    /// <returns>A boolean stating if initialization of the layer types base class was successful</returns>
-    public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle = null,
-        UnregisterAgent unregisterAgent = null)
-    {
-        var baseInitSuccessful = base.InitLayer(layerInitData, registerAgentHandle, unregisterAgent);
-
-        /*var bbox = Graph.SpatialGraphMediatorLayer.Environment.BoundingBox;
-        
-        // divide plane in GeoHash cells with ~ 38.2m x 19.1m (Level8)
-        var boxes = GeoHash.Bboxes(
-            bbox.MinY, bbox.MinX,
-            bbox.MaxY, bbox.MaxX,
-            (int) GeoHashPrecision.Level8); */
-        
-        
-        return baseInitSuccessful;
-    }
-    
     public void Tick()
     {
     }
@@ -53,6 +19,8 @@ public class TrafficGrid : RasterLayer, ISteppedActiveLayer
     {
     }
 
+    /// <summary>Routine of the <see cref="TrafficGrid"/> at the end of each simulation step.</summary>
+    /// <remarks>At the end of the simulation, the collected data are written to a GeoJSON file.</remarks>
     public void PostTick()
     {
         if (GetCurrentTick() % 1 == 0 ||  GetCurrentTick() == 1 || GetCurrentTick() == Context.MaxTicks)
@@ -67,9 +35,7 @@ public class TrafficGrid : RasterLayer, ISteppedActiveLayer
     }
     
     
-    /// <summary>
-    ///     Writes the movement heat map of Kudu agents to a GeoJSON file.
-    /// </summary>
+    /// <summary>Writes the traffic heatmap to a GeoJSON file.</summary>
     private void WriteMovementHeatMapToGeoJson()
     {
         var featureCollection = new FeatureCollection();

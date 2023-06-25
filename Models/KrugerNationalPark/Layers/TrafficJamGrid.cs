@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using Mars.Components.Layers;
-using Mars.Interfaces.Annotations;
-using Mars.Interfaces.Data;
 using Mars.Interfaces.Layers;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
@@ -10,6 +8,7 @@ using NetTopologySuite.IO;
 
 namespace KrugerNationalPark.Layers;
 
+/// <summary>The <see cref="TrafficJamGrid"/> tracks the location and duration of wildlife sighting events.</summary>
 public class TrafficJamGrid : RasterLayer, ISteppedActiveLayer
 {
     public void Tick()
@@ -20,6 +19,8 @@ public class TrafficJamGrid : RasterLayer, ISteppedActiveLayer
     {
     }
 
+    /// <summary>Routine of the <see cref="TrafficJamGrid"/> at the end of each simulation step.</summary>
+    /// <remarks>At the end of the simulation, the collected data are written to a GeoJSON file.</remarks>
     public void PostTick()
     {
         if (GetCurrentTick() % 1 == 0 ||  GetCurrentTick() == 1 || GetCurrentTick() == Context.MaxTicks)
@@ -34,9 +35,7 @@ public class TrafficJamGrid : RasterLayer, ISteppedActiveLayer
     }
     
     
-    /// <summary>
-    ///     Writes the movement heat map of Kudu agents to a GeoJSON file.
-    /// </summary>
+    /// <summary>Writes the traffic jam heatmap to a GeoJSON file.</summary>
     private void WriteMovementHeatMapToGeoJson()
     {
         var featureCollection = new FeatureCollection();
