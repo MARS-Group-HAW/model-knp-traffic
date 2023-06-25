@@ -32,26 +32,20 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         _knpRoadNetwork = layer;
         State = VisitorState.Driving;
 
-        _startTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
-
-        // TODO: Parameterisierung aus CSV oder Dynamik mit +/- Random Wert, um Varianz im Visitor-Verhalten abzubilden
-        _endTime = new DateTime(_startTime.Year, _startTime.Month, _startTime.Day, 10, 0, 0);
-
         TripsCollection = new TripsCollection(layer.Context);
 
-        var car = layer.EntityManager.Create<KnpCar>("type", "Golf");
-        car.Environment = _knpRoadNetwork.Environment;
-        Car = car;
+        // 2. Vehicle acquisition
+        Car = layer.EntityManager.Create<KnpCar>("type", "Golf");
+        Car.Environment = _knpRoadNetwork.Environment;
 
         var sourcePos = GenerateSourcePosition();
         // todo: define distribution to make some visitors spawn from gates and others from rest camps (in else case)?
         Position = sourcePos.X != 0d && sourcePos.Y != 0d ? sourcePos : PointsOfInterest.GetRandomPoiPositionOfType(PoiType.KnpGate);
         
-        car.TryEnterDriver(this, out var handle);
+        Car.TryEnterDriver(this, out var handle);
 
         _originNode = _knpRoadNetwork.Environment.NearestNode(Position, SpatialModalityType.CarDriving);
-        _knpRoadNetwork.Environment.Insert(car, _originNode);
-
+        _knpRoadNetwork.Environment.Insert(Car, _originNode);
 
         /*var p1 = new Position(31.4447138, -24.9883233);
         var p2 = new Position(31.4277741, -25.0153934);
@@ -92,7 +86,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     public void Tick()
     {
         // @todo: random in range
-        int lookDuration = RandomHelper.Random.NextInteger(5, 15);; // in minutes
+        var lookDuration = RandomHelper.Random.NextInteger(5, 15); // in minutes
 
         // we are driving around and waiting for an animal sighting event
         // todo: on the qy home should we prevent looking for animals?
@@ -102,15 +96,15 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             if (Car.Velocity == 0)
             {
                 // we are at a stand now, start timer to remove AnimalSighting "car"
-                _arrivalTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
-                _departureTime = _arrivalTime.AddMinutes(lookDuration);
+                _wildlifeSightingStartTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
+                _wildlifeSightingEndTime = _wildlifeSightingStartTime.AddMinutes(lookDuration);
                 State = VisitorState.Looking;
             }
         }
         else if (State == VisitorState.Looking)
         {
             //@todo : logik validieren, in der simulation sah es so aus lob die dauernd bremsen
-            if (_departureTime.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
+            if (_wildlifeSightingEndTime.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
             {
                 Car.Driver.BrakingActivated = false;
                 State = VisitorState.Driving;
@@ -119,10 +113,10 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
         if (VehicleHandle.Route.GoalReached)
         {
-            if (_departureTimePoi == null)
+            if (_departureTimePoi is null)
             {
                 _arrivalTimePoi = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
-                _departureTimePoi = _arrivalTimePoi?.AddMinutes(30);
+                _departureTimePoi = _arrivalTimePoi?.AddMinutes(30);  // TODO make 30 configurable
                 //Console.WriteLine($"{ID} {_sgmLayer.Context.CurrentTimePoint.GetValueOrDefault()} Visitor arrived at {currentDestinationPoi.Poi.Name}");
 
                 Console.WriteLine(
@@ -184,13 +178,12 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         // todo: 3 dynamisch machen
         if (TrafficJamGrid.IsInRaster(Position) && CarVelocity == 0 && State != VisitorState.Looking)
         {
+            _trafficJamDurationCounter += 1;
 
-            _reallyJam += 1;
-
-            if (_reallyJam > 60)
+            if (_trafficJamDurationCounter > 60)
             {
                 TrafficJamGrid[Position] += 1;
-                _reallyJam = 0;
+                _trafficJamDurationCounter = 0;
             }
         }
         
@@ -200,13 +193,12 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         }
     }
 
-    private int _reallyJam = 0;
-
     #endregion
 
     #region Properties
 
-    public int EventReceived { get; set; }
+    /// <summary>Number of seconds that the <see cref="Visitor"/> agent has spent in current traffic jam.</summary>
+    private int _trafficJamDurationCounter;
     public int EventPossibleRelevant { get; set; }
     public int EventHandled { get; set; }
 
@@ -226,13 +218,11 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     public PointsOfInterest PointsOfInterest { get; set; }
     public Guid ID { get; set; }
-    public int StableId { get; }
 
-    private static Random rng = new();
+    /// <summary>Current state of the Commuter (<see cref="VisitorState"/>).</summary>
+    public VisitorState State { get; set; }
+    
 
-    public int HasAnimalSighting { get; set; }
-
-    public int SightingEventCarVelocity { get; set; }
 
     /// <summary>
     ///     State of the visitor (driving around, looking at wildlife, ...)
@@ -301,34 +291,22 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 #nullable disable
     
     /// <summary>
-    ///     A queue containing one DateTime object for each node of the agent's node
-    ///     A node's DateTime object specifies the time as of which the agent needs to start driving home when it reaches this
-    ///     node
+    /// Time point at which the <see cref="Visitor"/> starts observing a wildlife sighting.
     /// </summary>
-    private readonly Queue<DateTime> _edgeTimings = new();
+    private DateTime _wildlifeSightingStartTime;
 
     /// <summary>
     ///     Keep track if the visitor is on its way home -> no longer stop for animals
     /// </summary>
-    private bool _goingHome;
+    private DateTime _wildlifeSightingEndTime;
 
     /// <summary>
     ///     start time of animal sighting
     /// </summary>
-    private DateTime _arrivalTime;
+    private DateTime? _arrivalTimePoi;
 
     /// <summary>
-    ///     time to start driving after an animal sighting
-    /// </summary>
-    private DateTime _departureTime;
-
-    /// <summary>
-    ///     start time of break/pause/etc at some poi
-    /// </summary>
-    private DateTime? _arrivalTimePoi = null;
-
-    /// <summary>
-    ///     time to start driving after a stop at a poi
+    ///  Time point at which the <see cref="Visitor"/> departs from a POI.
     /// </summary>
     private DateTime? _departureTimePoi;
 
