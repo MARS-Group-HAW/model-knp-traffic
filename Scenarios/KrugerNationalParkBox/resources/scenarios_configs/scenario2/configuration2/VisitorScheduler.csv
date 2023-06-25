@@ -1,0 +1,10 @@
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,sourceGeometry
+6:00,7:00,30,10,Crocodile Bridge,KNP Gate,
+6:00,7:00,40,10,Malelane,KNP Gate,
+6:00,7:00,40,10,Phabeni,KNP Gate,
+7:00,8:00,30,10,Crocodile Bridge,KNP Gate,
+7:00,8:00,40,10,Malelane,KNP Gate,
+7:00,8:00,40,10,Phabeni,KNP Gate,
+8:00,9:00,40,10,Crocodile Bridge,KNP Gate,
+8:00,9:00,60,10,Malelane,KNP Gate,
+8:00,9:00,60,10,Phabeni,KNP Gate,

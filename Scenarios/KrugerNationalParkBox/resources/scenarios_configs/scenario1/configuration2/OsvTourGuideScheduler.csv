@@ -1,0 +1,7 @@
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,sourceGeometry
+6:00,6:30,15,2,Berg-en-Dal,Rest camp,
+6:00,6:30,15,2,Pretoriuskop,Rest camp,
+7:00,8:00,30,3,Phabeni,KNP Gate,
+9:00,9:30,15,2,Berg-en-Dal,Rest camp,
+9:00,9:30,15,2,Pretoriuskop,Rest camp,
+9:00,9:30,30,3,Numbi,KNP Gate,

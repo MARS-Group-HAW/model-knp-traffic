@@ -1,0 +1,4 @@
+startTime,endTime,spawningIntervalInMinutes,spawningAmount,sourceName,sourceType,sourceGeometry
+6:00,7:00,30,3,Numbi,KNP Gate,
+7:00,8:00,30,2,Phabeni,KNP Gate,
+8:00,9:00,30,3,Numbi,KNP Gate,

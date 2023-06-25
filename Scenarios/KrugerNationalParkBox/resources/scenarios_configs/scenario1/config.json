@@ -1,0 +1,156 @@
+{
+  "globals": {
+    "deltaT": 1,
+    "deltaTUnit": "seconds",
+    "startTime": "2023-01-01T06:00:00",
+    "endTime": "2023-01-01T12:00:00",
+    "output": "csv",
+    "csvOptions": {
+      "delimiter": ";"
+    },
+    "console": false
+  },
+  "layers": [
+    {
+      "file": "resources/knp_raster_1111m.asc",
+      "name": "TrafficGrid"
+    },
+    {
+      "file": "resources/knp_raster_1111m.asc",
+      "name": "TrafficJamGrid"
+    },
+    {
+      "file": "resources/knp_raster_1111m.asc",
+      "name": "SightingsGrid"
+    },
+    {
+      "name": "KnpRoadNetwork",
+      "inputs": [
+        {
+          "file": "resources/roads_all_2019_inferred.geojson",
+          "inputConfiguration": {
+            "modalities": ["CarDriving"],
+            "isBidirectedGraph": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "PointsOfInterest",
+      "file": "resources/pois_inferred.geojson"
+    },
+    {
+      "name": "VisitorScheduler",
+      "file": "resources/VisitorScheduler.csv"
+    },
+    {
+      "name": "CommuterScheduler",
+      "file": "resources/_emptyScheduler.csv"
+    },
+    {
+      "name": "OsvTourGuideScheduler",
+      "file": "resources/OsvTourGuideScheduler.csv"
+    },
+    {
+      "name": "EventProducerScheduler",
+      "file": "resources/ProducerScheduler.csv"
+    }
+  ],
+  "entities": [
+    {
+      "name": "KnpCar",
+      "file": "resources/car.csv"
+    }
+  ],
+  "agents": [
+    {
+      "name": "EventProducer"
+    },
+    {
+      "name": "Visitor",
+      "outputs": [
+        {
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
+        },
+        {
+          "kind": "csv",
+          "outputConfiguration": {
+            "delimiter": ";"
+          }
+        }
+      ],
+      "individual": [
+        {
+          "name": "WriteRouteAsGeoJSON",
+          "parameter": "WriteRouteAsGeoJSON",
+          "value": false
+        },
+        {
+          "name": "RoadSurfacePreferences",
+          "parameter": "RoadSurfacePreferences",
+          "value": {
+            "Graded": 0.1,
+            "Gravel": 0.2,
+            "Disused": 0.3,
+            "Rehab": 0.4,
+            "Tar": 0.5,
+            "TwoTrack": 0.6
+          }
+        },
+        {
+          "name": "RoadAccessPermissions",
+          "parameter": "RoadAccessPermissions",
+          "value": {
+            "Private": false,
+            "Public": true,
+            "Staff": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "Commuter",
+      "outputs": [
+        {
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
+        },
+        {
+          "kind": "csv",
+          "outputConfiguration": {
+            "delimiter": ";"
+          }
+        }
+      ]
+    },
+    {
+      "name": "OsvTourGuide",
+      "outputs": [
+        {
+          "kind": "trips",
+          "outputConfiguration": {
+            "tripsFields": [
+              "ActiveCapability"
+            ]
+          }
+        }
+      ],
+      "individual": [
+        {
+          "name": "WriteRouteAsGeoJSON",
+          "parameter": "WriteRouteAsGeoJSON",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

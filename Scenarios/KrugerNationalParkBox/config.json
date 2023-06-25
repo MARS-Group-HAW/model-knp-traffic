@@ -38,11 +38,11 @@
     },
     {
       "name": "VisitorScheduler",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/VisitorScheduler.csv"
     },
     {
       "name": "CommuterScheduler",
-      "file": "resources/_emptyScheduler.csv"
+      "file": "resources/CommuterScheduler.csv"
     },
     {
       "name": "OsvTourGuideScheduler",
