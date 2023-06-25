@@ -5,8 +5,8 @@ using SOHCarModel.Model;
 namespace KrugerNationalPark.Agents;
 
 /// <summary>
-///     This class implements custom properties and the binding to the KNP.
-///     Those logic is used for this custom car. Use this class in order to expect more parameters.
+/// The <see cref="KnpCar"/> represents a standard vehicle that can be used by agents to move on the
+/// <see cref="KnpRoadNetwork"/>.
 /// </summary>
 public class KnpCar : Car
 {

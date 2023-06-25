@@ -195,7 +195,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Properties and Fields
 
-    /// <summary>Current state of the Commuter (<see cref="CommuterState"/>).</summary>
+    /// <summary>Current state of the <see cref="Commuter"/> (<see cref="CommuterState"/>).</summary>
     private CommuterState State { get; set; }
 
     /// <summary>

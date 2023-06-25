@@ -6,10 +6,18 @@ using Mars.Interfaces.Agents;
 
 namespace KrugerNationalPark.Agents;
 
+/// <summary>
+/// The <see cref="EventProducer"/> creates temporary wildlife sighting events (<see cref="KnpEvent"/>) along the road
+/// segments of the <see cref="KnpRoadNetwork"/>.
+/// </summary>
+/// <remarks>Configurable via and spawned by <see cref="EventProducerScheduler"/> (see scheduler CSV file).</remarks>
 public class EventProducer : IAgent<KnpRoadNetwork>
 {
     #region Initialization
 
+    /// <summary>Initialization routine of the <see cref="EventProducer"/> agent.</summary>
+    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="Commuter"/>
+    /// lives.</param>
     public void Init(KnpRoadNetwork layer)
     {
         _travellerLayer = layer;
@@ -20,6 +28,10 @@ public class EventProducer : IAgent<KnpRoadNetwork>
 
     #region Tick
 
+    /// <summary>Behaviour routine of the <see cref="EventProducer"/>.</summary>
+    /// <remarks>
+    /// Includes creation of <see cref="KnpEvent"/> instances at random locations of the <see cref="KnpRoadNetwork"/>.
+    /// </remarks>
     public void Tick()
     {
         var random = new Random();
@@ -57,15 +69,14 @@ public class EventProducer : IAgent<KnpRoadNetwork>
 
     #region Properties
 
+    /// <summary>Unique identifier of the <see cref="Visitor"/> agent.</summary>
     public Guid ID { get; set; }
         
+    /// <summary>Reference to the <see cref="KnpRoadNetwork"/>, which holds the road network of the KNP.</summary>
     private KnpRoadNetwork _travellerLayer;
 
+    /// <summary>Collection of produced <see cref="KnpEvent"/> instances.</summary>
     private EventsCollection _eventsCollection;
 
     #endregion Properties
-
-    #region Methods
-
-    #endregion Methods
 }

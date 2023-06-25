@@ -30,8 +30,8 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <remarks>
     /// Includes state initialization, vehicle acquisition, positioning in the environment, and route finding.
     /// </remarks>
-    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="Commuter"/> agent
-    /// lives.</param>
+    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="Visitor"/> lives.
+    /// </param>
     public void Init(KnpRoadNetwork layer)
     {
         // 1. State initialization
@@ -93,7 +93,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Tick
 
-    /// <summary>Behaviour routine of the <see cref="Commuter"/> agent.</summary>
+    /// <summary>Behaviour routine of the <see cref="Visitor"/>.</summary>
     /// <remarks>
     /// Includes movement behaviour that alternates between random travel on the <see cref="KnpRoadNetwork"/> and
     /// shortest-path travel to a nearby POI.
@@ -252,10 +252,10 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>Reference to the <see cref="PointsOfInterest"/> layer of the environment.</summary>
     public PointsOfInterest PointsOfInterest { get; set; }
     
-    /// <summary>Unique identifier of the <see cref="Commuter"/> agent.</summary>
+    /// <summary>Unique identifier of the <see cref="Visitor"/> agent.</summary>
     public Guid ID { get; set; }
 
-    /// <summary>Current state of the Commuter (<see cref="VisitorState"/>).</summary>
+    /// <summary>Current state of the <see cref="Visitor"/> (<see cref="VisitorState"/>).</summary>
     public VisitorState State { get; set; }
     
     /// <summary>
