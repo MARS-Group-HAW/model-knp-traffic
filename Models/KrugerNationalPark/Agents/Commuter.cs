@@ -17,19 +17,19 @@ using Position = Mars.Interfaces.Environments.Position;
 namespace KrugerNationalPark.Agents;
 
 /// <summary>
-/// The <see cref="Commuter"/> agents starts at a KNP Gate and travels to a Rest camp to work for some amount of time.
+/// The <see cref="Commuter"/> agent starts at a KNP Gate and travels to a Rest camp to work for some amount of time.
 /// </summary>
 /// <remarks>Configurable via and spawned by <see cref="CommuterScheduler"/> (see scheduler CSV file).</remarks>
 public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 {
     #region Initialization
 
-    /// <summary>Initialization routine of the <see cref="Commuter"/> agent.</summary>
+    /// <summary>Initialization routine of the <see cref="Commuter"/>.</summary>
     /// <remarks>
     /// Includes state initialization, vehicle acquisition, positioning in the environment, and route finding.
     /// </remarks>
-    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="Commuter"/> agent
-    /// lives.</param>
+    /// <param name="layer">Reference to the <see cref="KnpRoadNetwork"/> on which the <see cref="Commuter"/> lives.
+    /// </param>
     public void Init(KnpRoadNetwork layer)
     {
         // 1. State initialization
@@ -65,11 +65,10 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     #region Tick
 
-    /// <summary>
-    /// The behaviour routine of the <see cref="Commuter"/> agent.
-    /// </summary>
-    /// <remarks>Includes travel to place of work, remaining at place of work for some time, and returning to KNP entry
-    /// point.</remarks>
+    /// <summary>Behaviour routine of the <see cref="Commuter"/>.</summary>
+    /// <remarks>
+    /// Includes travel to place of work, remaining at place of work for some time, and returning to KNP entry point.
+    /// </remarks>
     public void Tick()
     {
         if (VehicleHandle.Route.GoalReached)
@@ -178,7 +177,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>Gets a random Position from the given geometry.</summary>
     /// <param name="geometry">The given geometry</param>
     /// <returns>A random position from the given geometry</returns>
-    // TODO move this method to KNPRoadNetwork
+    // TODO move this method to KNPRoadNetwork?
     private static Position GetRandomPositionFromGeometry(Geometry geometry)
     {
         var geometryCoords = geometry.Coordinates;
@@ -251,17 +250,17 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     public Geometry? TargetGeometry { get; set; }
 #nullable disable
 
-    /// <summary>Time point at which the <see cref="Commuter"/> agent arrives at <see cref="_workplaceNode"/>.</summary>
+    /// <summary>Time point at which the <see cref="Commuter"/> arrives at <see cref="_workplaceNode"/>.</summary>
     private DateTime _arrivalTime;
 
     /// <summary>
-    /// Amount of time, in minutes, that the <see cref="Commuter"/> agent spends at <see cref="_workplaceNode"/>.
+    /// Amount of time, in minutes, that the <see cref="Commuter"/> spends at <see cref="_workplaceNode"/>.
     /// </summary>
     [PropertyDescription(Name = "workDuration")]
     public double WorkDuration { get; set; }
 
     /// <summary>
-    /// Time point at which the <see cref="Commuter"/> agent departs from <see cref="_workplaceNode"/>.
+    /// Time point at which the <see cref="Commuter"/> departs from <see cref="_workplaceNode"/>.
     /// </summary>
     private DateTime _departureTime;
 
@@ -271,8 +270,8 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     /// <summary>Reference to the <see cref="PointsOfInterest"/> layer, which holds the POIs of the KNP.</summary>
     public PointsOfInterest PointsOfInterest { get; set; }
 
-    /// <summary>Position of the <see cref="Commuter"/> agent on the <see cref="KnpRoadNetwork"/>.</summary>
-    /// <remarks>Defined in terms of the position of the <see cref="Car"/> entity of the <see cref="Commuter"/> agent.
+    /// <summary>Position of the <see cref="Commuter"/> on the <see cref="KnpRoadNetwork"/>.</summary>
+    /// <remarks>Defined in terms of the position of the <see cref="Car"/> entity of the <see cref="Commuter"/>.
     /// </remarks>
     public Position Position
     {
@@ -280,7 +279,7 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         set => Car.Position = value;
     }
 
-    /// <summary>Unique identifier of the <see cref="Commuter"/> agent.</summary>
+    /// <summary>Unique identifier of the <see cref="Commuter"/>.</summary>
     public Guid ID { get; set; }
 
     /// <summary>Reference to the <see cref="UnregisterHandle"/> of the <see cref="KnpRoadNetwork"/>.</summary>
@@ -290,19 +289,19 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
 
     /// <summary>
     /// Reference to the <see cref="CarSteeringHandle"/> to interact with the <see cref="Car"/> of the
-    /// <see cref="Commuter"/> agent.
+    /// <see cref="Commuter"/>.
     /// </summary>
     public CarSteeringHandle VehicleHandle { get; set; }
 
-    /// <summary>Flag that indicates if the <see cref="Commuter"/> agent is capable of overtaking in traffic.</summary>
+    /// <summary>Flag that indicates if the <see cref="Commuter"/> is capable of overtaking in traffic.</summary>
     public bool OvertakingActivated { get; set; }
 
     /// <summary>
-    /// Flag that indicates if the <see cref="Commuter"/> agent is currently braking its <see cref="Car"/> entity.
+    /// Flag that indicates if the <see cref="Commuter"/> is currently braking its <see cref="Car"/> entity.
     /// </summary>
     public bool BrakingActivated { get; set; }
 
-    /// <summary>Reference to the <see cref="Car"/> entity of the <see cref="Commuter"/> agent.</summary>
+    /// <summary>Reference to the <see cref="Car"/> entity of the <see cref="Commuter"/>.</summary>
     public Car Car { get; set; }
 
     /// <summary>
@@ -311,13 +310,12 @@ public class Commuter : IAgent<KnpRoadNetwork>, ICarSteeringCapable
     public bool CurrentlyCarDriving => true;
 
     /// <summary>
-    /// Velocity, in meters per second, of the <see cref="Car"/> entity of the <see cref="Commuter"/> agent.
+    /// Velocity, in meters per second, of the <see cref="Car"/> entity of the <see cref="Commuter"/>.
     /// </summary>
     public double CarVelocity { get; set; }
 
     /// <summary>
-    /// Collection of temporally ordered TripPositions that encode the travel trajectory of the <see cref="Commuter"/>
-    /// agent.
+    /// Collection of temporally ordered TripPositions that encode the travel trajectory of the <see cref="Commuter"/>.
     /// </summary>
     public TripsCollection TripsCollection { get; set; }
 
