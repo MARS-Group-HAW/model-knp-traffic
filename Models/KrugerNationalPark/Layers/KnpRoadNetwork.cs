@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KrugerNationalPark.Agents;
 using KrugerNationalPark.Misc;
 using Mars.Components.Environments;
 using Mars.Interfaces.Environments;
@@ -8,15 +9,31 @@ using SOHDomain.Graph;
 
 namespace KrugerNationalPark.Layers;
 
+/// <summary>The <see cref="KnpRoadNetwork"/> holds the road network of the KNP on which agents can move.</summary>
+/// <remarks>Requires appropriate vector data for initialization. Configurable via config.json.</remarks>
 public class KnpRoadNetwork : SpatialGraphMediatorLayer
 {
 
+    /// <summary>
+    /// Computes a travel route for a <see cref="Visitor"/> agent that satisfies the given constraints.
+    /// </summary>
+    /// <param name="from">Origin of the trip.</param>
+    /// <param name="to">Destination of the trip.</param>
+    /// <param name="timeLimit">Maximum duration of the trip.</param>
+    /// <returns>The computed route encapsulated in a Route object.</returns>
     public Route FindVisitorRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
     {
         var visitorAccessPermissions = new List<string> { RoadAccess.Public };
         return FindRoute(from, to, timeLimit, edge => visitorAccessPermissions.Contains((string)edge.Attributes["ACCESS"]));
     }
         
+    /// <summary>
+    /// Computes a travel route for a <see cref="OsvTourGuide"/> agent that satisfies the given constraints.
+    /// </summary>
+    /// <param name="from">Origin of the trip.</param>
+    /// <param name="to">Destination of the trip.</param>
+    /// <param name="timeLimit">Maximum duration of the trip.</param>
+    /// <returns>The computed route encapsulated in a Route object.</returns>
     public Route FindOsvRoute(ISpatialNode from, ISpatialNode to, double timeLimit)
     {
         // at the moment it's not clear if we want to import Private marked routes or not
@@ -25,12 +42,13 @@ public class KnpRoadNetwork : SpatialGraphMediatorLayer
     }
 
     /// <summary>
-    ///     TODO: (?) does not take acceleration of cars into account.
+    /// Computes a travel route for a <see cref="Visitor"/> agent or <see cref="OsvTourGuide"/> agent that satisfies the
+    /// given constraints.
     /// </summary>
-    /// <param name="start"></param>
-    /// <param name="goal"></param>
-    /// <param name="timeLimit"></param>
-    /// <param name="filter"></param>
+    /// <param name="start">Origin of the trip.</param>
+    /// <param name="goal">Destination of the trip.</param>
+    /// <param name="timeLimit">Maximum duration of the trip.</param>
+    /// <param name="filter">Additional constraints on the trip.</param>
     /// <returns></returns>
     public Route FindRoute(ISpatialNode start, ISpatialNode goal, double timeLimit, Func<ISpatialEdge, bool> filter = null)
     {
@@ -127,15 +145,14 @@ public class KnpRoadNetwork : SpatialGraphMediatorLayer
 
             // no valid segment for next was found -> route can't be found
             // if we do not abort, we would be stuck in a endless loop
+            // TODO Fix route computation logic so that this exception becomes unreachable.
             if (!segmentFound) throw new ArgumentException("No viable route to goal within timeLimit.");
         } while (!currentNode.Equals(goal));
 
         return rt;
     }
 
-    /// <summary>
-    ///     Determines the complete duration it takes to drive a route.
-    /// </summary>
+    /// <summary>Computes the duration of the given route.</summary>
     /// <param name="rt"></param>
     /// <returns>duration in seconds</returns>
     private double GetRouteDuration(Route rt)

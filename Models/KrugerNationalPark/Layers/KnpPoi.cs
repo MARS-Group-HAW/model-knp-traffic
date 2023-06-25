@@ -8,18 +8,16 @@ using Mars.Interfaces.Layers;
 
 namespace KrugerNationalPark.Layers;
 
+/// <summary>
+/// A <see cref="KnpPoi"/> represents a POI in the KNP (e.g., KNP Gate, Rest camp, etc.).
+/// </summary>
 public class KnpPoi : IVectorFeature
 {
-    public TripOrigin infoList;
+    #region Initialization
 
-    public Position Position { get; private set; }
-
-    public string Name { get; private set; }
-
-    public string Type { get; private set; }
-
-    public VectorStructuredData VectorStructured { get; set; }
-
+    /// <summary>Initialization routine of the <see cref="KnpPoi"/>.</summary>
+    /// <param name="layer">The layer that holds the <see cref="KnpPoi"/>.</param>
+    /// <param name="data">The data available for initializing the <see cref="KnpPoi"/>.</param>
     public void Init(ILayer layer, VectorStructuredData data)
     {
         var centroid = data.Geometry.Centroid;
@@ -36,6 +34,10 @@ public class KnpPoi : IVectorFeature
         infoList = JsonSerializer.Deserialize<TripOrigin>(list);
     }
 
+    #endregion
+
+    #region Methods
+
     public void Update(VectorStructuredData data)
     {
         throw new NotImplementedException();
@@ -43,10 +45,10 @@ public class KnpPoi : IVectorFeature
 
     // TODO: Move this to PoiLayer (to encapsulate KnpPoi a little more)?
     /// <summary>
-    ///     Returns a list of POIs that satisfy the given travel time constraint and POI type constraint
+    /// Gets the <see cref="KnpPoi"/> objects that satisfy the given travel time constraint and POI type constraint.
     /// </summary>
-    /// <param name="timeLimit"></param> maximum amount of travel time in seconds
-    /// <param name="allowedTypes"></param> types of POIs that are requested as travel destinations
+    /// <param name="timeLimit">The maximum amount of travel time in seconds.</param>
+    /// <param name="allowedTypes">Types of POIs that are allowed as travel destinations. <see cref="PoiType"/>.</param>
     /// <returns></returns>
     public List<TripDestination> GetDestinationPois(double timeLimit, List<string> allowedTypes = null)
     {
@@ -65,4 +67,25 @@ public class KnpPoi : IVectorFeature
 
         return results;
     }
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>Collection of travel distances and durations to all other <see cref="KnpPoi"/>.</summary>
+    public TripOrigin infoList;
+
+    /// <summary>Position (latitude, longitude) of the <see cref="KnpPoi"/>.</summary>
+    public Position Position { get; private set; }
+
+    /// <summary>Name of the <see cref="KnpPoi"/>.</summary>
+    public string Name { get; private set; }
+
+    /// <summary>Type of the <see cref="KnpPoi"/> (<see cref="PoiType"/>).</summary>
+    public string Type { get; private set; }
+
+    /// <summary>Data passed to the <see cref="KnpPoi"/> upon initialization.</summary>
+    public VectorStructuredData VectorStructured { get; set; }
+
+    #endregion
 }
