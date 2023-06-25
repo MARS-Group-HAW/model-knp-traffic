@@ -20,7 +20,7 @@ public class EventProducer : IAgent<KnpRoadNetwork>
     /// lives.</param>
     public void Init(KnpRoadNetwork layer)
     {
-        _travellerLayer = layer;
+        _knpRoadNetwork = layer;
         _eventsCollection = new EventsCollection();
     }
 
@@ -37,8 +37,8 @@ public class EventProducer : IAgent<KnpRoadNetwork>
         var random = new Random();
         if (random.NextDouble() >= 0.9)
         {
-            var eventStartTime = _travellerLayer.Context.CurrentTimePoint.GetValueOrDefault();
-            var node = _travellerLayer.Environment.GetRandomNode();
+            var eventStartTime = _knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault();
+            var node = _knpRoadNetwork.Environment.GetRandomNode();
             var edges = node.OutgoingEdges;
 
             foreach (var edge in edges.Values)
@@ -73,7 +73,7 @@ public class EventProducer : IAgent<KnpRoadNetwork>
     public Guid ID { get; set; }
         
     /// <summary>Reference to the <see cref="KnpRoadNetwork"/>, which holds the road network of the KNP.</summary>
-    private KnpRoadNetwork _travellerLayer;
+    private KnpRoadNetwork _knpRoadNetwork;
 
     /// <summary>Collection of produced <see cref="KnpEvent"/> instances.</summary>
     private EventsCollection _eventsCollection;
