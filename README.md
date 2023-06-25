@@ -1,103 +1,189 @@
-# Kruger National Park Traffic Simulation Model
+# Kruger National Park Visitor and Traffic Management Model
 
-The Kruger National Park (KNP) traffic simulation model is an agent-based model (ABM) that simulates the daily traffic flow of commuters, visitors, and open safari vehicles (OSVs) in the KNP.
+The Kruger National Park (KNP) visitor and traffic management model is an agent-based model (ABM) developed with the [MARS Framework](https://www.mars-group.org/docs/tutorial/intro). It enables the configuration and simulations of traffic flow scenarios in the KNP. The current prototype was developed as part of a joint project with [South African National Parks (SANParks)](https://sanparks.org).
 
-## Model components
-The main components of the model can be categorized into agents, entities, layers, and resources.
+## Model Documentation
+
+At the conclusion of the joint project with SANParks, a [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) was prepared that describes the functionality and configurability of the current prototype in great detail. Throughout this README, sections of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) are referred to as a source of further information.
+
+## Model Setup
+
+### Requirements
+
+The following technologies are required to set up the model locally:
+
+- [.Net SDK](https://dotnet.microsoft.com/en-us/download)
+- Recommended: a .NET IDE ([JetBrains Rider](https://www.jetbrains.com/rider/) or [Visual Studio](https://visualstudio.microsoft.com/))
+
+### Project Setup
+
+To set up the project locally, follow these steps:
+
+1. Clone or download the GitHub repository
+   - Clone: `git clone https://github.com/MARS-Group-HAW/model-knp-traffic.git`
+   - Download: Click the "Code" button on the GitHub page of the repository and select "Download ZIP"
+2. Open the solution file of the project [Solution file](./KNPTrafficModel.sln) of the project in your preferred IDE
+
+## Model Components
+
+The main components of the model can be categorized into the following categories: environment, wildlife, entities, agents, model output, and schedulers.
+
+> **Note**  
+> See the [MARS Framework documentation](https://www.mars-group.org/docs/tutorial/intro) for general information on modelling and simulation with MARS.
+
+### Environment
+
+The georeferenced environment of the mdoel consists of the following two layer types.
+
+- `KnpRoadNetwork`: This layer type holds the road network of the KNP and provides route finding services to agents.
+- `PointsOfInterest`: This layer type holds a set of `KnpPoi` instances for agents to interact with.
+  - `KnpPoi`: This is a POI in the KNP and a potential travel destination of agents.
+
+See Section 3.1.1 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+
+### Wildlife
+
+Wildlife occurrences are modelled as temporary events of the type `KnpEvent` along the `KnpRoadNetwork`. These events are created and managed by the `EventProducer`. See Section 3.1.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+
+### Entities
+
+The model features an entity type `KnpCar` that can be used by agents move on the `KnpRoadNetwork`. See Section 3.1.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ### Agents
 
+The model features the following agent types:
+
 - `Commuter`: a worker who lives outside the KNP and works at a rest camp in the KNP.
-    - Summary of daily behavior routine:
-        1. Enter the KNP via a KNP gate
-        2. Commute by `KnpCar` (see below) to a KNP rest camp
-        3. Spend some amount of time at the KNP rest camp
-        4. Exit the KNP via the same KNP gate
-    - `CommuterState`: an enumeration that contains the possible states of `Commuter` agents based on their current activity in the behavior routine
 - `Visitor`: a visitor who drives around the KNP in search for wildlife.
-    - Summary of daily behavior routine:
-        - Daily visitor:
-            1. Enter the KNP via a KNP gate
-            2. Drive around randomly for some time, taking breaks at KNP rest camps or other points of interst (POIs)
-                - Stop driving for some amount of time when spotting wildlife
-            3. Exit the KNP via a KNP gate
-        - Overnight visitor:
-            1. Enter the KNP via a KNP rest camp
-            2. Drive around randomly for somet ime, taking breaks at KNP rest camps or other POIs
-                - Stop driving for some amount of time when spotting wildlife
-            3. Exit the KNP via the same KNP rest camp or another KNP rest camp
-    - `VisitorState`: an enumeration that contains the possible states of `Visitor` agents based on their current activity in the behavior routine
-- `OSV`: TBD
-- `EventProducer`: an abstract component that generates `KnpEvent` instances (see below) on the KNP traffic network for `Visitor` agents to interact with
+- `OSV`: a driver of an Open Safari Vehicle (OSV).
 
-### Entities
-- `KnpCar`: a car that can be used by `Commuter` agents and `Visitor` agents to move on the KNP traffic network. The first-come-first-served rule is applied to determine who has the right of way at intersections.
+See Section 3.1.4 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
-### Layers
-- `CommuterSchedulingLayer`: spawns a given number of `Commuter` agents at a given frequency at a given location over a given time interval (see Configuration)
-- `ProducerSchedulingLayer`: spawns one `EventProducer` agent at the beginning of a simulation
-- `POILayer`: holds a set of `KnpPoi` instances (see below) for `Visitor` agents to interact with
-- `VisitorSchedulingLayer`: spawns a given number of `Visitor` agents at a given frequency at a given location over a given time interval (see Configuration)
-- `VisitorTravelerLayer`: calculates routes for `Visitor` agents, making sure that they can satisfy time constraints (e.g., closing hours of KNP)
-- `SpatialGraphMediatorLayer`: holds the KNP travel network for `Commuter` agents and `Visitor` agents to drive on
+### Model Output
 
-### Resources
-- `KnpPoi`: a POI in the KNP and a potential travel destination of `Visitor` agents
-- `KnpEvent`: a marker on the KNP traffic network that represents a wildlife sighting. `Visitor` agents stop and observe for some amount of time when spotting an event
+The model produces raster data as part of its output. These raster data cotnain different information that can be used to create heatmaps. The following information are provided in the form of raster data:
+
+- `TrafficGrid`: movement density on the `KnpRoadNetwork`
+- `TrafficJamGrid`: location and duration of traffic jams
+- `SightingsGrid`: location and duration of wildlife sightings
+
+See Section 3.1.5 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+
+### Schedulers
+
+The model features a set of schedulers that can be configured to spawn agents at specific locations and times. Each agent type has its own scheduler:
+
+- `CommuterScheduler`: spawns `Commuter` agents.
+- `VisitorScheduler`: spawns `Visitor` agents.
+- `OsvTourGuideScheduler`: spawns `OsvTourGuide` agents.
+
+See the section [Configuration](#configuration) of this README and Section 3.1.6 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ## Data integration
-The following data are integrated into the KNP at runtime.
-- `roads_all_2019_inferred.geojson`: a geospatial representation of the KNP road network, provided by SANParks.
-- `pois_inferred.geojson`: a geospatial representation of the POIs (gates, rest camps, and other locations) within the KNP
-- Additionally, there are gate entry data, gate quota data, OSV permit data, and rest camp capacity and occupancy data provided by SANParks (see the `sanparks_res` directory). These data can be used to spatially distribute the spawn locations of agents and the camp occupancy distribution.
+
+Various georeferenced datasets provided by SANParks are integrated into the model to populate and inform the environment. The raw versions of these datasets are stored in the directory [sanparks_res](./Scenarios/KrugerNationalParkBox/sanparks_res/).
+
+See Section 3.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
 ## Configuration
-The following files can be edited to configure the model:
-- `car.csv`: used to configure `KnpCar` entities that are used by agent types
-- Agent configuration files and scheduling files:
-    - The following files serve to define spawn intervals and frequencies as well as spawn locations and attributes of agent types. For information on the required temporal and spatial parameters, please see the [scheduling layer documentation](https://mars.haw-hamburg.de/articles/soh/layers/scheduling_layer.html). In addition to the required scheduling parameters, the following agent-specific parameters can be set in the following files:
-    - `CommScheduler.csv`: used to schedule `Commuter` spawns
-        - `workDuration`: the amount of time (in minutes) that a `Commuter` agent will spend at its place of work
-    - `VisitorScheduler.csv`: used to schedule `Visitor` spawns
-    - `ProducerScheduler.csv`: used to schedule `Producer` spawns
-    - To spawn agent types at a KNP Gate or Rest camp, the following locations can be entered into the respective scheduler configuration file. Example:
-        1. Open the CSV scheduler file of an agent type
-        2. Create a new row and specify the temporal attributes and spawning amount as desired
-        3. Add the POI name (see table below) in the `gateName` attribute
-        4. `source` (optional): Add the WKT geometry of the chosen POI (in general, input geometries are expected in the [well-known text (WKT)](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) representation format)
-        5. `destination` (optional): Add a WKT geometry (e.g., a MULTIPOINT containing a subset of the coordinates listed in the table below). The agent chooses a random destination from the options provided in the MULTIPOINT
 
-| POI Type  | POI Name         | Longitude          | Latitude   | WKT geometry                                     |
-|-----------|------------------|--------------------|------------|--------------------------------------------------|
-| KNP Gate  | Crocodile Bridge | 31.89258657143726  | -25.358480632913864 | "POINT (31.89258657143726 -25.358480632913864)"  |
-| KNP Gate  | Malelane         | 31.5322480748238   | -25.462242036021298 | "POINT (31.5322480748238 -25.462242036021298)"   |
-| KNP Gate  | Numbi            | 31.19779114628988  | -25.155235225028587 | "POINT (31.19779114628988 -25.155235225028587)"  |
-| KNP Gate  | Orpen            | 31.390454263127054 | -24.481379204477278 | "POINT (31.390454263127054 -24.481379204477278)" |
-| KNP Gate  | Pafuri           | 31.04128207709203  | -22.399849267439016 | "POINT (31.04128207709203 -22.399849267439016)"  |
-| KNP Gate  | Paul Kruger      | 31.484825272079146 | -24.981054292519527  | "POINT (31.484825272079146 -24.981054292519527)" |
-| KNP Gate  | Phabeni          | 31.24188273415545  | -25.02502054780226  | "POINT (31.24188273415545 -25.02502054780226)"   |
-| KNP Gate  | Phalaborwa       | 31.166061973814458 | -23.94570262899793 | "POINT (31.166061973814458 -23.94570262899793)"  |
-| KNP Gate  | Punda Maria      | 31.01048065058071  | -22.737288654024038 | "POINT (31.01048065058071 -22.737288654024038)"  |
-| Rest camp | Berg-en-Dal      | 31.444319855824595 | -25.428126851153632 | "POINT (31.444319855824595 -25.428126851153632)" |
-| Rest camp | Crocodile Bridge | 31.89330364010209  | -25.358233850884123 | "POINT (31.89330364010209 -25.358233850884123)"  |
-| Rest camp | Letaba           | 31.57451374376673  | -23.85430033699618 | "POINT (31.57451374376673 -23.85430033699618)"   |
-| Rest camp | Lower Sabie      | 31.91437694895015  | -25.119944502413436 | "POINT (31.91437694895015 -25.119944502413436)"  |
-| Rest camp | Mopani           | 31.399132836948997 | -23.521639819788223 | "POINT (31.399132836948997 -23.521639819788223)" |
-| Rest camp | Olifants         | 31.7386871449655   | -24.00454966132233 | "POINT (31.7386871449655 -24.00454966132233)"    |
-| Rest camp | Orpen            | 31.390454263127054 | -24.481379204477278 | "POINT (31.390454263127054 -24.481379204477278)" |
-| Rest camp | Skukuza          | 31.591989637766584 | -24.996507331891323 | "POINT (31.591989637766584 -24.996507331891323)" |
-| Rest camp | Shingwedzi       | 31.434153793525685 | -23.107844185540074 | "POINT (31.434153793525685 -23.107844185540074)" |
-| Rest camp | Pretoriuskop     | 31.268696006058565 | -25.168990139725594 | "POINT (31.268696006058565 -25.168990139725594)" |
-| Rest camp | Punda Maria      | 31.018924936716804 | -22.692239597900695 | "POINT (31.018924936716804 -22.692239597900695)" |
-| Rest camp | Satara           | 31.780473375065686 | -24.39220480951074 | "POINT (31.780473375065686 -24.39220480951074)"  |
-| Satellite camp | Balule      | 31.733020373834496 | -24.053980346565005 | "POINT (31.733020373834496 -24.053980346565005)" |
-| Satellite camp | Malelane    | 31.51273269058665  | -25.470369247759475 | "POINT (31.51273269058665 -25.470369247759475)"  |
+The main configuration file of the model is the JSON file [`config.json`](./Scenarios/KrugerNationalParkBox/config.json). This JSON file contains blocks (JSON keys) for configuring layers, entities, and agents. In these blocks, auxiliary configuration files are referenced which are located in the directory [`resources`](./Scenarios/KrugerNationalParkBox/resources/). Below, the configuration options are described and the default auxiliary files are named.
 
-The model configuration takes place in the `SimConfig()` method in `Program.cs`. Here, the simulation parameters and input files can be specified in a `SimulationConfig` object.
+See Section 3.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for an overview of the configuration options of the model.
 
-## Execution
-The model can be executed by running the `Program.cs` file.
+### Preconfigured Scenarios
 
-## Analysis
-The model produces one CSV-file per agent type. In addition, one `trips.geojson` file is produced that contains the movement trajectories of each agent. The trajectories can be visualized on [kepler.gl](https://kepler.gl).
-- TODO: list geospatial files that are suitable for visualization
+The directory [`scenario_configs`](./Scenarios/KrugerNationalParkBox/resources/scenario_configs/) contains configuration files for two scenarios: [scenario1](./Scenarios/KrugerNationalParkBox/resources/scenarios_configs/scenario1/) and [scenario2](./Scenarios/KrugerNationalParkBox/resources/scenarios_configs/scenario2/). Each scenario is ready to be run in two configurations: `configuration1` and `configuration2`.
+
+> **Note**  
+> See Section 4 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for an overview of the two scenarios and details on their configuration.
+
+To run a configuration of one of these scenarios, follow these steps:
+
+1. Navigate to the directory of the desired scenario.
+2. Move the `config.json` file of the scenario to the directory [KrugerNationalParkBox](./Scenarios/KrugerNationalParkBox/). Be sure not to accidentally overwrite any files that have the same name.
+3. Move the files contained in the configuration directory to the directory [`resources`](./Scenarios/KrugerNationalParkBox/resources/). Be sure not to accidentally overwrite any files that have the same name.
+
+### Layer Configuration
+
+The layer configuration section of the `config.json` file contains configuration options for the environment (see [Environment](#environment)), the raster data model output (see [Model Output](#model-output)), and the schedulers (see [Schedulers](#schedulers)).
+
+See Section 3.3.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+
+#### Environment Configuration
+
+The environment configuration enables the specification of georeferenced datasets for the `KnpRoadNetwork` layer and the `PointsOfInterest` layer. Each layer type requires a GeoJSON file. The default GeoJSON file is located [here](./Scenarios/KrugerNationalParkBox/resources/roads_all_2019_inferred.geojson) and [here](./Scenarios/KrugerNationalParkBox/resources/pois_inferred.geojson), respectively.
+
+#### Model Output Configuration
+
+The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Model Output](#model-output)) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
+
+#### Scheduler Configuration
+
+The scheduler configuration (see [Schedulers](#schedulers)) enables the specification of spawn periods for each agent type (see [Agents](#agents)). The `CommuterScheduler`, `VisitorScheduler`, and `OsvTourGuideScheduler` can be used to specify spawn periods for `Commuter`, `Visitor`, and `OsvTourGuide` agents, respectively.
+
+> **Note**  
+> See Section 3.1.6 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for an overview of spawn periods and spawn events.
+
+Each scheduler requires a CSV file. The default CSV files are located [here](./Scenarios/KrugerNationalParkBox/resources/CommuterScheduler.csv), [here](./Scenarios/KrugerNationalParkBox/resources/VisitorScheduler.csv), and [here](./Scenarios/KrugerNationalParkBox/resources/OsvTourGuideScheduler.csv), respectively. The parameters listed in the following table can be set via the scheduler CSV file of each agent type. Parameters marked with &check; are required, whereas parameters marked with &#10005; are optional.
+
+| **Name**         | **Type**   | **Description**                                        | **Required?** |
+|------------------|------------|--------------------------------------------------------|:-------------:|
+| `sourceName`     | String     | Name of the POI at which agents spawn                  | &check;       |
+| `sourceType`     | String     | Type of the POI specified in `sourceName`               | &check;       |
+| `sourceGeometry` | WKT String | Geometry that contains POIs at which agents can spawn  | &#10005;      |
+| `targetName`     | String     | Name of the POI to which agents travel                 | &#10005;      |
+| `targetType`     | String     | Type of the POI specified in `targetName`               | &#10005;      |
+| `targetGeometry` | WKT String | Geometry that contains POIs to which agents can travel | &#10005;      |
+
+To specify a new spawn period for an agent type, follow these steps:
+
+1. Open the CSV file of the scheduler of the agent type
+2. Create a new row in the CSV file
+3. Populate the row with values corresponding to the attributes in the column header
+
+See Appendix A and Appendix B of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for aggregated information on the POIs that are available in the model environment. In addition, see the supplementary documentation file [KNP POI document](./Documentation/knp_pois.pdf) for a comprehensive listing of all individual POIs that are available in the model and that can be used as values for the parameters `sourceName`, `sourceType`, `targetName`, and `targetType`.
+
+> **Note**  
+> See [this](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) Wikipedia entry for an overview of WKT geometries and WKT-formatted strings.
+
+### Entity Configuration
+
+The `KnpCar` (see [Entities](#entities)) requires a CSV file. The default CSV file is [`car.csv`](./Scenarios/KrugerNationalParkBox/resources/car.csv).
+
+See Section 3.3.3 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+
+### Agent Configuration
+
+The parameters of a spawn period that apply to all agent types are listed in the above table (see [Scheduler Configuration](#scheduler-configuration)). In addition, parameters specific to each agent type can also be set via the respective scheduler.
+
+#### `Commuter`
+
+The parameters listed in the following table are specific to `Commuter` agents.
+
+| **Name**       | **Type** | **Description**                                                        | **Required?** |
+|----------------|----------|------------------------------------------------------------------------|:-------------:|
+| `workDuration` | String   | Amount of time, in minutes, that the agent spends at its place of work | &check;       |
+
+#### `Visitor`
+
+TBD (additional properties of the `OsvTourGuide` will soon become configurable)
+
+#### `OsvTourGuide`
+
+TBD (additional properties of the `OsvTourGuide` will soon become configurable)
+
+## Model Execution
+
+The model can be run via the [`Program.cs`](./Scenarios/KrugerNationalParkBox/Program.cs) file. To run the model with an IDE (e.g., JetBrains Rider or Microsoft Visual Studio), open the project and execute the Program.cs file with the Run button of the IDE.
+
+Alternatively, run the model via the `dotnet` CLI:
+
+1. Build the project: `dotnet build`
+2. Run the project: `dotnet run`
+
+## Output Analysis
+
+The model produces one CSV file and one GeoJSON file per agent type. The CSV file contains each agent's state per simulation step and the GeoJSON file contains each agent's travel trajectory. In addition, a set of raster data are created that can be used to generate heatmaps over the KNP road network (see [Model Output](#model-output)). The travel trajectories can be visualised with [kepler.gl](https://kepler.gl).
+
+See Section 5 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for exemplary result visualisations.
