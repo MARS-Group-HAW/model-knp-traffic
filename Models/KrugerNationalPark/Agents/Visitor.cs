@@ -118,7 +118,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
         }
         else if (State == VisitorState.Looking)
         {
-            //@todo : logik validieren, in der simulation sah es so aus lob die dauernd bremsen
+            // TODO validate logic; in simulation, it appears like they are constantly braking
             if (_wildlifeSightingEndTime.Subtract(_knpRoadNetwork.Context.CurrentTimePoint.GetValueOrDefault()).TotalMinutes < 0)
             {
                 Car.Driver.BrakingActivated = false;
@@ -187,7 +187,7 @@ public class Visitor : IAgent<KnpRoadNetwork>, ICarSteeringCapable
             TrafficGrid[Position] += 1;
         }
 
-        // todo: 3 dynamisch machen
+        // todo: make dynamic
         if (TrafficJamGrid.IsInRaster(Position) && CarVelocity == 0 && State != VisitorState.Looking)
         {
             _trafficJamDurationCounter += 1;

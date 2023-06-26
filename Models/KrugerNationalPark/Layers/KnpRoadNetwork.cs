@@ -72,7 +72,7 @@ public class KnpRoadNetwork : SpatialGraphMediatorLayer
 
             //var newOutEdges = new List<ISpatialEdge>();
 
-            // TODO: die lastEdge scheint keine OutGoing edge der "Nächsten" node zu sein. 
+            // TODO lastEdge does not seem to be an outgoing edge of the "next" node
             // das ist uns unklar und nicht erwartungskonform!
 
             var uTurnEdges = new List<ISpatialEdge>();
@@ -125,7 +125,7 @@ public class KnpRoadNetwork : SpatialGraphMediatorLayer
                 // from this node we have to be able to reach out goal within the time limit
                 var targetNode = prevEdge.To;
                     
-                // @todo: FindRoute hat nur Filter für Attribute? Keinen Filter für Modalität?
+                // TODO FindRoute has filters for attributes, but no filters for modalities?
                 var tmpRoute = Environment.FindRoute(targetNode, goal, PathHeuristics.Shortest, filter);
                     
                 var routeDuration = GetRouteDuration(tmpRoute);
