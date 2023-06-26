@@ -151,7 +151,7 @@ The environment configuration enables the specification of georeferenced dataset
 
 #### Model Output Configuration
 
-The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Model Output](#heatmap-output) in this README) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
+The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Heatmap Output](#heatmap-output) in this README) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
 
 #### Scheduler Configuration
 
@@ -223,7 +223,7 @@ Depending on the simulation configuration (see [Configuration](#configuration) i
 
 - One CSV file per agent type (named `<AgentType>.csv`), which contains each agent's state per simulation step.
 - One GeoJSON file per agent type (named `<AgentType>_trips.geojson`), which contains each agent's travel trajectory.
-- Three GeoJSON files named `TrafficGrid.csv`, `TrafficJamGrid.csv`, and `SightingsGrid.csv` (see [Model Output](#heatmap-output) in this README).
+- Three GeoJSON files named `TrafficGrid.csv`, `TrafficJamGrid.csv`, and `SightingsGrid.csv` (see [Heatmap Output](#heatmap-output) in this README).
 - One JSON file per `Visitor` agent and/or `OsvTourGuide` agent (named `route_<AgentID>.json`) containing the agent's movement trajectory (see [Visitor](#visitor) and [OsvTourGuide](#osvtourguide) in this README).
 
 ## Output Analysis
