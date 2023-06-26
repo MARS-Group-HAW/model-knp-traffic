@@ -81,9 +81,9 @@ The model features the following agent types:
 
 See Section 3.1.4 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
-### Model Output
+### Heatmap Output
 
-The model produces raster data as part of its output. These raster data cotnain different information that can be used to create heatmaps. The following information are provided in the form of raster data:
+The model produces three heatmaps over the `KnpRoadNetwork` as part of its output, containing the following information:
 
 - `TrafficGrid`: movement density on the `KnpRoadNetwork`
 - `TrafficJamGrid`: location and duration of traffic jams
@@ -101,11 +101,24 @@ The model features a set of schedulers that can be configured to spawn agents at
 
 See [Configuration](#configuration) in this README and Section 3.1.6 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
-## Data integration
+## Data Integration
 
-Various georeferenced datasets provided by SANParks are integrated into the model to populate and inform the environment. The raw versions of these datasets are stored in the directory [sanparks_res](./Scenarios/KrugerNationalParkBox/sanparks_res/).
+Various georeferenced datasets provided by SANParks are integrated into the model to populate and inform the environment. The raw versions of these datasets are stored in the directory [`sanparks_res`](./Scenarios/KrugerNationalParkBox/sanparks_res/).
 
 See Section 3.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
+
+### Data Preprocessing and Verification
+
+Some Jupyter notebooks are available in the project in the directory [`KrugerNationalParkBox`](./Scenarios/KrugerNationalParkBox/). Below is a brief description of each notebook:
+
+- [SchedulerCSVPrep.ipynb](./Scenarios/KrugerNationalParkBox/SchedulerCSVPrep.ipynb): Programmatic Preparation of scheduler CSV files
+- [Commuter.ipynb](./Scenarios/KrugerNationalParkBox/Commuter.ipynb): Visualisation of driving speed of `Commuter` agents
+- [POI Layer Timings.ipynb](./Scenarios/KrugerNationalParkBox/POI%20Layer%20Timings.ipynb): Tabular representation of route distance and travel duration between pairwise KNP Gate and Rest camp POIs
+- [Prepare POI Layer.ipynb](./Scenarios/KrugerNationalParkBox/Prepare%20POI%20Layer.ipynb): deprecated
+- [Scheduler.ipynb](./Scenarios/KrugerNationalParkBox/Scheduler.ipynb): deprecated calculations of route distances and travel durations
+- [Visitor.ipynb](./Scenarios/KrugerNationalParkBox/Visitor.ipynb): Visualisation of driving speed of `Visitor` agents
+- [VisitorEventBraking.ipynb](./Scenarios/KrugerNationalParkBox/VisitorEventBraking.ipynb): verification of agent behaviour upon wildlife sighting (brake and stop driving for some time)
+- Jupyter Notebooks in directory [`sanparks_res`](./Scenarios/KrugerNationalParkBox/sanparks_res/): exploration, processing, and analysis of datasets provided by SANParks
 
 ## Configuration
 
@@ -123,12 +136,12 @@ The directory [`scenario_configs`](./Scenarios/KrugerNationalParkBox/resources/s
 To run a configuration of one of these scenarios, follow these steps:
 
 1. Navigate to the directory of the desired scenario.
-2. Move the `config.json` file of the scenario to the directory [KrugerNationalParkBox](./Scenarios/KrugerNationalParkBox/). Be sure not to accidentally overwrite any files that have the same name.
+2. Move the `config.json` file of the scenario to the directory [`KrugerNationalParkBox`](./Scenarios/KrugerNationalParkBox/). Be sure not to accidentally overwrite any files that have the same name.
 3. Move the files contained in the configuration directory to the directory [`resources`](./Scenarios/KrugerNationalParkBox/resources/). Be sure not to accidentally overwrite any files that have the same name.
 
 ### Layer Configuration
 
-The layer configuration section of the `config.json` file contains configuration options for the environment (see [Environment](#environment) in this README), the raster data model output (see [Model Output](#model-output) in this README), and the schedulers (see [Schedulers](#schedulers) in this README).
+The layer configuration section of the `config.json` file contains configuration options for the environment (see [Environment](#environment) in this README), the raster data model output (see [Heatmap Output](#heatmap-output) in this README), and the schedulers (see [Schedulers](#schedulers) in this README).
 
 See Section 3.3.2 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for more details.
 
@@ -138,7 +151,7 @@ The environment configuration enables the specification of georeferenced dataset
 
 #### Model Output Configuration
 
-The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Model Output](#model-output) in this README) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
+The model output configuration enables the specification of raster layer files that are used by the `TrafficGrid`, `TrafficJamGrid`, and `SightingsGrid` (see [Model Output](#heatmap-output) in this README) to track information about the traffic on the `KnpRoadNetwork` during a simulation. Each layer requires an ASC file. The default ASC file for each layer is located [here](./Scenarios/KrugerNationalParkBox/resources/knp_raster_1111m.asc).
 
 #### Scheduler Configuration
 
@@ -189,11 +202,11 @@ The parameters listed in the following table are specific to `Commuter` agents.
 
 #### `Visitor`
 
-TBD (additional properties of the `Visitor` will soon become configurable)
+In `config.json`, the flag `WriteRouteAsGeoJSON` can be set to `true` to produce one GeoJSON file per agent containing the movement trajectory of that agent.
 
 #### `OsvTourGuide`
 
-TBD (additional properties of the `OsvTourGuide` will soon become configurable)
+In `config.json`, the flag `WriteRouteAsGeoJSON` can be set to `true` to produce one GeoJSON file per agent containing the movement trajectory of that agent.
 
 ## Model Execution
 
@@ -204,8 +217,22 @@ Alternatively, run the model via the `dotnet` CLI:
 1. Build the project: `dotnet build`
 2. Run the project: `dotnet run`
 
+## Model Outputs
+
+Depending on the simulation configuration (see [Configuration](#configuration) in this README), the model produces the following outputs:
+
+- One CSV file per agent type (named `<AgentType>.csv`), which contains each agent's state per simulation step.
+- One GeoJSON file per agent type (named `<AgentType>_trips.geojson`), which contains each agent's travel trajectory.
+- Three GeoJSON files named `TrafficGrid.csv`, `TrafficJamGrid.csv`, and `SightingsGrid.csv` (see [Model Output](#heatmap-output) in this README).
+- One JSON file per `Visitor` agent and/or `OsvTourGuide` agent (named `route_<AgentID>.json`) containing the agent's movement trajectory (see [Visitor](#visitor) and [OsvTourGuide](#osvtourguide) in this README).
+
 ## Output Analysis
 
-The model produces one CSV file and one GeoJSON file per agent type. The CSV file of an agent type is named `<AgentType>.csv` and contains each agent's state per simulation step. The GeoJSON file of an agent type is named `<AgentType>_trips.geojson` contains each agent's travel trajectory. In addition, a set of raster data are created that can be used to generate heatmaps over the KNP road network (see [Model Output](#model-output) in this README). The travel trajectories and the raster data can be visualised with [kepler.gl](https://kepler.gl).
+The travel trajectories and the heatmaps can be visualised with [kepler.gl](https://kepler.gl). To do so, follow these steps:
+
+1. In a web browser, open [kepler.gl](https://kepler.gl).
+2. In a file explorer, navigate to the directory containing the model execution and output files.
+3. Load the desired files (e.g., heatmap files, movement trajectories, or trips files (see [Model Output](#model-outputs) in this README)) into [kepler.gl](https://kepler.gl).
+4. Adjust the visualisation via the options provided in the left sidebar.
 
 See Section 5 of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) for exemplary result visualisations.
