@@ -25,7 +25,7 @@ public class TrafficGrid : RasterLayer, ISteppedActiveLayer
     {
         if (GetCurrentTick() % 1 == 0 ||  GetCurrentTick() == 1 || GetCurrentTick() == Context.MaxTicks)
         {
-            Console.WriteLine($"{GetCurrentTick()}/{Context.MaxTicks}");
+            Console.WriteLine($"Simulation step: {GetCurrentTick()}/{Context.MaxTicks}");
         }
         
         if (GetCurrentTick() == Context.MaxTicks)

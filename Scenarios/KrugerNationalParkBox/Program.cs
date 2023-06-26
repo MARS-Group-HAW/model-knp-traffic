@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using KrugerNationalPark.Agents;
 using KrugerNationalPark.Layers;
-using Mars.Common.Core.Collections;
 using Mars.Common.Core.Logging;
 using Mars.Components.Environments;
 using Mars.Components.Starter;

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Mars.Components.Layers;
 using Mars.Interfaces.Layers;
@@ -23,11 +22,6 @@ public class SightingsGrid : RasterLayer, ISteppedActiveLayer
     /// <remarks>At the end of the simulation, the collected data are written to a GeoJSON file.</remarks>
     public void PostTick()
     {
-        if (GetCurrentTick() % 1 == 0 ||  GetCurrentTick() == 1 || GetCurrentTick() == Context.MaxTicks)
-        {
-            Console.WriteLine($"{GetCurrentTick()}/{Context.MaxTicks}");
-        }
-        
         if (GetCurrentTick() == Context.MaxTicks)
         {
             WriteMovementHeatMapToGeoJson();
