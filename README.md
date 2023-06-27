@@ -2,6 +2,17 @@
 
 The Kruger National Park (KNP) visitor and traffic management model is an agent-based model (ABM) developed with the [MARS Framework](https://www.mars-group.org/docs/tutorial/intro). It enables the configuration and simulations of traffic flow scenarios in the KNP. The current prototype was developed as part of a joint project with [South African National Parks (SANParks)](https://sanparks.org).
 
+## Contents of this README
+
+- [Model Documentation](#model-documentation): Where to find documentation of the model that goes beyond this README
+- [Model Usage](#model-usage): How to set up the model for simulation or development
+- [Model Components](#model-components): An overview of the main components of the model
+- [Data Integration](#data-integration): An overview of the data that are integrated into the model
+- [Configuration](#configuration): How to configure simulations of the model
+- [Model Execution](#model-execution): How to run the model
+- [Model Outputs](#model-outputs): An overview of the outputs produced by the model
+- [Output Analysis](#output-analysis): How to analyse outputs of the model
+
 ## Model Documentation
 
 At the conclusion of the joint project with SANParks, a [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) was prepared that describes the functionality and configurability of the current prototype in great detail. Throughout this README, sections of the [final report](./Documentation/KNP_Traffic_Model_Final_Report.pdf) are referred to as a source of further information.
